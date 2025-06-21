@@ -22,6 +22,7 @@ import type {
   CharacterClassSpecificChoice,
   InfoDialogContentType
 } from '@/types/character-core';
+import type { DualBadgeProps } from '@/components/ui/DualBadge';
 import { isAlignmentCompatibleWithDeity, isAlignmentValidForRequirement } from '@/types/character';
 import { getLocalizedString, type ProcessedSiteData } from '@/i18n/i18n-data';
 import { Input } from '@/components/ui/input';
@@ -483,7 +484,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         disabled={panelIsLocked && !hasInfoContentForDialog}
         aria-label={(UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel || "Info for {choiceName}").replace("{choiceName}", blockLabel)}
       >
-        <Info />
+        <Info className="h-4 w-4" />
       </Button>
     ) : null;
 
@@ -501,9 +502,9 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
         <div key={`${uiBlock.key}-${blockIndex}-select`}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-          <div className="flex items-center">
+          <div className="flex">
             <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
-              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow text-sm"> <SelectValue/> </SelectTrigger>
+              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow"> <SelectValue/> </SelectTrigger>
               <SelectContent> {finalSelectOptions.map(opt => <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</SelectItem>)} </SelectContent>
             </Select>
             {commonInfoButton}
@@ -515,14 +516,14 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
         <div key={`${uiBlock.key}-${blockIndex}-combobox`}>
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-           <div className="flex items-center">
+           <div className="flex">
             <Select
               name={uiBlock.key}
               value={uiValueForComponent}
               onValueChange={handleChange}
               disabled={isDisabledByPanelOrDependency}
             >
-              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow text-sm">
+              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -543,11 +544,11 @@ const CharacterFormCoreInfoSectionComponent = ({
       const slotLabelTemplate = uiBlock.slotLabel || `${uiBlock.key} Slot {slotNum}`;
       return (
         <div key={`${uiBlock.key}-group-${blockIndex}`} className="border rounded-md bg-background/50">
-          <Label className="flex items-center text-md font-medium">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
+          <Label className="flex text-md font-medium">{blockLabel} <Badge variant="outline">{numInputsToRender}</Badge></Label>
           {Array.from({ length: numInputsToRender }).map((_, index) => (
             <div key={`${uiBlock.key}-slot-${index}`}>
               <Label htmlFor={`${uiBlock.key}-input-${index}`} className="text-xs"> {parseAndRenderUIString(slotLabelTemplate, { slotNum: index + 1 })} </Label>
-              <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} className="text-sm" disabled={isDisabledByPanelOrDependency} />
+              <Input id={`${uiBlock.key}-input-${index}`} value={getCurrentValue(uiBlock.key, index)} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, index)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             </div>
           ))}
           {blockNote && <p className="text-xs text-destructive/80 italic">{blockNote}</p>}
@@ -557,7 +558,7 @@ const CharacterFormCoreInfoSectionComponent = ({
       return (
          <div key={`${uiBlock.key}-${blockIndex}-textInput`}>
             <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
-            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} className="text-sm"/>
+            <Input id={`cspec-${uiBlock.key}-${blockIndex}`} value={currentBlockValueForProp} onChange={(e) => handleClassSpecificChoiceChange(uiBlock.key, e.target.value, uiBlock.choiceType === 'multiInput' ? blockIndex : undefined)} placeholder={inputPlaceholderText} disabled={isDisabledByPanelOrDependency} />
             {blockNote && <p className="text-xs text-destructive/80 italic">{blockNote}</p>}
          </div>
       );
@@ -586,7 +587,7 @@ const CharacterFormCoreInfoSectionComponent = ({
         headerClassName="bg-muted/20"
       >
         {() => (
-          <div className="flex justify-center items-center">
+          <div className="flex">
             <Loader2 className="animate-spin text-primary" />
             <p className="text-muted-foreground">{translations?.UI_STRINGS.loadingText || "Loading..."}</p>
           </div>
@@ -608,56 +609,43 @@ const CharacterFormCoreInfoSectionComponent = ({
       {({ isLocked: panelIsLocked }) => (
         <>
           <div>
-            <div className="grid grid-cols-1 md:grid-cols-2 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2">
               <div>
                 <Label htmlFor="name">{UI_STRINGS.characterNameLabel}</Label>
-                <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} className="text-sm"/>
+                <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
               </div>
               <div>
                 <Label htmlFor="playerName">{UI_STRINGS.playerNameLabel}</Label>
-                <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} className="text-sm"/>
+                <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} />
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2">
               <div>
                 <Label htmlFor="race">{UI_STRINGS.raceLabel}</Label>
-                <div className="flex items-center">
+                <div className="flex">
                   <Select value={localRace} onValueChange={(value) => setLocalRace(value as DndRaceId)} disabled={panelIsLocked} >
-                    <SelectTrigger id="race" className="flex-grow text-sm"> <SelectValue /> </SelectTrigger>
+                    <SelectTrigger id="race" className="flex-grow"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {DND_RACES.map(race => <SelectItem key={race.id} value={race.id}>{race.label}</SelectItem>)} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info/> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace}> <Info className="h-4 w-4" /> </Button>
                 </div>
                 {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-                   <div className="flex flex-wrap items-baseline justify-start">
+                   <div className="flex flex-wrap">
                     {raceSpecialQualities.abilityEffects.map((effect) => {
                       const change = effect.change;
-                      let leftBorderColorClass = "border-border";
-                      let rightBgClass = "bg-muted";
-                      let rightTextClass = "text-muted-foreground";
-                      let rightBorderColorClass = "border-border";
-
+                      let badgeColor: DualBadgeProps['color'] = 'default';
                       if (change > 0) {
-                        leftBorderColorClass = "border-emerald-600";
-                        rightBgClass = "bg-emerald-600";
-                        rightTextClass = "text-emerald-50";
-                        rightBorderColorClass = "border-emerald-600";
+                          badgeColor = 'emerald';
                       } else if (change < 0) {
-                        leftBorderColorClass = "border-destructive";
-                        rightBgClass = "bg-destructive";
-                        rightTextClass = "text-destructive-foreground";
-                        rightBorderColorClass = "border-destructive";
+                          badgeColor = 'destructive';
                       }
-
                       return (
                          <DualBadge
                           key={effect.ability}
                           leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                           rightLabel={change > 0 ? `+${change}` : String(change)}
-                          leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
-                          rightClassName={cn("border-2 rounded-r-full", rightBgClass, rightTextClass, rightBorderColorClass)}
-                          className=""
+                          color={badgeColor}
                         />
                       );
                     })}
@@ -666,21 +654,19 @@ const CharacterFormCoreInfoSectionComponent = ({
               </div>
                <div>
                 <Label htmlFor="className">{UI_STRINGS.classLabel}</Label>
-                <div className="flex items-center">
+                <div className="flex">
                   <Select value={localClassName} onValueChange={(value) => setLocalClassName(value as DndClassId)} disabled={panelIsLocked} >
-                    <SelectTrigger id="className" className="flex-grow text-sm"> <SelectValue /> </SelectTrigger>
+                    <SelectTrigger id="className" className="flex-grow"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {DND_CLASSES.map(c => <SelectItem key={c.id} value={c.id}>{c.label}</SelectItem>)} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info /> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} > <Info className="h-4 w-4" /> </Button>
                 </div>
-                <div className="flex flex-wrap items-baseline justify-start">
+                <div className="flex flex-wrap">
                   {!panelIsLocked && selectedClassInfo?.hitDice && (
                     <DualBadge
                       leftLabel={UI_STRINGS.hitDiceBadgeLabel}
                       rightLabel={selectedClassInfo.hitDice}
-                      leftClassName="bg-transparent text-foreground border-2 border-primary/60 border-r-0"
-                      rightClassName="bg-primary text-primary-foreground border-2 border-primary"
-                      className=""
+                      color="primary"
                     />
                   )}
                   {!panelIsLocked && aggregatedFeatEffects?.grantedAbilities && aggregatedFeatEffects.grantedAbilities.map(ability => {
@@ -693,9 +679,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                           key={ability.abilityKey}
                           leftLabel={abilityNameForDisplay}
                           rightLabel={`${usesValue} / ${localizedPeriod}`}
-                          leftClassName="bg-transparent text-foreground border-2 border-accent/60 border-r-0"
-                          rightClassName="bg-accent text-accent-foreground border-2 border-accent"
-                          className=""
+                          color="accent"
                         />
                       );
                     } else if (ability.uses && ability.uses.value === "customPool" && ability.abilityKey === "layOnHandsHealingPool" && aggregatedFeatEffects?.modifiedMechanics?.layOnHandsHealingPool) {
@@ -706,9 +690,7 @@ const CharacterFormCoreInfoSectionComponent = ({
                           key={ability.abilityKey}
                           leftLabel={abilityNameForDisplay}
                           rightLabel={`${typeof poolValue === 'number' ? poolValue : UI_STRINGS.abilityUsesPoolPlaceholder || "Pool"} / ${localizedPeriod}`}
-                          leftClassName="bg-transparent text-foreground border-2 border-accent/60 border-r-0"
-                          rightClassName="bg-accent text-accent-foreground border-2 border-accent"
-                          className=""
+                          color="accent"
                         />
                       );
                     }
@@ -730,27 +712,27 @@ const CharacterFormCoreInfoSectionComponent = ({
               </Card>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-2">
               <div>
                 <Label htmlFor="alignment">{UI_STRINGS.alignmentLabel}</Label>
-                <div className="flex items-center">
+                <div className="flex">
                   <Select name="alignment" value={localAlignment === "" ? UI_EMPTY_SELECTION_VALUE : localAlignment} onValueChange={(value) => setLocalAlignment(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterAlignment)} disabled={panelIsLocked} >
-                    <SelectTrigger id="alignment" className="flex-grow text-sm"> <SelectValue /> </SelectTrigger>
+                    <SelectTrigger id="alignment" className="flex-grow"> <SelectValue /> </SelectTrigger>
                     <SelectContent> {availableAlignments.map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                   </Select>
-                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info /> </Button>
+                  <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment}> <Info className="h-4 w-4" /> </Button>
                 </div>
               </div>
               <div>
                   <Label htmlFor="deity">{UI_STRINGS.deityLabel}</Label>
-                  <div className="flex items-center">
+                  <div className="flex">
                     <Select
                       name="deity"
                       value={localDeity === "" ? UI_EMPTY_SELECTION_VALUE : localDeity}
                       onValueChange={(value) => setLocalDeity(value === UI_EMPTY_SELECTION_VALUE ? "" : value)}
                       disabled={panelIsLocked || (selectedClassInfo?.deityAlignmentRestriction && deitySelectOptions.length <= 1)}
                     >
-                      <SelectTrigger id="deity" className="flex-grow text-sm">
+                      <SelectTrigger id="deity" className="flex-grow">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -761,51 +743,36 @@ const CharacterFormCoreInfoSectionComponent = ({
                         ))}
                       </SelectContent>
                     </Select>
-                    <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info /> </Button>
+                    <Button type="button" variant="ghost" className="shrink-0 text-muted-foreground hover:text-foreground" onClick={onOpenDeityInfoDialog} disabled={(panelIsLocked && (!localDeity || localDeity.trim() === '')) || (!localDeity || localDeity.trim() === '')} > <Info className="h-4 w-4" /> </Button>
                   </div>
                 </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 items-start">
+            <div className="grid grid-cols-1 md:grid-cols-3">
               <div>
-                <Label htmlFor="age" className="inline-block text-center md:text-center">{UI_STRINGS.ageLabel}</Label>
-                <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} inputClassName="text-sm text-center" buttonSize="icon" className="justify-center" disabled={panelIsLocked} />
+                <Label htmlFor="age" className="inline-block">{UI_STRINGS.ageLabel}</Label>
+                <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} disabled={panelIsLocked} />
                 {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
-                   <div className="flex flex-wrap items-baseline justify-center">
+                   <div className="flex flex-wrap">
                     <DualBadge
                       leftLabel={UI_STRINGS.ageCategoryBadgeLabel}
                       rightLabel={ageEffectsDetails.categoryName}
-                      leftClassName="bg-transparent text-foreground border-2 border-secondary/60 border-r-0"
-                      rightClassName="bg-secondary text-secondary-foreground border-2 border-secondary"
-                      className=""
+                      color="secondary"
                     />
                     {ageEffectsDetails.effects.map((effect) => {
                       const change = effect.change;
-                      let leftBorderColorClass = "border-border";
-                      let rightBgClass = "bg-muted";
-                      let rightTextClass = "text-muted-foreground";
-                      let rightBorderColorClass = "border-border";
-
+                      let badgeColor: DualBadgeProps['color'] = 'default';
                       if (change > 0) {
-                        leftBorderColorClass = "border-emerald-600";
-                        rightBgClass = "bg-emerald-600";
-                        rightTextClass = "text-emerald-50";
-                        rightBorderColorClass = "border-emerald-600";
+                        badgeColor = 'emerald';
                       } else if (change < 0) {
-                        leftBorderColorClass = "border-destructive";
-                        rightBgClass = "bg-destructive";
-                        rightTextClass = "text-destructive-foreground";
-                        rightBorderColorClass = "border-destructive";
+                        badgeColor = 'destructive';
                       }
-
                       return (
                          <DualBadge
                           key={effect.ability}
                           leftLabel={effect.ability.substring(0, 3).toUpperCase()}
                           rightLabel={change > 0 ? `+${change}` : String(change)}
-                          leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
-                          rightClassName={cn("border-2 rounded-r-full", rightBgClass, rightTextClass, rightBorderColorClass)}
-                          className=""
+                          color={badgeColor}
                         />
                       );
                     })}
@@ -815,46 +782,33 @@ const CharacterFormCoreInfoSectionComponent = ({
               <div>
                 <Label htmlFor="gender">{UI_STRINGS.genderLabel}</Label>
                 <Select name="gender" value={localGender} onValueChange={(value) => setLocalGender(value as GenderId)} disabled={panelIsLocked} >
-                  <SelectTrigger id="gender" className="text-sm"> <SelectValue /> </SelectTrigger>
+                  <SelectTrigger id="gender"> <SelectValue /> </SelectTrigger>
                   <SelectContent> {genderSelectOptions.map(g => ( <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem> ))} </SelectContent>
                 </Select>
               </div>
               <div>
                 <Label htmlFor="sizeCategory">{UI_STRINGS.sizeLabel}</Label>
                 <Select name="sizeCategory" value={localSize === "" ? UI_EMPTY_SELECTION_VALUE : localSize} onValueChange={(value) => setLocalSize(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterSize)} disabled={panelIsLocked} >
-                  <SelectTrigger id="sizeCategory" className="text-sm"><SelectValue /></SelectTrigger>
+                  <SelectTrigger id="sizeCategory"><SelectValue /></SelectTrigger>
                   <SelectContent> {SIZES.map(s => <SelectItem key={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id} value={s.id === "" ? UI_EMPTY_SELECTION_VALUE : s.id}>{s.label}</SelectItem>)} </SelectContent>
                 </Select>
                 {!panelIsLocked && localSize && (() => {
                     const selectedSizeObject = SIZES.find(s => s.id === localSize);
                     if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                       const acMod = selectedSizeObject.acModifier;
-
-                      let leftBorderColorClass = "border-border";
-                      let rightBgClass = "bg-muted";
-                      let rightTextClass = "text-muted-foreground";
-                      let rightBorderColorClass = "border-border";
-
+                      let badgeColor: DualBadgeProps['color'] = 'default';
                       if (acMod > 0) {
-                        leftBorderColorClass = "border-emerald-600";
-                        rightBgClass = "bg-emerald-600";
-                        rightTextClass = "text-emerald-50";
-                        rightBorderColorClass = "border-emerald-600";
+                        badgeColor = 'emerald';
                       } else if (acMod < 0) {
-                        leftBorderColorClass = "border-destructive";
-                        rightBgClass = "bg-destructive";
-                        rightTextClass = "text-destructive-foreground";
-                        rightBorderColorClass = "border-destructive";
+                        badgeColor = 'destructive';
                       }
 
                       return (
-                        <div className="flex items-baseline justify-start">
+                        <div className="flex">
                           <DualBadge
                             leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
                             rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
-                            leftClassName={cn("bg-transparent text-foreground border-2 rounded-l-full border-r-0", leftBorderColorClass)}
-                            rightClassName={cn("border-2 rounded-r-full", rightBgClass, rightTextClass, rightBorderColorClass)}
-                            className=""
+                            color={badgeColor}
                           />
                         </div>
                       );

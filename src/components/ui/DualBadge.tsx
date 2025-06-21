@@ -4,19 +4,32 @@
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
+type DualBadgeColor = 'primary' | 'secondary' | 'accent' | 'destructive' | 'emerald' | 'default';
+
 interface DualBadgeProps extends React.HTMLAttributes<HTMLDivElement> {
   leftLabel?: React.ReactNode;
   rightLabel?: React.ReactNode;
-  leftClassName?: string;
-  rightClassName?: string;
+  color?: DualBadgeColor;
 }
+
+const colorStyles: Record<DualBadgeColor, {
+  borderColor: string;
+  bgColor: string;
+  textColor: string;
+}> = {
+  primary: { borderColor: "border-primary", bgColor: "bg-primary", textColor: "text-primary-foreground" },
+  secondary: { borderColor: "border-secondary", bgColor: "bg-secondary", textColor: "text-secondary-foreground" },
+  accent: { borderColor: "border-accent", bgColor: "bg-accent", textColor: "text-accent-foreground" },
+  destructive: { borderColor: "border-destructive", bgColor: "bg-destructive", textColor: "text-destructive-foreground" },
+  emerald: { borderColor: "border-emerald-600", bgColor: "bg-emerald-600", textColor: "text-emerald-50" },
+  default: { borderColor: "border-border", bgColor: "bg-muted", textColor: "text-muted-foreground" },
+};
 
 export function DualBadge({
   leftLabel,
   rightLabel,
+  color = 'default',
   className,
-  leftClassName,
-  rightClassName,
   ...props
 }: DualBadgeProps) {
   const hasLeft = leftLabel !== undefined && leftLabel !== null && leftLabel !== '';
@@ -25,6 +38,8 @@ export function DualBadge({
   if (!hasLeft && !hasRight) {
     return null;
   }
+
+  const styles = colorStyles[color];
 
   return (
     <div
@@ -37,9 +52,10 @@ export function DualBadge({
       {hasLeft && (
         <span
           className={cn(
-            "px-2.5 py-0.5 border-2",
-            hasRight ? "rounded-l-full border-r-0" : "rounded-full", // If no right, it's fully rounded
-            leftClassName
+            "bg-transparent text-foreground border-2 rounded-l-full border-r-0",
+            "px-2.5 py-0.5",
+            styles.borderColor,
+            !hasRight && "rounded-r-full border-r-2" 
           )}
         >
           {leftLabel}
@@ -48,9 +64,12 @@ export function DualBadge({
       {hasRight && (
         <span
           className={cn(
-            "px-2.5 py-0.5 border-2",
-            hasLeft ? "rounded-r-full border-l-0 -ml-[2px]" : "rounded-full", // If no left, it's fully rounded. Negative margin if left exists
-            rightClassName
+            "border-2 rounded-r-full",
+            "px-2.5 py-0.5",
+            styles.borderColor,
+            styles.bgColor,
+            styles.textColor,
+            hasLeft && "border-l-0 -ml-[2px]"
           )}
         >
           {rightLabel}
