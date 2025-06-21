@@ -504,7 +504,7 @@ const CharacterFormCoreInfoSectionComponent = ({
           <Label htmlFor={`cspec-${uiBlock.key}-${blockIndex}`}>{blockLabel}</Label>
           <div className="flex">
             <Select name={uiBlock.key} value={uiValueForComponent} onValueChange={handleChange} disabled={isDisabledByPanelOrDependency} >
-              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow"> <SelectValue/> </SelectTrigger>
+              <SelectTrigger id={`cspec-${uiBlock.key}-${blockIndex}`} className="flex-grow"> <SelectValue /> </SelectTrigger>
               <SelectContent> {finalSelectOptions.map(opt => <SelectItem key={opt.value} value={opt.value} disabled={opt.disabled}>{opt.label}</SelectItem>)} </SelectContent>
             </Select>
             {commonInfoButton}
@@ -631,23 +631,15 @@ const CharacterFormCoreInfoSectionComponent = ({
                 </div>
                 {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
                    <div className="flex flex-wrap">
-                    {raceSpecialQualities.abilityEffects.map((effect) => {
-                      const change = effect.change;
-                      let badgeColor: DualBadgeProps['color'] = 'default';
-                      if (change > 0) {
-                          badgeColor = 'emerald';
-                      } else if (change < 0) {
-                          badgeColor = 'destructive';
-                      }
-                      return (
+                    {raceSpecialQualities.abilityEffects.map((effect) => (
                          <DualBadge
                           key={effect.ability}
                           leftLabel={effect.ability.substring(0, 3).toUpperCase()}
-                          rightLabel={change > 0 ? `+${change}` : String(change)}
-                          color={badgeColor}
+                          rightLabel={effect.change > 0 ? `+${effect.change}` : String(effect.change)}
+                          color={effect.change > 0 ? 'emerald' : 'destructive'}
                         />
-                      );
-                    })}
+                      )
+                    )}
                   </div>
                 )}
               </div>
@@ -750,7 +742,15 @@ const CharacterFormCoreInfoSectionComponent = ({
             <div className="grid grid-cols-1 md:grid-cols-3">
               <div>
                 <Label htmlFor="age" className="inline-block">{UI_STRINGS.ageLabel}</Label>
-                <NumberSpinnerInput id="age" value={localAge} onChange={setLocalAge} min={currentMinAgeForInput} max={1000} disabled={panelIsLocked} />
+                <Input
+                  id="age"
+                  type="number"
+                  value={localAge}
+                  onChange={(e) => setLocalAge(parseInt(e.target.value, 10) || 0)}
+                  min={currentMinAgeForInput}
+                  max={1000}
+                  disabled={panelIsLocked}
+                />
                 {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
                    <div className="flex flex-wrap">
                     <DualBadge
@@ -758,23 +758,15 @@ const CharacterFormCoreInfoSectionComponent = ({
                       rightLabel={ageEffectsDetails.categoryName}
                       color="secondary"
                     />
-                    {ageEffectsDetails.effects.map((effect) => {
-                      const change = effect.change;
-                      let badgeColor: DualBadgeProps['color'] = 'default';
-                      if (change > 0) {
-                        badgeColor = 'emerald';
-                      } else if (change < 0) {
-                        badgeColor = 'destructive';
-                      }
-                      return (
+                    {ageEffectsDetails.effects.map((effect) => (
                          <DualBadge
                           key={effect.ability}
                           leftLabel={effect.ability.substring(0, 3).toUpperCase()}
-                          rightLabel={change > 0 ? `+${change}` : String(change)}
-                          color={badgeColor}
+                          rightLabel={effect.change > 0 ? `+${effect.change}` : String(effect.change)}
+                          color={effect.change > 0 ? 'emerald' : 'destructive'}
                         />
-                      );
-                    })}
+                      )
+                    )}
                   </div>
                 )}
                 </div>
@@ -795,19 +787,12 @@ const CharacterFormCoreInfoSectionComponent = ({
                     const selectedSizeObject = SIZES.find(s => s.id === localSize);
                     if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                       const acMod = selectedSizeObject.acModifier;
-                      let badgeColor: DualBadgeProps['color'] = 'default';
-                      if (acMod > 0) {
-                        badgeColor = 'emerald';
-                      } else if (acMod < 0) {
-                        badgeColor = 'destructive';
-                      }
-
                       return (
                         <div className="flex">
                           <DualBadge
                             leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
                             rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
-                            color={badgeColor}
+                            color={acMod > 0 ? 'emerald' : 'destructive'}
                           />
                         </div>
                       );
