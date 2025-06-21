@@ -133,16 +133,16 @@ const CharacterFormAbilityScoresSectionComponent = ({
   }, []);
 
 
-  if (translationsLoading || !translations) {
+  if (translationsLoading || !translations || !detailedAbilityScores) {
     return (
        <LockablePanelWrapper
-        title={"Ability Scores"}
+        title={translations?.UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}
         icon={Dices}
         cardContentClassName="pt-2"
         initialLockedState={false}
        >
         {() => (
-          <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
+          <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
             {abilityKeys.map(ability => (
               <div key={ability} className="flex flex-col items-center p-3 border rounded-md bg-card shadow-sm gap-2">
                 <Skeleton className="h-6 w-12 mb-1" />
@@ -171,17 +171,13 @@ const CharacterFormAbilityScoresSectionComponent = ({
       >
         {({ isLocked: panelIsLocked }) => (
           <>
-            <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
+            <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
               {abilityKeys.map(ability => {
                 const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
                 const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
 
-                const actualScoreData = detailedAbilityScores ? detailedAbilityScores[ability] : null;
-                const displayTotalScore = actualScoreData
-                  ? actualScoreData.finalScore
-                  : (abilityScoresData.abilityScores[ability] || 0) +
-                    (abilityScoresData.abilityScoreTempCustomModifiers?.[ability] || 0);
-
+                const actualScoreData = detailedAbilityScores[ability];
+                const displayTotalScore = actualScoreData.finalScore;
                 const displayModifier = calculateAbilityModifier(displayTotalScore);
 
                 const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
@@ -221,7 +217,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                             aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
                           >
                             <Dices className="h-3.5 w-3.5" />
-                        </Button>
+                          </Button>
                       </div>
                     </div>
 
@@ -299,10 +295,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
           rollType={rollAbilityDialogData.rollType}
           baseModifier={rollAbilityDialogData.baseModifier}
           calculationBreakdown={rollAbilityDialogData.calculationBreakdown}
+          rerollTwentiesForChecks={rerollTwentiesForChecks}
           weaponDamageDiceString={rollAbilityDialogData.weaponDamageDiceString || ""}
           weaponCriticalMultiplier={rollAbilityDialogData.weaponCriticalMultiplier || 1}
           onRoll={handleAbilityRollResult}
-          rerollTwentiesForChecks={rollAbilityDialogData.rerollTwentiesForChecks}
         />
       )}
     </>
