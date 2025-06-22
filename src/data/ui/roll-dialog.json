@@ -34,6 +34,16 @@
   "rollDialogTitleRangedDamageFormat": { "en": "Ranged Damage ({weaponName}: {dice})", "fr": "Dégâts à Distance ({weaponName} : {dice})" },
   "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" },
   "rollDialogCritFailureLabel": { "en": "Critical Failure!", "fr": "Échec Critique !" },
-  "rollDialogGenericBreakdownLabel": { "en": "Component", "fr": "Composant" }
+  "rollDialogGenericBreakdownLabel": { "en": "Component", "fr": "Composant" },
+  "rollDialogAbilityModifierLabel": { "en": "Ability Modifier ({abilityAbbr})", "fr": "Mod. de Carac. ({abilityAbbr})" },
+  "rollDialogSkillRanksLabel": { "en": "Skill Ranks", "fr": "Rangs de Compétence" },
+  "rollDialogSkillKeyAbilityLabel": { "en": "Key Ability ({abilityAbbr})", "fr": "Carac. Clé ({abilityAbbr})" },
+  "rollDialogSkillSynergyBonusLabel": { "en": "Synergy Bonus", "fr": "Bonus de Synergie" },
+  "rollDialogSkillFeatBonusLabel": { "en": "Feat Bonus", "fr": "Bonus de Don" },
+  "rollDialogSkillRacialBonusLabel": { "en": "Racial Bonus", "fr": "Bonus Racial" },
+  "rollDialogSkillSizeBonusLabel": { "en": "Size Bonus", "fr": "Bonus de Taille" },
+  "rollDialogSkillUserMiscModLabel": { "en": "Misc Modifier", "fr": "Modificateur Divers" },
+  "rollDialogTitleSkillCheck": { "en": "{skillName} Check", "fr": "Test de {skillName}" },
+  "rollDialogTotalNumericBonusLabel": { "en": "Total Numeric Bonus", "fr": "Bonus Numérique Total"}
 }
     
