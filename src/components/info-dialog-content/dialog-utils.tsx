@@ -6,10 +6,10 @@ import { cn } from '@/lib/utils';
 
 export const renderModifierValue = (value: number | string): React.ReactNode => {
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(numValue)) return <span className="font-bold">{value}</span>;
-  if (numValue === 0) return <span className="font-bold text-muted-foreground">+0</span>;
-  if (numValue > 0) return <span className="font-bold text-emerald-500">+{numValue}</span>;
-  return <span className="font-bold text-destructive">{numValue}</span>;
+  if (isNaN(numValue)) return <span>{value}</span>;
+  if (numValue === 0) return <span className="text-muted-foreground">+0</span>;
+  if (numValue > 0) return <span className="text-emerald-500">+{numValue}</span>;
+  return <span className="text-destructive">{numValue}</span>;
 };
 
 export const ExpandableDetailWrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,4 +27,3 @@ export function capitalizeFirstLetter(string: string) {
   if (!string) return string;
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
-
