@@ -4,24 +4,20 @@
 import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Loader2, Info, Dices, Lock, Unlock } from 'lucide-react';
+import { Zap, Info, Dices } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { DualBadge, type DualBadgeProps } from '@/components/ui/DualBadge';
-import { Badge } from '@/components/ui/badge';
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Separator } from '@/components/ui/separator';
-
-const DEBOUNCE_DELAY = 400;
+import { Input } from '@/components/ui/input';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleSubtle, textStyleValueBig } from '@/config/layout';
 
 export interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes' | 'feats'>;
@@ -33,6 +29,105 @@ export interface SavingThrowsPanelProps {
 }
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
+
+interface SavingThrowCardProps {
+  saveType: SavingThrowType;
+  saveTypeLabel: string;
+  totalValue: number;
+  baseValue: number;
+  abilityModifier: number;
+  abilityAbbr: string;
+  miscBonus: number;
+  tempModValue: number;
+  onTempModChange: (saveType: SavingThrowType, value: number) => void;
+  panelIsLocked: boolean;
+  onOpenInfoDialog: (saveType: SavingThrowType) => void;
+  onOpenRollDialog: (saveType: SavingThrowType) => void;
+  uiStrings: Record<string, string>;
+}
+
+const SavingThrowCard = React.memo(({
+  saveType,
+  saveTypeLabel,
+  totalValue,
+  baseValue,
+  abilityModifier,
+  abilityAbbr,
+  miscBonus,
+  tempModValue,
+  onTempModChange,
+  panelIsLocked,
+  onOpenInfoDialog,
+  onOpenRollDialog,
+  uiStrings,
+}: SavingThrowCardProps) => {
+
+  const handleDebouncedChange = React.useCallback((value: number) => {
+    onTempModChange(saveType, value);
+  }, [onTempModChange, saveType]);
+
+  const [localTemporaryMod, setLocalTemporaryMod] = useDebouncedFormField(
+    tempModValue, handleDebouncedChange, DEBOUNCE_DELAY_FORM_INPUT
+  );
+
+  let badgeColor: DualBadgeProps['color'] = 'default';
+  if (abilityModifier > 0) badgeColor = 'emerald';
+  else if (abilityModifier < 0) badgeColor = 'destructive';
+
+  return (
+    <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+      <Label className="text-center text-md font-medium">{saveTypeLabel}</Label>
+      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+        <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
+        <Button
+          type="button" variant="ghost" size="icon-xs"
+          className="text-muted-foreground hover:text-primary self-center"
+          onClick={() => onOpenInfoDialog(saveType)}
+          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+        > <Info /> </Button>
+        <Button
+          type="button" variant="ghost" size="icon-xs"
+          className="text-muted-foreground hover:text-primary self-center"
+          onClick={() => onOpenRollDialog(saveType)}
+          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+        > <Dices /> </Button>
+      </div>
+
+      {!panelIsLocked && (
+        <div className={cn("mt-auto flex flex-col", panelFieldVerticalGap)}>
+          <Separator className="my-1" />
+          <div className="flex justify-between items-center text-sm">
+            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelBase}</Label>
+            <p className="font-semibold">{baseValue}</p>
+          </div>
+          <div className="flex justify-between items-center text-sm">
+            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+            <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
+          </div>
+          <div className="flex justify-between items-center text-sm">
+            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
+            <p className="font-semibold">{renderModifierValue(miscBonus)}</p>
+          </div>
+          <div className="flex justify-between items-center text-sm">
+            <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubtle}>
+              {uiStrings.savingThrowsRowLabelTemporaryModifier}
+            </Label>
+            <Input
+              id={`temp-mod-${saveType}`}
+              type="number"
+              value={localTemporaryMod}
+              onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
+              className="h-8 w-20 text-center"
+              disabled={panelIsLocked}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+SavingThrowCard.displayName = 'SavingThrowCard';
+
 
 const SavingThrowsPanelComponent = ({
   savingThrowsData,
@@ -46,17 +141,6 @@ const SavingThrowsPanelComponent = ({
   const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
-
-  const debouncedTemporaryMods = {} as Record<SavingThrowType, [number, (val: number) => void]>;
-
-  SAVE_TYPES.forEach(saveType => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    debouncedTemporaryMods[saveType] = useDebouncedFormField(
-      savingThrowsData.savingThrows[saveType].miscMod || 0,
-      React.useCallback((value) => onSavingThrowTemporaryModChange(saveType, value), [onSavingThrowTemporaryModChange, saveType]),
-      DEBOUNCE_DELAY
-    );
-  });
 
   const calculateCalculatedTotalMiscBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
     if (!aggregatedFeatEffects) return 0;
@@ -76,64 +160,40 @@ const SavingThrowsPanelComponent = ({
     return totalMiscBonus;
   }, [aggregatedFeatEffects, savingThrowsData.savingThrows, abilityScores]);
 
-
   const handleOpenSavingThrowRollDialog = React.useCallback((saveType: SavingThrowType) => {
     if (!translations || !abilityScores || !aggregatedFeatEffects) return;
     const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
-
-    const calculatedBaseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
-    const baseSaveValue = calculatedBaseSaves[saveType];
+    const baseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
     const abilityKey = SAVING_THROW_ABILITIES[saveType];
-    const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-    const calculatedTotalMiscBonus = calculateCalculatedTotalMiscBonusForSave(saveType);
-    const [localTemporaryMod] = debouncedTemporaryMods[saveType];
-
-    const totalSaveModifier = baseSaveValue + abilityModifier + calculatedTotalMiscBonus + localTemporaryMod;
-    const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType;
-    const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
-
+    
     const breakdown: GenericBreakdownItem[] = [
-      { label: UI_STRINGS.savingThrowsRowLabelBase || "Base", value: baseSaveValue, isRawValue: true },
-      { label: `${UI_STRINGS.savingThrowsRowLabelAbilityModifier || "Ability Modifier"} (${abilityLabelInfo?.abbr || abilityKey.toUpperCase()})`, value: abilityModifier },
+      { label: UI_STRINGS.savingThrowsRowLabelBase, value: baseSaves[saveType] },
+      { label: (UI_STRINGS.savingThrowsRowLabelAbilityModifier).replace('{abilityAbbr}', ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
     ];
-    if (calculatedTotalMiscBonus !== 0) {
-      breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier || "Misc Modifier", value: calculatedTotalMiscBonus });
-    }
-    if (localTemporaryMod !== 0) {
-      breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier || "Temporary Modifier", value: localTemporaryMod });
-    }
-    breakdown.push({ label: UI_STRINGS.infoDialogTotalLabel || "Total", value: totalSaveModifier, isBold: true });
+    const miscBonus = calculateCalculatedTotalMiscBonusForSave(saveType);
+    if(miscBonus !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier, value: miscBonus });
+    const tempMod = savingThrowsData.savingThrows[saveType].miscMod || 0;
+    if(tempMod !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier, value: tempMod });
+    
+    const totalModifier = breakdown.reduce((sum, item) => sum + (typeof item.value === 'number' ? item.value : 0), 0);
 
     onOpenRollDialog({
-      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow || "{saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel),
+      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow).replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
       rollType: `saving_throw_${saveType}`,
-      baseModifier: totalSaveModifier,
+      baseModifier: totalModifier,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rerollTwentiesForChecks,
       weaponDamageDiceString: "",
       weaponCriticalMultiplier: 1,
     });
-  }, [translations, abilityScores, savingThrowsData, aggregatedFeatEffects, onOpenRollDialog, calculateCalculatedTotalMiscBonusForSave, debouncedTemporaryMods, rerollTwentiesForChecks]);
+  }, [translations, savingThrowsData, abilityScores, aggregatedFeatEffects, calculateCalculatedTotalMiscBonusForSave, rerollTwentiesForChecks, onOpenRollDialog]);
 
+  const handleOpenInfo = React.useCallback((saveType: SavingThrowType) => {
+    onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType });
+  }, [onOpenInfoDialog]);
 
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
-    return (
-      <LockablePanelWrapper
-        title={translations?.UI_STRINGS.savingThrowsPanelTitle || "Saving Throws"}
-        icon={Zap}
-        initialLockedState={false}
-        cardContentClassName="pt-4"
-      >
-        {() => (
-          <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">
-              {translations?.UI_STRINGS.savingThrowsPanelLoading || "Loading saving throw details..."}
-            </p>
-          </div>
-        )}
-      </LockablePanelWrapper>
-    );
+    return null;
   }
 
   const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
@@ -144,118 +204,47 @@ const SavingThrowsPanelComponent = ({
       title={UI_STRINGS.savingThrowsPanelTitle}
       icon={Zap}
       initialLockedState={false}
-      cardContentClassName="pt-4"
+      footer={
+        <p className="text-sm text-muted-foreground">
+          {parseAndRenderUIString(UI_STRINGS.savingThrowsPanelMiscModInfoNote_full, {
+            badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+          })}
+        </p>
+      }
     >
       {({ isLocked: panelIsLocked }) => (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {SAVE_TYPES.map((saveType) => {
-              const [localTemporaryMod, setLocalTemporaryMod] = debouncedTemporaryMods[saveType];
-              const baseSaveValue = calculatedBaseSaves[saveType];
-              const abilityKey = SAVING_THROW_ABILITIES[saveType];
-              const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-              const calculatedTotalMiscBonusForSaveVal = calculateCalculatedTotalMiscBonusForSave(saveType);
-              const totalCalculatedValue = baseSaveValue + abilityModifier + calculatedTotalMiscBonusForSaveVal + localTemporaryMod;
-              const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType;
-              const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
-              const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
+        <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
+          {SAVE_TYPES.map((saveType) => {
+            const baseSaveValue = calculatedBaseSaves[saveType];
+            const abilityKey = SAVING_THROW_ABILITIES[saveType];
+            const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+            const calculatedTotalMiscBonusForSaveVal = calculateCalculatedTotalMiscBonusForSave(saveType);
+            const tempModValue = savingThrowsData.savingThrows[saveType].miscMod || 0;
+            const totalCalculatedValue = baseSaveValue + abilityModifier + calculatedTotalMiscBonusForSaveVal + tempModValue;
+            const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType;
+            const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
+            const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
 
-              let badgeColor: DualBadgeProps['color'] = 'default';
-              if (abilityModifier > 0) {
-                badgeColor = 'emerald';
-              } else if (abilityModifier < 0) {
-                badgeColor = 'destructive';
-              }
-
-              return (
-                <Card key={saveType} className="shadow-sm">
-                  <CardHeader className="p-3 pb-2 flex flex-col items-center space-y-1 text-center">
-                    <span className="text-sm font-medium">{saveTypeLabel}</span>
-                    <div className="flex items-center justify-center space-x-1">
-                        <p className={cn("text-xl font-bold text-accent")}>
-                            {totalCalculatedValue >= 0 ? '+' : ''}{totalCalculatedValue}
-                        </p>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                          onClick={() => onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType: saveType })}
-                          aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Info for {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
-                          disabled={!onOpenInfoDialog}
-                        >
-                          <Info className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-primary"
-                          onClick={() => handleOpenSavingThrowRollDialog(saveType)}
-                          aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
-                          disabled={!onOpenRollDialog}
-                        >
-                          <Dices className="h-4 w-4" />
-                        </Button>
-                    </div>
-                  </CardHeader>
-                  {!panelIsLocked && (
-                    <CardContent className="p-3 pt-1">
-                      <div className="space-y-1.5">
-                        <div className="space-y-1 text-center">
-                          <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelBase}</Label>
-                          <p className="font-semibold text-md">{baseSaveValue}</p>
-                        </div>
-                        <div className="space-y-1 text-center">
-                          <Label className="text-xs text-muted-foreground">{UI_STRINGS.savingThrowsRowLabelAbilityModifier}</Label>
-                          <div className="flex justify-center mt-1">
-                              <DualBadge
-                                  leftLabel={abilityAbbr}
-                                  rightLabel={renderModifierValue(abilityModifier)}
-                                  color={badgeColor}
-                              />
-                          </div>
-                        </div>
-                        <div className="space-y-1 text-center">
-                          <Label className="text-xs text-muted-foreground">
-                            {UI_STRINGS.savingThrowsRowLabelMiscModifier}
-                          </Label>
-                          <p className="font-semibold text-md">{renderModifierValue(calculatedTotalMiscBonusForSaveVal)}</p>
-                        </div>
-                        <div className="space-y-1 text-center">
-                          <Label htmlFor={`temp-mod-${saveType}`} className="text-xs text-muted-foreground">
-                              {UI_STRINGS.savingThrowsRowLabelTemporaryModifier}
-                          </Label>
-                          <div className="mt-1 w-full">
-                            <NumberSpinnerInput
-                              id={`temp-mod-${saveType}`}
-                              value={localTemporaryMod}
-                              onChange={setLocalTemporaryMod}
-                              min={-20}
-                              max={20}
-                              inputClassName="w-full h-8 text-sm text-center"
-                              buttonSize="sm"
-                              buttonClassName="h-8 w-8"
-                              className="w-full justify-between"
-                              disabled={panelIsLocked}
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  )}
-                </Card>
-              );
-            })}
-          </div>
-          {!panelIsLocked && (
-            <p className="text-sm text-muted-foreground pt-3 text-left border-t border-border/30 mt-4">
-              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_prefix }} />
-              <Badge variant="outline">{UI_STRINGS.savingThrowsRowLabelMiscModifier}</Badge>
-              <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.savingThrowsPanelMiscModInfoNote_suffix }} />
-            </p>
-          )}
-        </>
+            return (
+              <SavingThrowCard
+                key={saveType}
+                saveType={saveType}
+                saveTypeLabel={saveTypeLabel}
+                totalValue={totalCalculatedValue}
+                baseValue={baseSaveValue}
+                abilityModifier={abilityModifier}
+                abilityAbbr={abilityAbbr}
+                miscBonus={calculatedTotalMiscBonusForSaveVal}
+                tempModValue={tempModValue}
+                onTempModChange={onSavingThrowTemporaryModChange}
+                panelIsLocked={panelIsLocked}
+                onOpenInfoDialog={handleOpenInfo}
+                onOpenRollDialog={handleOpenSavingThrowRollDialog}
+                uiStrings={UI_STRINGS}
+              />
+            );
+          })}
+        </div>
       )}
     </LockablePanelWrapper>
   );
