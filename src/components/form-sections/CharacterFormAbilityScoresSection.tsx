@@ -38,7 +38,7 @@ interface AbilityScoreInputGroupProps {
   onTriggerRollDialog: (ability: Exclude<AbilityName, 'none'>) => void;
 }
 
-const AbilityScoreInputGroup = React.memo(({
+const AbilityScoreInputGroup = React.memo((({
   abilityKey,
   finalScore,
   baseScoreValue,
@@ -205,10 +205,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
     return { ABILITY_LABELS: translations.ABILITY_LABELS, UI_STRINGS: translations.UI_STRINGS };
   }, [translations]);
 
-  if (translationsLoading || !translations || !detailedAbilityScores || !translationSubsetForChild) {
+  if (!detailedAbilityScores || !translationSubsetForChild) {
     return null;
   }
-  const { UI_STRINGS } = translations;
+  const { UI_STRINGS } = translationSubsetForChild;
 
   return (
     <>
@@ -243,26 +243,29 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 onTriggerRollDialog={handleTriggerRollDialog}
               />
             ))}
-            <Button
-              type="button"
-              variant="outline"
-              size="default"
-              onClick={() => setIsRollerDialogOpen(true)}
-              disabled={panelIsLocked}
-              className="w-full sm:col-start-2 lg:col-start-5"
-            >
-              <Dices /> {UI_STRINGS.abilityScoresRollButton}
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              size="default"
-              onClick={() => setIsPointBuyDialogOpen(true)}
-              disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
-              className="w-full sm:col-start-auto lg:col-start-auto"
-            >
-              <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
-            </Button>
+            {!panelIsLocked && (
+              <div className="contents">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="default"
+                  onClick={() => setIsRollerDialogOpen(true)}
+                  className="w-full sm:col-start-2 lg:col-start-5"
+                >
+                  <Dices /> {UI_STRINGS.abilityScoresRollButton}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="default"
+                  onClick={() => setIsPointBuyDialogOpen(true)}
+                  disabled={typeof pointBuyBudget !== 'number'}
+                  className="w-full sm:col-start-auto lg:col-start-auto"
+                >
+                  <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
+                </Button>
+              </div>
+            )}
           </div>
         )}
       </LockablePanelWrapper>
