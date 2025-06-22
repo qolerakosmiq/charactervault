@@ -4,7 +4,7 @@
   "savingThrowsPanelDescription": { "en": "Manage your character's resistances to various effects.", "fr": "Gérez les résistances de votre personnage à divers effets." },
   "savingThrowsPanelLoading": { "en": "Loading saving throw details...", "fr": "Chargement des détails des jets de sauvegarde..." },
   "savingThrowsRowLabelTotal": { "en": "Total", "fr": "Total" },
-  "savingThrowsRowLabelBase": { "en": "Base", "fr": "Base" },
+  "savingThrowsRowLabelBase": { "en": "Final Modifier", "fr": "Modificateur final" },
   "savingThrowsRowLabelAbilityModifier": { "en": "Ability Modifier", "fr": "Mod. de Carac." },
   "savingThrowsRowLabelMagicModifier": { "en": "Magic Modifier", "fr": "Mod. Magique" },
   "savingThrowsRowLabelMiscModifier": { "en": "Misc Modifier", "fr": "Mod. Divers" },
