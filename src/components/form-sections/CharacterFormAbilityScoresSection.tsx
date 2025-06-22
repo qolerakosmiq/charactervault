@@ -19,6 +19,8 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
 import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleValueMedium } from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
+import { Badge } from '@/components/ui/badge';
+
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -183,13 +185,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
         headerClassName="bg-muted/20"
         initialLockedState={false}
         footer={
-          !isLocked && (
-            <p className="text-sm text-muted-foreground">
-              {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
-                badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
-              })}
-            </p>
-          )
+          <p className="text-sm text-muted-foreground">
+            {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
+              badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+            })}
+          </p>
         }
       >
         {({ isLocked: panelIsLocked }) => (
