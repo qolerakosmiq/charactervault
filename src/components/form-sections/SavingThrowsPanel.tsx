@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -8,17 +7,30 @@ import { Zap, Info, Dices, Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
+import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { DualBadge, type DualBadgeProps } from '@/components/ui/DualBadge';
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelGridGap, panelFieldVerticalGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleSubLabelTitle, textStyleCardTitle } from '@/config/layout';
+import {
+  DEBOUNCE_DELAY_FORM_INPUT,
+  panelContentPadding,
+  panelFieldHorizontalGap,
+  panelGridGap,
+  panelFieldVerticalGap,
+  panelBadgeGroupGap,
+  textStyleModifier,
+  textStyleSubtle,
+  textStyleValueBig,
+  textStyleSubLabelTitle,
+  textStyleCardTitle
+} from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 import { parseAndRenderUIString } from '@/lib/utils';
+
 
 export interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes' | 'feats'>;
