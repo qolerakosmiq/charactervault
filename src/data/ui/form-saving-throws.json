@@ -1,6 +1,7 @@
 
 {
   "savingThrowsPanelTitle": { "en": "Saving Throws", "fr": "Jets de Sauvegarde" },
+  "savingThrowsPanelDescription": { "en": "Manage your character's resistances to various effects.", "fr": "Gérez les résistances de votre personnage à divers effets." },
   "savingThrowsPanelLoading": { "en": "Loading saving throw details...", "fr": "Chargement des détails des jets de sauvegarde..." },
   "savingThrowsRowLabelTotal": { "en": "Total", "fr": "Total" },
   "savingThrowsRowLabelBase": { "en": "Base", "fr": "Base" },
