@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -181,6 +182,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         icon={Dices}
         headerClassName="bg-muted/20"
         initialLockedState={false}
+        cardContentClassName="gap-y-4"
         footer={
           <p className="text-sm text-muted-foreground">
             {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full)}
@@ -196,13 +198,13 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === ability)?.label}</span>
                 </Label>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={textStyleValueBig}>{detailedAbilityScores[ability].finalScore}</p>
+                  <p className={textStyleValueMedium}>{detailedAbilityScores[ability].finalScore}</p>
                   <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenAbilityScoreBreakdownDialog(ability)} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === ability)?.label)}><Info /></Button>
                 </div>
                 <div className="flex flex-col items-center">
                   <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
                   <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={textStyleValueMedium}>{detailedAbilityScores[ability].finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores[ability].finalScore)}</p>
+                    <p className={textStyleValueBig}>{detailedAbilityScores[ability].finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores[ability].finalScore)}</p>
                     <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => handleOpenRollDialog(ability)} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === ability)?.label)}><Dices /></Button>
                   </div>
                 </div>
@@ -236,7 +238,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 )}
               </div>
             ))}
-
             {!panelIsLocked && (
               <>
                 <Button
