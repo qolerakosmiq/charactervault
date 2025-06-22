@@ -5,10 +5,9 @@ import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Info, Dices } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useI18n } from '@/context/I18nProvider';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { DualBadge, type DualBadgeProps } from '@/components/ui/DualBadge';
@@ -16,9 +15,8 @@ import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelGridGap, panelBadgeGroupGap, textStyleModifier, textStyleSubtle, textStyleValueBig, panelFieldVerticalGap } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
-import { parseAndRenderUIString } from '@/lib/utils';
 
 export interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes' | 'feats'>;
@@ -76,43 +74,43 @@ const SavingThrowCard = React.memo(({
   else if (abilityModifier < 0) badgeColor = 'destructive';
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center", panelContentPadding, "gap-y-1")}>
-      <Label className="text-center text-md font-medium">{saveTypeLabel}</Label>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelBadgeGroupGap)}>
+      <Label className="text-md font-medium">{saveTypeLabel}</Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
         <Button
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenInfoDialog(saveType)}
-          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel || "Detailed breakdown for {saveTypeLabel} save").replace("{saveTypeLabel}", saveTypeLabel)}
         > <Info /> </Button>
         <Button
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenRollDialog(saveType)}
-          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
         > <Dices /> </Button>
       </div>
 
       {!panelIsLocked && (
-        <div className={cn("w-full mt-auto pt-2 space-y-2 text-center", panelFieldVerticalGap)}>
-           <div className="space-y-1">
-              <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelBase}</Label>
-              <p className="font-bold text-accent">{baseValue}</p>
+        <div className={cn("w-full mt-auto pt-2", panelFieldVerticalGap)}>
+          <div className={cn("flex flex-col", panelBadgeGroupGap)}>
+            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelBase}</Label>
+            <p className="font-bold text-accent">{baseValue}</p>
           </div>
-          <div className="space-y-1">
-              <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-              <div className="flex justify-center">
-                  <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
-              </div>
+          <div className={cn("flex flex-col", panelBadgeGroupGap)}>
+            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+            <div className="flex justify-center">
+                <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
+            </div>
           </div>
-          <div className="space-y-1">
-              <Label className={cn(textStyleSubtle, "font-bold")}>
-                {uiStrings.savingThrowsRowLabelMiscModifier}
-              </Label>
-              <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
+          <div className={cn("flex flex-col", panelBadgeGroupGap)}>
+            <Label className={cn(textStyleSubtle, "font-bold")}>
+              {uiStrings.savingThrowsRowLabelMiscModifier}
+            </Label>
+            <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
           </div>
-          <div className="space-y-1">
+          <div className={cn("flex flex-col", panelBadgeGroupGap)}>
               <Label htmlFor={`temp-mod-${saveType}`} className={cn(textStyleSubtle, "font-bold")}>
                 {uiStrings.savingThrowsRowLabelTemporaryModifier}
               </Label>
@@ -122,7 +120,7 @@ const SavingThrowCard = React.memo(({
                   type="number"
                   value={localTemporaryMod}
                   onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                  className="text-center"
+                  className="text-center h-8"
                   disabled={panelIsLocked}
                 />
               </div>
