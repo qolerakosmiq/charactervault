@@ -117,7 +117,7 @@ export default function CharacterDashboardPage() {
     <>
       <div className="container mx-auto px-4 py-8">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-8 pb-4 border-b border-border">
-          <div className="flex items-center space-x-3 mb-4 sm:mb-0">
+          <div className="flex items-center gap-3 mb-4 sm:mb-0">
             <Users className="h-10 w-10 text-primary" />
             <h1 className="text-4xl font-serif font-bold">{UI_STRINGS.dashboardTitle}</h1>
           </div>
@@ -162,13 +162,13 @@ export default function CharacterDashboardPage() {
 
         <Separator className="my-10" />
         
-        <div className="space-y-4 p-4 border rounded-lg shadow-sm bg-card">
+        <div className="flex flex-col gap-4 p-4 border rounded-lg shadow-sm bg-card">
             <h3 className="text-xl font-serif text-foreground/80 flex items-center">
                 <Settings className="mr-3 h-6 w-6 text-primary/70" />
                 {UI_STRINGS.dmSettingsPanelTitle}
             </h3>
-            <div className="space-y-2 pt-2">
-              <div className="flex items-center space-x-3">
+            <div className="flex flex-col gap-2 pt-2">
+              <div className="flex items-center gap-3">
                 <Label htmlFor="dm-language-switcher" className="flex items-center text-sm font-medium">
                   <Languages className="mr-2 h-4 w-4 text-muted-foreground" />
                   {UI_STRINGS.dmSettingsLanguageLabel}
@@ -181,7 +181,7 @@ export default function CharacterDashboardPage() {
             </div>
             <Separator className="my-4" />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-                <div className="space-y-2">
+                <div className="flex flex-col gap-2">
                     <Label htmlFor="dm-reroll-ones" className="flex items-center">
                         <Checkbox
                             id="dm-reroll-ones"
@@ -195,7 +195,7 @@ export default function CharacterDashboardPage() {
                         {UI_STRINGS.dmSettingsRerollOnesDescription}
                     </p>
                 </div>
-                 <div className="space-y-2">
+                 <div className="flex flex-col gap-2">
                     <Label htmlFor="dm-reroll-twenties" className="flex items-center">
                         <Repeat className="mr-2 h-4 w-4 text-muted-foreground" />
                         <Checkbox
@@ -210,7 +210,7 @@ export default function CharacterDashboardPage() {
                         {UI_STRINGS.dmSettingsRerollTwentiesDescription}
                     </p>
                 </div>
-                <div className="space-y-2">
+                <div className="flex flex-col gap-2">
                     <Label htmlFor="dm-point-buy-budget" className="flex items-center">
                         <Calculator className="mr-2 h-4 w-4 text-muted-foreground" />
                         {UI_STRINGS.dmSettingsPointBuyBudgetLabel}

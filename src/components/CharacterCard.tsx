@@ -71,7 +71,7 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
   return (
     <Card className="flex flex-col overflow-hidden shadow-lg hover:shadow-primary/20 transition-shadow duration-300">
       <CardHeader className="bg-muted/30 p-4">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <Users className="h-8 w-8 text-primary" />
           <div>
             <CardTitle className="text-xl font-serif">{character.name}</CardTitle>
@@ -82,14 +82,14 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
         </div>
       </CardHeader>
       <CardContent className="p-4 flex-grow">
-        <div className="space-y-1 text-sm">
+        <div className="flex flex-col gap-1 text-sm">
           <p><span className="font-semibold">{UI_STRINGS.alignmentLabel}:</span> {alignmentLabelForDisplay}</p>
           {character.deity && <p><span className="font-semibold">{UI_STRINGS.deityLabel}:</span> {character.deity}</p>}
           <p><span className="font-semibold">{UI_STRINGS.sizeLabel}:</span> {sizeLabelForDisplay}</p>
         </div>
       </CardContent>
       <CardFooter className="p-4 bg-muted/30 border-t">
-        <div className="flex w-full justify-end space-x-2">
+        <div className="flex w-full justify-end gap-2">
           <Button variant="outline" size="sm" asChild>
             <Link href={`/character/${character.id}`}>
               <FilePenLine className="mr-2 h-4 w-4" /> {UI_STRINGS.characterCardViewEditButton}

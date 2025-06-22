@@ -288,9 +288,9 @@ const AddCustomFeatDialogComponent = ({
         </DialogHeader>
 
         <ScrollArea className="max-h-[70vh] p-1">
-          <div className="space-y-4 p-4">
+          <div className="flex flex-col gap-4 p-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="custom-feat-name">Feat Name (Label)</Label>
                   <Input
                     id="custom-feat-name"
@@ -300,7 +300,7 @@ const AddCustomFeatDialogComponent = ({
                     disabled={isFormDisabled}
                   />
                 </div>
-                <div className="space-y-1">
+                <div className="flex flex-col gap-1">
                     <Label htmlFor="custom-feat-type">Feat Type</Label>
                     <Select value={featType} onValueChange={(value) => setFeatType(value as FeatTypeString)} disabled={isFormDisabled}>
                         <SelectTrigger id="custom-feat-type">
@@ -316,7 +316,7 @@ const AddCustomFeatDialogComponent = ({
                     </Select>
                 </div>
             </div>
-            <div className="space-y-1">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="custom-feat-description">Description</Label>
               <Textarea
                 id="custom-feat-description"
@@ -327,7 +327,7 @@ const AddCustomFeatDialogComponent = ({
                 disabled={isFormDisabled}
               />
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <Checkbox
                 id="custom-feat-multiple-times"
                 checked={canTakeMultipleTimes}
@@ -338,7 +338,7 @@ const AddCustomFeatDialogComponent = ({
                 Can this feat be taken multiple times?
               </Label>
             </div>
-            <div className="space-y-1">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="custom-feat-specialization">Requires Specialization (Optional)</Label>
               <Input
                 id="custom-feat-specialization"
@@ -354,17 +354,17 @@ const AddCustomFeatDialogComponent = ({
             <h3 className="text-md font-semibold text-foreground mb-2">Structured Prerequisites</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="prereq-bab">Base Attack Bonus (BAB)</Label>
                 <NumberSpinnerInput id="prereq-bab" value={prereqBab} onChange={setPrereqBab} min={0} inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm" disabled={isFormDisabled}/>
               </div>
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="prereq-caster-level">Caster Level</Label>
                 <NumberSpinnerInput id="prereq-caster-level" value={prereqCasterLevel} onChange={setPrereqCasterLevel} min={0} inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm" disabled={isFormDisabled}/>
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="prereq-class">Class Prerequisite</Label>
                 <ComboboxPrimitive
                   options={classComboboxOptions}
@@ -373,7 +373,7 @@ const AddCustomFeatDialogComponent = ({
                   placeholder="Select Class..."
                 />
               </div>
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="prereq-class-level">Minimum Level in Class</Label>
                 <NumberSpinnerInput
                   id="prereq-class-level"
@@ -386,7 +386,7 @@ const AddCustomFeatDialogComponent = ({
               </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="prereq-race">Race Prerequisite</Label>
                 <ComboboxPrimitive
                   options={raceComboboxOptions}
@@ -395,7 +395,7 @@ const AddCustomFeatDialogComponent = ({
                   placeholder="Select Race..."
                 />
               </div>
-              <div className="space-y-1">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="prereq-alignment">Alignment Prerequisite</Label>
                 <ComboboxPrimitive
                   options={alignmentComboboxOptions}
@@ -408,9 +408,9 @@ const AddCustomFeatDialogComponent = ({
 
             <Separator className="my-6" />
             <h4 className="text-sm font-medium text-foreground mb-1">Add Specific Prerequisite:</h4>
-            <div className="p-3 border rounded-md bg-muted/20 space-y-3">
+            <div className="flex flex-col gap-3 p-3 border rounded-md bg-muted/20">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 items-end">
-                <div className="space-y-1">
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="new-prereq-type">Type</Label>
                   <Select value={newPrereqType} onValueChange={(val) => { setNewPrereqType(val as any); setNewPrereqItemId(''); setNewPrereqValue(0); }} disabled={isFormDisabled}>
                     <SelectTrigger><SelectValue placeholder="Select Type..." /></SelectTrigger>
@@ -424,7 +424,7 @@ const AddCustomFeatDialogComponent = ({
 
                 {newPrereqType === 'ability' && (
                   <>
-                    <div className="space-y-1">
+                    <div className="flex flex-col gap-1">
                       <Label htmlFor="new-prereq-ability-item">Ability</Label>
                       <Select value={newPrereqItemId} onValueChange={setNewPrereqItemId} disabled={isFormDisabled}>
                         <SelectTrigger><SelectValue placeholder="Select Ability..." /></SelectTrigger>
@@ -433,7 +433,7 @@ const AddCustomFeatDialogComponent = ({
                         </SelectContent>
                       </Select>
                     </div>
-                    <div className="space-y-1">
+                    <div className="flex flex-col gap-1">
                       <Label htmlFor="new-prereq-ability-value">Min Score</Label>
                       <NumberSpinnerInput id="new-prereq-ability-value" value={newPrereqValue} onChange={setNewPrereqValue} min={1} inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm" disabled={isFormDisabled}/>
                     </div>
@@ -441,7 +441,7 @@ const AddCustomFeatDialogComponent = ({
                 )}
                 {newPrereqType === 'skill' && (
                   <>
-                    <div className="space-y-1">
+                    <div className="flex flex-col gap-1">
                       <Label htmlFor="new-prereq-skill-item">Skill</Label>
                       <ComboboxPrimitive
                         options={allSkills}
@@ -450,14 +450,14 @@ const AddCustomFeatDialogComponent = ({
                         placeholder="Select Skill..."
                       />
                     </div>
-                    <div className="space-y-1">
+                    <div className="flex flex-col gap-1">
                       <Label htmlFor="new-prereq-skill-value">Min Ranks</Label>
                       <NumberSpinnerInput id="new-prereq-skill-value" value={newPrereqValue} onChange={setNewPrereqValue} min={1} inputClassName="h-9 text-sm" buttonClassName="h-9 w-9" buttonSize="sm" disabled={isFormDisabled}/>
                     </div>
                   </>
                 )}
                 {newPrereqType === 'feat' && (
-                  <div className="space-y-1 md:col-span-2">
+                  <div className="flex flex-col gap-1 md:col-span-2">
                     <Label htmlFor="new-prereq-feat-item">Feat</Label>
                     <ComboboxPrimitive
                       options={allFeats.map(f => ({ value: f.id, label: f.label }))} // Use id
@@ -476,7 +476,7 @@ const AddCustomFeatDialogComponent = ({
             </div>
 
             {prerequisitesList.length > 0 && (
-              <div className="mt-4 space-y-2">
+              <div className="mt-4 flex flex-col gap-2">
                 <Label>Defined Prerequisites:</Label>
                 {prerequisitesList.map(p => (
                   <div key={p.tempId} className="flex items-center justify-between p-2 border rounded-md bg-background">
@@ -495,7 +495,7 @@ const AddCustomFeatDialogComponent = ({
 
             <Separator className="my-6" />
             <h3 className="text-md font-semibold text-foreground">Effects (Textual)</h3>
-             <div className="space-y-1">
+             <div className="flex flex-col gap-1">
               <Label htmlFor="custom-feat-effects-text">Describe Effects</Label>
               <Textarea
                 id="custom-feat-effects-text"

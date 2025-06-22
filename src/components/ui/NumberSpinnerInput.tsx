@@ -191,7 +191,7 @@ export function NumberSpinnerInput({
   const shouldRenderButtons = !disabled && showButtons;
 
   return (
-    <div ref={wrapperRef} className={cn("flex items-center", className, shouldRenderButtons && "space-x-1")}>
+    <div ref={wrapperRef} className={cn("flex items-center", className, shouldRenderButtons && "gap-1")}>
       {shouldRenderButtons && (
         <Button
           type="button"

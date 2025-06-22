@@ -223,7 +223,7 @@ export function AbilityScoreRollerDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="mt-4 space-y-4"> {/* Changed my-4 to mt-4 */}
+        <div className="mt-4 flex flex-col gap-4"> {/* Changed my-4 to mt-4 */}
           <div className="text-center">
             <Label className="text-sm font-medium text-muted-foreground">
               {UI_STRINGS.rollerDialogYourScoresLabel}

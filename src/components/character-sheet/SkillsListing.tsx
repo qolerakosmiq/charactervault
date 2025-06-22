@@ -60,13 +60,13 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           <Scroll className="h-6 w-6 text-primary" />
           <CardTitle className="font-serif">{UI_STRINGS.skillsPanelTitle}</CardTitle>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-1 -mx-2">
+        <div className="flex flex-col gap-1 -mx-2">
           {/* Header Row */}
           <div className="grid grid-cols-[1fr_auto_auto_auto_auto_auto_auto] gap-x-2 px-2 py-2 items-center font-semibold border-b">
             <span className="text-sm">{UI_STRINGS.skillsTableHeaderSkillLabel}</span>

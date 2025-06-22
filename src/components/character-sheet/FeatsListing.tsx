@@ -83,7 +83,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
     <Card>
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center gap-2">
             <Award className="h-6 w-6 text-primary" />
             <CardTitle className="font-serif">{UI_STRINGS.featsPanelTitle}</CardTitle>
           </div>
@@ -96,7 +96,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
         <CardDescription>{UI_STRINGS.featsPanelSheetDescription}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           {feats.length > 0 ? (
             feats.map(featInstance => {
               const definition = getFeatDefinition(featInstance.definitionId);
@@ -107,7 +107,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
               return (
                 <div key={featInstance.instanceId} className="p-3 border rounded-md bg-muted/10 group">
                   {editingFeat?.instanceId === featInstance.instanceId ? (
-                    <div className="space-y-2">
+                    <div className="flex flex-col gap-2">
                       <p className="font-semibold text-foreground">{featName}</p>
                       {featRequiresSpecialization && (
                         <div>
@@ -123,7 +123,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
                         </div>
                       )}
                        {!featRequiresSpecialization && <p className="text-sm text-muted-foreground italic">{UI_STRINGS.featNoSpecializationNeeded}</p>}
-                      <div className="flex justify-end space-x-2">
+                      <div className="flex justify-end gap-2">
                         <Button size="sm" variant="ghost" onClick={handleCancelEdit}>{UI_STRINGS.formButtonCancel}</Button>
                         <Button size="sm" onClick={handleSaveEdit}>{UI_STRINGS.formButtonSaveChanges}</Button>
                       </div>
@@ -142,7 +142,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
                             <p className="text-xs text-muted-foreground italic mt-0.5">{featInstance.grantedNote}</p>
                         )}
                       </div>
-                      <div className="flex space-x-1 shrink-0">
+                      <div className="flex gap-1 shrink-0">
                         {featRequiresSpecialization && !featInstance.isGranted && (
                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => handleStartEdit(featInstance)} aria-label={UI_STRINGS.featEditSpecializationAriaLabel}>
                             <Edit3 className="h-4 w-4" />

@@ -155,8 +155,8 @@ const AddCustomSkillDialogComponent = ({
         </DialogHeader>
 
         <ScrollArea className="max-h-[70vh]">
-          <div className="space-y-4 p-4">
-            <div className="space-y-1">
+          <div className="flex flex-col gap-4 p-4">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="custom-skill-name">Skill Name</Label>
               <Input
                 id="custom-skill-name"
@@ -165,7 +165,7 @@ const AddCustomSkillDialogComponent = ({
                 placeholder="e.g., Arcane Linguistics"
               />
             </div>
-            <div className="space-y-1">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="custom-skill-key-ability">Key Ability</Label>
               <Select
                 value={selectedKeyAbility}
@@ -184,7 +184,7 @@ const AddCustomSkillDialogComponent = ({
                 </SelectContent>
               </Select>
             </div>
-            <div className="space-y-1">
+            <div className="flex flex-col gap-1">
               <Label htmlFor="custom-skill-description">Skill Description</Label>
               <Textarea
                 id="custom-skill-description"
@@ -202,8 +202,8 @@ const AddCustomSkillDialogComponent = ({
                 <Sparkles className="mr-2 h-5 w-5 text-primary/80" />
                 Synergies Provided by this Skill
               </h3>
-              <div className="p-3 border rounded-md bg-muted/20 space-y-3">
-                <div className="space-y-1">
+              <div className="flex flex-col gap-3 p-3 border rounded-md bg-muted/20">
+                <div className="flex flex-col gap-1">
                   <Label htmlFor="synergy-target-skill">Target Skill to Grant Bonus To</Label>
                   <ComboboxPrimitive
                     options={availableTargetSkillsOptions}
@@ -216,7 +216,7 @@ const AddCustomSkillDialogComponent = ({
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="space-y-1">
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="synergy-ranks-required">Ranks in *this* Custom Skill Required</Label>
                     <NumberSpinnerInput
                       id="synergy-ranks-required"
@@ -228,7 +228,7 @@ const AddCustomSkillDialogComponent = ({
                       buttonSize="sm"
                     />
                   </div>
-                  <div className="space-y-1">
+                  <div className="flex flex-col gap-1">
                     <Label htmlFor="synergy-bonus-granted">Bonus Granted to Target Skill</Label>
                      <NumberSpinnerInput
                       id="synergy-bonus-granted"
@@ -247,7 +247,7 @@ const AddCustomSkillDialogComponent = ({
               </div>
 
               {synergyRules.length > 0 && (
-                <div className="mt-4 space-y-2">
+                <div className="mt-4 flex flex-col gap-2">
                   <Label>Defined Synergy Rules (This skill grants...):</Label>
                   {synergyRules.map(rule => (
                     <div key={rule.id} className="flex items-center justify-between p-2 border rounded-md text-xs bg-background">

@@ -268,15 +268,15 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
     return (
       <Card className="mt-8">
         <CardHeader>
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-3">
             <ShieldQuestion className="h-8 w-8 text-primary" />
             <Skeleton className="h-7 w-32" />
           </div>
           <Skeleton className="h-4 w-3/4 mt-1" />
         </CardHeader>
-        <CardContent className="space-y-3 pt-4">
+        <CardContent className="flex flex-col gap-3 pt-4">
           {[1, 2, 3].map(i => (
-            <div key={i} className="flex items-center space-x-2 py-1.5">
+            <div key={i} className="flex items-center gap-2 py-1.5">
               <Skeleton className="h-5 w-5 rounded" />
               <Skeleton className="h-5 w-4/5" />
             </div>
@@ -295,19 +295,19 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
   return (
     <Card className="mt-8">
       <CardHeader>
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <ShieldQuestion className="h-8 w-8 text-primary" />
           <CardTitle className="text-2xl font-serif">{UI_STRINGS.conditionsPanelTitle || "Active Conditions"}</CardTitle>
         </div>
         <CardDescription>{UI_STRINGS.conditionsPanelDescription || "Toggle conditional effects from your character's feats and abilities."}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-3 pt-4">
+      <CardContent className="flex flex-col gap-3 pt-4">
         {uniqueConditionsForDisplay.map(({ conditionKey, displayText, sources, isGloballyActive, canBeToggled }) => {
            const isToggleDisabled = !canBeToggled;
            const firstSource = sources[0];
 
           return (
-            <div key={conditionKey} className="flex items-start space-x-2">
+            <div key={conditionKey} className="flex items-start gap-2">
               <Checkbox
                 id={`condition-toggle-${conditionKey.replace(/\W/g, '-')}`}
                 checked={isGloballyActive}
@@ -325,7 +325,7 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
                   )}
                 </Label>
                 {firstSource && (firstSource.featName || (firstSource.effectsSummary && firstSource.effectsSummary.length > 0)) && (
-                  <div className="text-xs text-muted-foreground mt-0.5 space-y-0.5">
+                  <div className="text-xs text-muted-foreground mt-0.5 flex flex-col gap-0.5">
                     {firstSource.featName && (
                       <div className="flex items-baseline">
                         <strong>{UI_STRINGS.conditionsPanelSourceFeatLabel || "Source"}:</strong>{'\u00A0'}
@@ -356,5 +356,3 @@ const ConditionsPanelComponent: React.FC<ConditionsPanelProps> = ({
 };
 ConditionsPanelComponent.displayName = "ConditionsPanelComponent";
 export const ConditionsPanel = React.memo(ConditionsPanelComponent);
-
-    

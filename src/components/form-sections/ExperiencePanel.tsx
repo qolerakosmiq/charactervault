@@ -89,7 +89,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
       {({ isLocked: panelIsLocked }) => (
         <>
           <div className="flex items-center gap-x-2">
-            <div className="w-1/2 space-y-1.5">
+            <div className="w-1/2 flex flex-col gap-1.5">
               <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
                 <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
                 <span className="block text-xs text-muted-foreground">

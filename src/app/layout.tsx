@@ -26,7 +26,7 @@ export default function RootLayout({
           <div className="min-h-screen flex flex-col">
             <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
-                <Link href="/" className="flex items-center space-x-2">
+                <Link href="/" className="flex items-center gap-2">
                   <ScrollText className="h-8 w-8 text-primary" />
                   <span className="font-serif text-xl font-bold tracking-tight text-primary">Character Vault</span>
                 </Link>

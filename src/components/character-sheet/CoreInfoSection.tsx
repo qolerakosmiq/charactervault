@@ -58,13 +58,13 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           <UserCircle2 className="h-6 w-6 text-primary" />
           <CardTitle className="font-serif">{UI_STRINGS.coreInfoSectionTitle}</CardTitle>
         </div>
         <CardDescription>{UI_STRINGS.coreInfoSectionDescription}</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="flex flex-col gap-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <Label htmlFor="name-cs">{UI_STRINGS.characterNameLabel}</Label>

@@ -104,7 +104,7 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
   const isWeapon = currentFields.itemType === 'weapon';
 
   const renderItemFields = (isEditing: boolean) => (
-    <div className="space-y-3 p-3 border rounded-md bg-background">
+    <div className="flex flex-col gap-3 p-3 border rounded-md bg-background">
       <h4 className="text-md font-semibold">{isEditing ? UI_STRINGS.inventoryEditItemTitle : UI_STRINGS.inventoryAddNewItemTitle}</h4>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
         <div>
@@ -201,15 +201,15 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Checkbox id={isEditing ? `edit-weapon-finesse-${editingItem?.id}` : "new-weapon-finesse"} checked={currentFields.isFinesseWeapon || false} onCheckedChange={(checked) => handleInputChange('isFinesseWeapon', !!checked)} />
                 <Label htmlFor={isEditing ? `edit-weapon-finesse-${editingItem?.id}` : "new-weapon-finesse"} className="text-sm font-normal">{UI_STRINGS.inventoryWeaponIsFinesseLabel}</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Checkbox id={isEditing ? `edit-weapon-light-${editingItem?.id}` : "new-weapon-light"} checked={currentFields.isLightWeapon || false} onCheckedChange={(checked) => handleInputChange('isLightWeapon', !!checked)} />
                 <Label htmlFor={isEditing ? `edit-weapon-light-${editingItem?.id}` : "new-weapon-light"} className="text-sm font-normal">{UI_STRINGS.inventoryWeaponIsLightLabel}</Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center gap-2">
                 <Checkbox id={isEditing ? `edit-weapon-twohanded-${editingItem?.id}` : "new-weapon-twohanded"} checked={currentFields.isTwoHandedWeapon || false} onCheckedChange={(checked) => handleInputChange('isTwoHandedWeapon', !!checked)} />
                 <Label htmlFor={isEditing ? `edit-weapon-twohanded-${editingItem?.id}` : "new-weapon-twohanded"} className="text-sm font-normal">{UI_STRINGS.inventoryWeaponIsTwoHandedLabel}</Label>
               </div>
@@ -237,7 +237,7 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
           rows={2}
         />
       </div>
-      <div className="flex justify-end space-x-2 mt-3">
+      <div className="flex justify-end gap-2 mt-3">
         {isEditing ? (
           <>
             <Button size="sm" variant="ghost" onClick={handleCancelEdit} type="button">{UI_STRINGS.formButtonCancel}</Button>
@@ -256,7 +256,7 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-2">
           <Backpack className="h-6 w-6 text-primary" />
           <CardTitle className="font-serif">{UI_STRINGS.inventoryPanelTitle}</CardTitle>
         </div>
@@ -267,7 +267,7 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
           renderItemFields(true)
         ) : (
           <>
-            <div className="space-y-4">
+            <div className="flex flex-col gap-4">
               {inventory.length > 0 ? (
                 inventory.map(item => (
                   <div key={item.id} className="p-3 border rounded-md bg-muted/10 group">
@@ -281,7 +281,7 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
                            </p>
                         )}
                       </div>
-                      <div className="flex space-x-1 shrink-0">
+                      <div className="flex gap-1 shrink-0">
                         <Button variant="ghost" size="icon" className="h-7 w-7 opacity-50 group-hover:opacity-100" onClick={() => handleStartEdit(item)}>
                           <Edit3 className="h-4 w-4" />
                         </Button>

@@ -144,7 +144,7 @@ export function AbilityScorePointBuyDialog({
         </DialogHeader>
 
         <ScrollArea className="max-h-[60vh] pr-2">
-            <div className="p-1 space-y-4">
+            <div className="p-1 flex flex-col gap-4">
                 <div className="flex items-center justify-between gap-4 p-3 border rounded-md bg-muted/30">
                     <div className="text-left">
                         <p className="text-sm font-medium">{UI_STRINGS.pointBuyDialogTotalPointsBudgetLabel}</p>
@@ -194,7 +194,7 @@ export function AbilityScorePointBuyDialog({
                     const incrementWouldExceedBudget = (calculatePointsSpent({ ...currentScores, [ability]: score + 1 })) > safeBudgetForCalculations;
 
                     return (
-                    <div key={ability} className="p-3 border rounded-md space-y-2 bg-background">
+                    <div key={ability} className="p-3 border rounded-md flex flex-col gap-2 bg-background">
                         <Label htmlFor={`score-input-${ability}`} className="text-base flex justify-between items-center">
                           <span>
                             <span className="font-semibold">{abbreviationPart}</span>

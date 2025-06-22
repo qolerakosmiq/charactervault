@@ -1161,7 +1161,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 
   return (
     <>
-      <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="space-y-8">
+      <form onSubmit={handleSubmit} onKeyDown={handleKeyDown} className="flex flex-col gap-8">
         <BasicInformationSection
           characterData={basicInfoData}
           classSpecificChoices={character.classSpecificChoices || []}
@@ -1203,7 +1203,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-8">
+          <div className="flex flex-col gap-8">
             {character && aggregatedFeatEffects && (
               <ArmorClassPanel
                 character={character}
@@ -1222,7 +1222,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             )}
           </div>
 
-          <div className="space-y-8">
+          <div className="flex flex-col gap-8">
             {healthPanelData && (
               <HealthPanel
                 healthData={healthPanelData}
@@ -1344,7 +1344,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
                 const equippedItemDef = equippedInstance ? allItemDefinitions.find(def => def.definitionId === equippedInstance.definitionId) : undefined;
 
                 return (
-                  <div key={slot.id} className="space-y-1">
+                  <div key={slot.id} className="flex flex-col gap-1">
                     <Label htmlFor={`equip-${slot.id}`}>{slot.label}</Label>
                     <Select
                       value={equippedItemDef?.definitionId || '__NONE__'}
