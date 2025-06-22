@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Dices, Info, Calculator, Lock, Unlock } from 'lucide-react';
+import { Dices, Info, Calculator } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,6 @@ import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDia
 import { RollDialog, type RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
-import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
@@ -75,7 +74,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
       DEBOUNCE_DELAY_FORM_INPUT
     );
   });
-
+  
+  if (typeof rawPointBuyBudgetFromStore !== 'number') {
+    throw new Error("Point buy budget is not a valid number. Check definitions-store.");
+  }
   const pointBuyBudget = rawPointBuyBudgetFromStore;
 
 
@@ -231,7 +233,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
             {!panelIsLocked && (
               <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
-                <div className="lg:col-start-5">
+                <div className="lg:col-start-5 sm:col-span-3">
                   <Button
                       type="button"
                       variant="outline"
@@ -243,7 +245,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                       <Dices /> {UI_STRINGS.abilityScoresRollButton}
                   </Button>
                 </div>
-                <div className="lg:col-span-1">
+                <div className="lg:col-start-6 sm:col-span-3">
                   <Button
                       type="button"
                       variant="outline"
