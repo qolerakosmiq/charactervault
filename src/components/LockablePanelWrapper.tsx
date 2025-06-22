@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/I18nProvider';
-import { panelHeaderPadding, panelContentPadding } from '@/config/layout';
+import { panelHeaderPadding, panelGridGap } from '@/config/layout';
 
 interface LockablePanelWrapperProps {
   title: string;
@@ -83,10 +83,10 @@ const LockablePanelWrapperComponent = ({
             </Button>
         </div>
       </CardHeader>
-      <CardContent className={cn(panelContentPadding, cardContentClassName)}>
+      <CardContent className={cn("flex flex-col", panelGridGap, cardContentClassName)}>
         {typeof children === 'function' ? children({ isLocked }) : children}
       </CardContent>
-      {footer && (
+      {footer && !isLocked && (
         <CardFooter className={cn("bg-muted/20 border-t", panelHeaderPadding)}>
           {footer}
         </CardFooter>
