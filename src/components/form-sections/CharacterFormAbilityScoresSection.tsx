@@ -233,7 +233,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         initialLockedState={false}
         footer={
           <p className={textStyleDescription}>
-            {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
+            {parseAndRenderUIString(UI_STRINGS.abilityScoresNoteFull, {
               badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
             })}
           </p>

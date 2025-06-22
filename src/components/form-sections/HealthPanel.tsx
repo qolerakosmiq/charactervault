@@ -367,9 +367,9 @@ const HealthPanelComponent = ({
                 </div>
               </div>
               <p className="text-sm text-muted-foreground pt-2">
-                <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.healthPanelMaxHpMiscModInfoNote_prefix }} />
+                <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.healthPanelMaxHpMiscModInfoNotePrefix }} />
                 <Badge variant="outline">{UI_STRINGS.healthPanelMiscMaxHpLabel || "Misc Modifier"}</Badge>
-                <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.healthPanelMaxHpMiscModInfoNote_suffix }}/>
+                <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.healthPanelMaxHpMiscModInfoNoteSuffix }}/>
               </p>
           </div>
         </>

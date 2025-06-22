@@ -205,9 +205,9 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
             />
           </div>
           <p className="text-sm text-muted-foreground mb-4">
-            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_prefix }} />
+            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNotePrefix }} />
             <Badge variant="outline">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Badge>
-            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNote_suffix }} />
+            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNoteSuffix }} />
           </p>
         </>
       )}

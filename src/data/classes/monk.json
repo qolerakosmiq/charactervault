@@ -94,8 +94,8 @@
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
       "effectsText": { "en": "Wisdom bonus to AC (unarmored, unencumbered). Additional +1 AC every 5 levels", "fr": "Bonus de Sagesse à la CA (sans armure, sans charge). +1 CA supplémentaire tous les 5 niveaux" },
       "effects": [
-        { "type": "armorClass", "acType": "monk_wisdom", "value": "WIS", "bonusType": "untyped", "condition": "unarmored_and_unencumbered" },
-        { "type": "armorClass", "acType": "monkScaling", "value": 0, "bonusType": "untyped", "condition": "unarmored_and_unencumbered", "appliesToScope": ["normal","touch","flatFooted"], "scaleWithClassLevel": { "classId": "monk", "specificLevels": [{"level":1, "value":0}, {"level":5, "value":1},{"level":10, "value":2},{"level":15, "value":3},{"level":20, "value":4}]} }
+        { "type": "armorClass", "acType": "monk_wisdom", "value": "WIS", "bonusType": "untyped", "condition": "unarmoredAndUnencumbered" },
+        { "type": "armorClass", "acType": "monkScaling", "value": 0, "bonusType": "untyped", "condition": "unarmoredAndUnencumbered", "appliesToScope": ["normal","touch","flatFooted"], "scaleWithClassLevel": { "classId": "monk", "specificLevels": [{"level":1, "value":0}, {"level":5, "value":1},{"level":10, "value":2},{"level":15, "value":3},{"level":20, "value":4}]} }
       ]
     },
     {
@@ -128,7 +128,7 @@
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
       "effectsText": { "en": "Enhancement bonus to speed when unarmored and unencumbered. Scales with level", "fr": "Bonus d'altération à la vitesse sans armure et sans charge. Évolue avec le niveau" },
       "effects": [
-        { "type": "speed", "speedType": "land", "modification": "bonus", "value": 0, "bonusType": "enhancement", "condition": "unarmored_and_unencumbered",
+        { "type": "speed", "speedType": "land", "modification": "bonus", "value": 0, "bonusType": "enhancement", "condition": "unarmoredAndUnencumbered",
           "scaleWithClassLevel": { "classId": "monk", "specificLevels": [
             {"level":1, "value":0}, {"level":3, "value":10}, {"level":6, "value":20}, {"level":9, "value":30},
             {"level":12, "value":40}, {"level":15, "value":50}, {"level":18, "value":60}
@@ -142,7 +142,7 @@
       "description": { "en": "A monk of 3rd level or higher gains a +2 bonus on saving throws against spells and effects from the school of enchantment.", "fr": "Un moine de niveau 3 ou plus gagne un bonus de +2 aux jets de sauvegarde contre les sorts et les effets de l'école d'enchantement." },
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
       "effectsText": { "en": "+2 saves vs. enchantment", "fr": "+2 aux jets de sauvegarde contre les enchantements" },
-      "effects": [{ "type": "savingThrow", "save": "all", "value": 2, "bonusType": "untyped", "condition": "vs_enchantment"}]
+      "effects": [{ "type": "savingThrow", "save": "all", "value": 2, "bonusType": "untyped", "condition": "vsEnchantment"}]
     },
     {
       "id": "class-monk-ki-strike-magic",

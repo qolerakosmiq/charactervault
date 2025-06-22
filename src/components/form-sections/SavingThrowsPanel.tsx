@@ -280,7 +280,7 @@ const SavingThrowsPanelComponent = ({
       initialLockedState={false}
       footer={
         <p className={textStyleDescription}>
-          {parseAndRenderUIString(UI_STRINGS.savingThrowsPanelMiscModInfoNote_full, {
+          {parseAndRenderUIString(UI_STRINGS.savingThrowsPanelMiscModInfoNoteFull, {
             badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
           })}
         </p>

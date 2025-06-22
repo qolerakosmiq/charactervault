@@ -61,8 +61,8 @@
         { "type": "grantsAbility", "abilityKey": "smiteEvilUses", "name": { "en": "Smite Evil", "fr": "Châtiment du Mal" },
           "uses": { "per": "day", "value": "scaled", "scaleWithClassLevel": { "classId": "paladin", "specificLevels": [{"level":1,"value":1},{"level":5,"value":2},{"level":10,"value":3},{"level":15,"value":4},{"level":20,"value":5}] } }
         },
-        { "type": "attackRoll", "value": "CHA", "bonusType": "untyped", "appliesTo": "melee", "condition": "smite_evil_active_vs_evil_target" },
-        { "type": "damageRoll", "value": "classLevel:paladin", "bonusType": "untyped", "appliesTo": "melee", "condition": "smite_evil_active_vs_evil_target" }
+        { "type": "attackRoll", "value": "CHA", "bonusType": "untyped", "appliesTo": "melee", "condition": "smiteEvilActiveVsEvilTarget" },
+        { "type": "damageRoll", "value": "classLevel:paladin", "bonusType": "untyped", "appliesTo": "melee", "condition": "smiteEvilActiveVsEvilTarget" }
       ]
     },
     {
@@ -179,4 +179,3 @@
     }
   ]
 }
-

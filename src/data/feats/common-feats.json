@@ -134,7 +134,7 @@
       },
       "effectsText": { "en": "+4 bonus to Concentration checks made to cast a spell or use a spell-like ability when casting defensively or when you are grappling or pinned", "fr": "+4 bonus aux tests de Concentration effectués pour lancer un sort ou utiliser un pouvoir magique lorsque vous lancez en défensif, que vous êtes agrippé ou maîtrisé" },
       "effects": [
-        { "type": "skill", "skillId": "concentration", "value": 4, "bonusType": "untyped", "condition": "casting_defensively_or_grappled" }
+        { "type": "skill", "skillId": "concentration", "value": 4, "bonusType": "untyped", "condition": "castingDefensivelyOrGrappled" }
       ],
       "isClassFeature": false,
       "type": "general"
@@ -224,7 +224,7 @@
       "prerequisites": { "abilities": { "dexterity": 13 } },
       "effectsText": { "en": "Designate an opponent and receive a +1 dodge bonus to AC against attacks from that opponent", "fr": "Désignez un adversaire et recevez un bonus d'esquive de +1 à la CA contre les attaques de cet adversaire" },
       "effects": [
-        { "type": "armorClass", "acType": "dodge", "value": 1, "bonusType": "dodge", "condition": "vs_designated_target" }
+        { "type": "armorClass", "acType": "dodge", "value": 1, "bonusType": "dodge", "condition": "vsDesignatedTarget" }
       ],
       "type": "general",
       "category": "fighterBonusFeat"
@@ -239,7 +239,7 @@
       "prerequisites": { "abilities": { "dexterity": 13 }, "feats": ["dodge"] },
       "effectsText": { "en": "+4 dodge bonus to Armor Class against attacks of opportunity caused when you move out of or within a threatened area", "fr": "+4 bonus d'esquive à la Classe d'Armure contre les attaques d'opportunité provoquées lorsque vous sortez ou vous déplacez dans une zone menacée" },
       "effects": [
-        { "type": "armorClass", "acType": "dodge", "value": 4, "bonusType": "dodge", "condition": "vs_aoo_from_movement" }
+        { "type": "armorClass", "acType": "dodge", "value": 4, "bonusType": "dodge", "condition": "vsAooFromMovement" }
       ],
       "type": "general",
       "category": "fighterBonusFeat"
@@ -268,7 +268,7 @@
       },
       "effectsText": { "en": "+4 bonus on checks/saves related to nonlethal damage from fatigue, exhaustion, or hot/cold environments, suffocation, starvation/thirst, and forced march. Can sleep in light/medium armor without fatigue", "fr": "+4 bonus aux tests/jets de sauvegarde liés aux dégâts non létaux dus à la fatigue, à l'épuisement, ou aux environnements chauds/froids, à l'asphyxie, à la faim/soif, et à la marche forcée. Peut dormir en armure légère/intermédiaire sans fatigue" },
       "effects": [
-        { "type": "skill", "skillId": "swim", "value": 4, "bonusType": "untyped", "condition": "resist_nonlethal_damage" },
+        { "type": "skill", "skillId": "swim", "value": 4, "bonusType": "untyped", "condition": "resistNonlethalDamage" },
         { "type": "note", "text": { "en": "+4 on specific Constitution checks (running, forced march, hold breath, starvation/thirst) and Fortitude saves (hot/cold environments, suffocation). Can sleep in light/medium armor without fatigue", "fr": "+4 à des tests de Constitution spécifiques (course, marche forcée, retenir son souffle, faim/soif) et jets de Vigueur (environnements chauds/froids, asphyxie). Peut dormir en armure légère/intermédiaire sans fatigue" } }
       ],
       "type": "general"
@@ -776,7 +776,9 @@
         "fr": "Vous êtes doué pour guider votre monture au combat"
       },
       "effectsText": { "en": "Once per round when your mount is hit in combat, you may attempt a Ride check (as a reaction) to negate the hit. The hit is negated if your Ride check result is greater than the opponent’s attack roll", "fr": "Une fois par round lorsque votre monture est touchée au combat, vous pouvez tenter un test d'Équitation (en réaction) pour annuler le coup. Le coup est annulé si le résultat de votre test d'Équitation est supérieur au jet d'attaque de l'adversaire" },
-      "effects": [{ "type": "note", "text": { "en": "Once per round when your mount is hit, attempt Ride check as reaction to negate hit (Ride check > attack roll)", "fr": "Une fois par round lorsque votre monture est touchée, tentez un test d'Équitation en réaction pour annuler le coup (test d'Équitation > jet d'attaque)" } }],
+      "effects": [
+        { "type": "note", "text": { "en": "Once per round when your mount is hit, attempt Ride check as reaction to negate hit (Ride check > attack roll)", "fr": "Une fois par round lorsque votre monture est touchée, tentez un test d'Équitation en réaction pour annuler le coup (test d'Équitation > jet d'attaque)" } }
+      ],
       "type": "general",
       "category": "fighterBonusFeat"
     },
@@ -964,9 +966,9 @@
     { "id": "itemCreation", "label": { "en": "Item Creation", "fr": "Création d'objet" } },
     { "id": "metamagic", "label": { "en": "Metamagic", "fr": "Métamagie" } },
     { "id": "special", "label": { "en": "Special", "fr": "Spécial" } },
-    { "id": "special-ex", "label": { "en": "Special Ability (Ex)", "fr": "Capacité spéciale (Ext)" } },
-    { "id": "special-su", "label": { "en": "Special Ability (Su)", "fr": "Capacité spéciale (Sur)" } },
-    { "id": "special-sp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } },
+    { "id": "specialEx", "label": { "en": "Special Ability (Ex)", "fr": "Capacité spéciale (Ext)" } },
+    { "id": "specialSu", "label": { "en": "Special Ability (Su)", "fr": "Capacité spéciale (Sur)" } },
+    { "id": "specialSp", "label": { "en": "Special Ability (Sp)", "fr": "Capacité spéciale (Mag)" } },
     { "id": "fighterBonusFeat", "label": { "en": "Fighter Bonus Feat", "fr": "Don Guerrier" } },
     { "id": "wizardBonusFeat", "label": { "en": "Wizard Bonus Feat", "fr": "Don supplémentaire Magicien" } },
     { "id": "monkBonusFeatL1", "label": { "en": "Monk Bonus (L1)", "fr": "Don suppl. Moine (N1)" } },

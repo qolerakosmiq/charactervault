@@ -51,7 +51,7 @@
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
       "effectsText": { "en": "Extra damage (+1d6/2 levels) vs. flat-footed or flanked targets", "fr": "Dégâts supplémentaires (+1d6/2 niveaux) contre cibles prises au dépourvu ou en tenaille" },
       "effects": [
-        { "type": "damageRoll", "value": "1d6", "bonusType": "precision", "condition": "target_denied_dex_or_flanked",
+        { "type": "damageRoll", "value": "1d6", "bonusType": "precision", "condition": "targetDeniedDexOrFlanked",
           "scaleWithClassLevel": { "classId": "rogue", "valuePerLevel": 0.5, "diceType": "d6" }
         }
       ]
@@ -77,8 +77,8 @@
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
       "effectsText": { "en": "+1/3 levels Reflex save & Dodge AC vs traps", "fr": "+1/3 niveaux aux jets de Réf et CA Esquive contre pièges" },
       "effects": [
-        { "type": "savingThrow", "save": "reflex", "value": 0, "bonusType": "untyped", "condition": "vs_traps", "scaleWithClassLevel": { "classId": "rogue", "specificLevels": [{"level":3,"value":1},{"level":6,"value":2},{"level":9,"value":3},{"level":12,"value":4},{"level":15,"value":5},{"level":18,"value":6}]} },
-        { "type": "armorClass", "acType": "dodge", "value": 0, "bonusType": "dodge", "condition": "vs_trap_attacks", "appliesToScope": ["normal", "touch"], "scaleWithClassLevel": { "classId": "rogue", "specificLevels": [{"level":3,"value":1},{"level":6,"value":2},{"level":9,"value":3},{"level":12,"value":4},{"level":15,"value":5},{"level":18,"value":6}]} }
+        { "type": "savingThrow", "save": "reflex", "value": 0, "bonusType": "untyped", "condition": "vsTraps", "scaleWithClassLevel": { "classId": "rogue", "specificLevels": [{"level":3,"value":1},{"level":6,"value":2},{"level":9,"value":3},{"level":12,"value":4},{"level":15,"value":5},{"level":18,"value":6}]} },
+        { "type": "armorClass", "acType": "dodge", "value": 0, "bonusType": "dodge", "condition": "vsTrapAttacks", "appliesToScope": ["normal", "touch"], "scaleWithClassLevel": { "classId": "rogue", "specificLevels": [{"level":3,"value":1},{"level":6,"value":2},{"level":9,"value":3},{"level":12,"value":4},{"level":15,"value":5},{"level":18,"value":6}]} }
       ]
     },
     {
