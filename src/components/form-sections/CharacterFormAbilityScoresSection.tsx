@@ -96,13 +96,13 @@ const AbilityScoreInputGroup = React.memo(({
       </Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{finalScore}</p>
-        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleOpenBreakdown} aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Detailed breakdown for {abilityName}").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Info /></Button>
+        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleOpenBreakdown} aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Info /></Button>
       </div>
       <div className="flex flex-col items-center">
         <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
           <p className={cn(modifierColorClass, "self-center")}>{finalModifier >= 0 ? '+' : ''}{finalModifier}</p>
-          <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleTriggerRoll} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
+          <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleTriggerRoll} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel).replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
         </div>
       </div>
       {!panelIsLocked && (
@@ -180,11 +180,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
       const finalModifier = calculateAbilityModifier(detailedAbilityScores[abilityForRollDialog].finalScore);
 
       const breakdown: GenericBreakdownItem[] = [
-        { label: (translations.UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", abilityLabelInfo?.abbr || abilityForRollDialog.toUpperCase().substring(0,3)), value: finalModifier, isBold: true }
+        { label: (translations.UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", abilityLabelInfo?.abbr || abilityForRollDialog.toUpperCase().substring(0,3)), value: finalModifier, isBold: true }
       ];
 
       setRollAbilityDialogData({
-        dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName || ''),
+        dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck).replace("{abilityName}", abilityName || ''),
         rollType: `ability_check_${abilityForRollDialog}`,
         baseModifier: finalModifier,
         calculationBreakdown: breakdown,

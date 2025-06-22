@@ -127,19 +127,19 @@ export function AbilityScorePointBuyDialog({
           <DialogHeader>
             <DialogTitle className="flex items-center font-serif">
               <Calculator className="mr-2 h-6 w-6 text-primary" />
-              {translations?.UI_STRINGS.pointBuyDialogTitleLoading || "Loading Point Buy..."}
+              {translations?.UI_STRINGS.pointBuyDialogTitleLoading}
             </DialogTitle>
           </DialogHeader>
           <div className="flex justify-center items-center py-10">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle || "Loading ability names..."}</p>
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle}</p>
           </div>
            <DialogFooter className="mt-6">
             <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
-              {translations?.UI_STRINGS.pointBuyDialogCancelButton || "Cancel"}
+              {translations?.UI_STRINGS.pointBuyDialogCancelButton}
             </Button>
             <Button disabled type="button">
-              {translations?.UI_STRINGS.pointBuyDialogApplyButton || "Apply Scores"}
+              {translations?.UI_STRINGS.pointBuyDialogApplyButton}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -259,4 +259,3 @@ export function AbilityScorePointBuyDialog({
     </Dialog>
   );
 }
-
