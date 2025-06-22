@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -189,186 +188,57 @@ const CharacterFormAbilityScoresSectionComponent = ({
         }
       >
         {({ isLocked: panelIsLocked }) => (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
-                <Label htmlFor={!panelIsLocked ? `base-score-strength` : undefined} className="text-center text-md font-medium flex flex-col items-center">
-                  <span>{ABILITY_LABELS.find(al => al.id === 'strength')?.abbr}</span>
-                  <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'strength')?.label}</span>
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {abilityKeys.map(ability => (
+              <div key={ability} className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+                <Label htmlFor={!panelIsLocked ? `base-score-${ability}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
+                  <span>{ABILITY_LABELS.find(al => al.id === ability)?.abbr}</span>
+                  <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === ability)?.label}</span>
                 </Label>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={textStyleValueBig}>{detailedAbilityScores.strength.finalScore}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenAbilityScoreBreakdownDialog('strength')} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'strength')?.label)}><Info /></Button>
+                  <p className={textStyleValueBig}>{detailedAbilityScores[ability].finalScore}</p>
+                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenAbilityScoreBreakdownDialog(ability)} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === ability)?.label)}><Info /></Button>
                 </div>
                 <div className="flex flex-col items-center">
                   <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
                   <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={textStyleValueMedium}>{detailedAbilityScores.strength.finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores.strength.finalScore)}</p>
-                    <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => handleOpenRollDialog('strength')} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'strength')?.label)}><Dices /></Button>
+                    <p className={textStyleValueMedium}>{detailedAbilityScores[ability].finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores[ability].finalScore)}</p>
+                    <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => handleOpenRollDialog(ability)} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === ability)?.label)}><Dices /></Button>
                   </div>
                 </div>
                 {!panelIsLocked && (
                   <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
                     <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="base-score-strength" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-                      <Input id="base-score-strength" type="number" value={str} onChange={(e) => setStr(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
+                      <Label htmlFor={`base-score-${ability}`} className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
+                      <Input id={`base-score-${ability}`} type="number" value={
+                        ability === 'strength' ? str : ability === 'dexterity' ? dex : ability === 'constitution' ? con :
+                        ability === 'intelligence' ? int : ability === 'wisdom' ? wis : cha
+                      } onChange={(e) => {
+                        const val = parseInt(e.target.value, 10) || 1;
+                        if (ability === 'strength') setStr(val); else if (ability === 'dexterity') setDex(val);
+                        else if (ability === 'constitution') setCon(val); else if (ability === 'intelligence') setInt(val);
+                        else if (ability === 'wisdom') setWis(val); else if (ability === 'charisma') setCha(val);
+                      }} min={1} className="text-base text-center" disabled={panelIsLocked} />
                     </div>
                     <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="temp-mod-strength" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-                      <Input id="temp-mod-strength" type="number" value={strMod} onChange={(e) => setStrMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
+                      <Label htmlFor={`temp-mod-${ability}`} className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
+                      <Input id={`temp-mod-${ability}`} type="number" value={
+                        ability === 'strength' ? strMod : ability === 'dexterity' ? dexMod : ability === 'constitution' ? conMod :
+                        ability === 'intelligence' ? intMod : ability === 'wisdom' ? wisMod : chaMod
+                      } onChange={(e) => {
+                        const val = parseInt(e.target.value, 10) || 0;
+                        if (ability === 'strength') setStrMod(val); else if (ability === 'dexterity') setDexMod(val);
+                        else if (ability === 'constitution') setConMod(val); else if (ability === 'intelligence') setIntMod(val);
+                        else if (ability === 'wisdom') setWisMod(val); else if (ability === 'charisma') setChaMod(val);
+                      }} className="text-base text-center" disabled={panelIsLocked} />
                     </div>
                   </div>
                 )}
               </div>
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
-                <Label htmlFor={!panelIsLocked ? `base-score-dexterity` : undefined} className="text-center text-md font-medium flex flex-col items-center">
-                  <span>{ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr}</span>
-                  <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'dexterity')?.label}</span>
-                </Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={textStyleValueBig}>{detailedAbilityScores.dexterity.finalScore}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenAbilityScoreBreakdownDialog('dexterity')} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'dexterity')?.label)}><Info /></Button>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
-                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={textStyleValueMedium}>{detailedAbilityScores.dexterity.finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores.dexterity.finalScore)}</p>
-                    <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => handleOpenRollDialog('dexterity')} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'dexterity')?.label)}><Dices /></Button>
-                  </div>
-                </div>
-                {!panelIsLocked && (
-                  <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="base-score-dexterity" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-                      <Input id="base-score-dexterity" type="number" value={dex} onChange={(e) => setDex(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="temp-mod-dexterity" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-                      <Input id="temp-mod-dexterity" type="number" value={dexMod} onChange={(e) => setDexMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
-                <Label htmlFor={!panelIsLocked ? `base-score-constitution` : undefined} className="text-center text-md font-medium flex flex-col items-center">
-                  <span>{ABILITY_LABELS.find(al => al.id === 'constitution')?.abbr}</span>
-                  <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'constitution')?.label}</span>
-                </Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={textStyleValueBig}>{detailedAbilityScores.constitution.finalScore}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenAbilityScoreBreakdownDialog('constitution')} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'constitution')?.label)}><Info /></Button>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
-                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={textStyleValueMedium}>{detailedAbilityScores.constitution.finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores.constitution.finalScore)}</p>
-                    <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => handleOpenRollDialog('constitution')} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'constitution')?.label)}><Dices /></Button>
-                  </div>
-                </div>
-                {!panelIsLocked && (
-                  <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="base-score-constitution" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-                      <Input id="base-score-constitution" type="number" value={con} onChange={(e) => setCon(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="temp-mod-constitution" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-                      <Input id="temp-mod-constitution" type="number" value={conMod} onChange={(e) => setConMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
-                <Label htmlFor={!panelIsLocked ? `base-score-intelligence` : undefined} className="text-center text-md font-medium flex flex-col items-center">
-                  <span>{ABILITY_LABELS.find(al => al.id === 'intelligence')?.abbr}</span>
-                  <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'intelligence')?.label}</span>
-                </Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={textStyleValueBig}>{detailedAbilityScores.intelligence.finalScore}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenAbilityScoreBreakdownDialog('intelligence')} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'intelligence')?.label)}><Info /></Button>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
-                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={textStyleValueMedium}>{detailedAbilityScores.intelligence.finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores.intelligence.finalScore)}</p>
-                    <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => handleOpenRollDialog('intelligence')} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'intelligence')?.label)}><Dices /></Button>
-                  </div>
-                </div>
-                {!panelIsLocked && (
-                  <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="base-score-intelligence" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-                      <Input id="base-score-intelligence" type="number" value={int} onChange={(e) => setInt(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="temp-mod-intelligence" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-                      <Input id="temp-mod-intelligence" type="number" value={intMod} onChange={(e) => setIntMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
-                <Label htmlFor={!panelIsLocked ? `base-score-wisdom` : undefined} className="text-center text-md font-medium flex flex-col items-center">
-                  <span>{ABILITY_LABELS.find(al => al.id === 'wisdom')?.abbr}</span>
-                  <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'wisdom')?.label}</span>
-                </Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={textStyleValueBig}>{detailedAbilityScores.wisdom.finalScore}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenAbilityScoreBreakdownDialog('wisdom')} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'wisdom')?.label)}><Info /></Button>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
-                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={textStyleValueMedium}>{detailedAbilityScores.wisdom.finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores.wisdom.finalScore)}</p>
-                    <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => handleOpenRollDialog('wisdom')} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'wisdom')?.label)}><Dices /></Button>
-                  </div>
-                </div>
-                {!panelIsLocked && (
-                  <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="base-score-wisdom" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-                      <Input id="base-score-wisdom" type="number" value={wis} onChange={(e) => setWis(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="temp-mod-wisdom" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-                      <Input id="temp-mod-wisdom" type="number" value={wisMod} onChange={(e) => setWisMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                  </div>
-                )}
-              </div>
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
-                <Label htmlFor={!panelIsLocked ? `base-score-charisma` : undefined} className="text-center text-md font-medium flex flex-col items-center">
-                  <span>{ABILITY_LABELS.find(al => al.id === 'charisma')?.abbr}</span>
-                  <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'charisma')?.label}</span>
-                </Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={textStyleValueBig}>{detailedAbilityScores.charisma.finalScore}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenAbilityScoreBreakdownDialog('charisma')} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'charisma')?.label)}><Info /></Button>
-                </div>
-                <div className="flex flex-col items-center">
-                  <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
-                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={textStyleValueMedium}>{detailedAbilityScores.charisma.finalScore >= 10 ? '+' : ''}{calculateAbilityModifier(detailedAbilityScores.charisma.finalScore)}</p>
-                    <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => handleOpenRollDialog('charisma')} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === 'charisma')?.label)}><Dices /></Button>
-                  </div>
-                </div>
-                {!panelIsLocked && (
-                  <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="base-score-charisma" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-                      <Input id="base-score-charisma" type="number" value={cha} onChange={(e) => setCha(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                    <div className={cn("w-full", panelFieldVerticalGap)}>
-                      <Label htmlFor="temp-mod-charisma" className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-                      <Input id="temp-mod-charisma" type="number" value={chaMod} onChange={(e) => setChaMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-            
+            ))}
+
             {!panelIsLocked && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+              <>
                 <Button
                   type="button"
                   variant="outline"
@@ -389,9 +259,9 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 >
                   <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
                 </Button>
-              </div>
+              </>
             )}
-          </>
+          </div>
         )}
       </LockablePanelWrapper>
       <AbilityScoreRollerDialog
