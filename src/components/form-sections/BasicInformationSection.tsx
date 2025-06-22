@@ -38,8 +38,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap } from '@/config/layout';
-import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
+import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, textStyleSubtle, DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
 
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
@@ -134,7 +133,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   if (uiBlock.isHeadingOnly) {
     return (
       <div className="md:col-span-2">
-        <h3 className="text-lg font-bold text-accent">{blockLabel}</h3>
+        <h3 className={textStyleSectionSubheading}>{blockLabel}</h3>
       </div>
     );
   }
@@ -152,7 +151,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
           </div>
           {commonInfoButton}
         </div>
-        {blockNote && <p className="italic text-xs text-muted-foreground">{blockNote}</p>}
+        {blockNote && <p className={cn("italic", textStyleSubtle)}>{blockNote}</p>}
       </div>
     );
   }

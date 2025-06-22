@@ -1,10 +1,11 @@
+
 'use client';
 
 import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Info, Dices, Lock, Unlock } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
@@ -25,11 +26,12 @@ import {
   textStyleSubtle,
   textStyleValueBig,
   textStyleSubLabelTitle,
-  textStyleCardTitle
+  textStyleCardTitle,
+  textStyleInput,
+  textStyleDescription
 } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
-import { parseAndRenderUIString } from '@/lib/utils';
 
 
 export interface SavingThrowsPanelProps {
@@ -149,7 +151,7 @@ const SavingThrowCard = React.memo(({
                   type="number"
                   value={localTemporaryMod}
                   onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                  className="text-center"
+                  className={textStyleInput}
                   disabled={panelIsLocked}
                 />
               </div>
@@ -277,7 +279,7 @@ const SavingThrowsPanelComponent = ({
       headerClassName="bg-muted/20"
       initialLockedState={false}
       footer={
-        <p className="text-sm text-muted-foreground">
+        <p className={textStyleDescription}>
           {parseAndRenderUIString(UI_STRINGS.savingThrowsPanelMiscModInfoNote_full, {
             badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
           })}

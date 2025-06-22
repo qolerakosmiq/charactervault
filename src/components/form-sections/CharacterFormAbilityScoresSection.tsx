@@ -26,7 +26,9 @@ import {
   textStyleSubtle,
   textStyleValueBig,
   textStyleSubLabelTitle,
-  textStyleCardTitle
+  textStyleCardTitle,
+  textStyleInput,
+  textStyleDescription
 } from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
@@ -120,11 +122,11 @@ const AbilityScoreInputGroup = React.memo((({
         <div className={cn("w-full mt-auto flex flex-col", panelFieldVerticalGap)}>
           <div className={cn("w-full", panelFieldVerticalGap)}>
             <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-            <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
+            <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={textStyleInput} disabled={panelIsLocked} />
           </div>
           <div className={cn("w-full", panelFieldVerticalGap)}>
             <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-            <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
+            <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={textStyleInput} disabled={panelIsLocked} />
           </div>
         </div>
       )}
@@ -230,7 +232,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         headerClassName="bg-muted/20"
         initialLockedState={false}
         footer={
-          <p className="text-sm text-muted-foreground">
+          <p className={textStyleDescription}>
             {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
               badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
             })}
