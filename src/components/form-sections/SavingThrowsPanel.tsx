@@ -75,7 +75,7 @@ const SavingThrowCard = React.memo(({
   else if (abilityModifier < 0) badgeColor = 'destructive';
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelGridGap)}>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center p-4", panelFieldVerticalGap)}>
       <Label className="text-md font-medium">{saveTypeLabel}</Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
@@ -94,10 +94,10 @@ const SavingThrowCard = React.memo(({
       </div>
 
       {!panelIsLocked && (
-        <div className={cn("w-full mt-auto pt-2 flex flex-col items-center", panelGridGap)}>
+        <div className={cn("w-full flex flex-col items-center", panelFieldVerticalGap)}>
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelBase}</Label>
-            <p className={cn("font-bold text-accent", textStyleValueMedium)}>{baseValue}</p>
+            <p className={cn("text-accent", textStyleValueMedium)}>{baseValue}</p>
           </div>
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
@@ -119,7 +119,7 @@ const SavingThrowCard = React.memo(({
                   type="number"
                   value={localTemporaryMod}
                   onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                  className="text-center"
+                  className="text-center h-8"
                   disabled={panelIsLocked}
                 />
               </div>
