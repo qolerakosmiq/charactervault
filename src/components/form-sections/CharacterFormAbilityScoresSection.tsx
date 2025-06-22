@@ -16,7 +16,7 @@ import { useDefinitionsStore } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleSubLabelTitle } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleSubLabelTitle, textStyleCardTitle } from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
 
@@ -90,9 +90,9 @@ const AbilityScoreInputGroup = React.memo((({
 
   return (
     <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
-      <Label htmlFor={!panelIsLocked ? `base-score-${abilityKey}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
-        <span>{ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr}</span>
-        <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === abilityKey)?.label}</span>
+      <Label htmlFor={!panelIsLocked ? `base-score-${abilityKey}` : undefined} className="text-center flex flex-col items-center">
+        <span className={textStyleCardTitle}>{ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr}</span>
+        <span className={cn(textStyleSubtle, "font-normal")}>{ABILITY_LABELS.find(al => al.id === abilityKey)?.label}</span>
       </Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{finalScore}</p>

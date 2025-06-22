@@ -13,3 +13,4 @@ export const textStyleValueMedium = "text-base font-bold";
 export const textStyleModifier = "text-xl font-bold";
 export const textStyleSubtle = "text-xs text-muted-foreground";
 export const textStyleSubLabelTitle = "text-xs font-bold";
+export const textStyleCardTitle = "text-lg text-primary-foreground font-bold";
