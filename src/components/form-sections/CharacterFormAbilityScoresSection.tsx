@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -27,9 +26,9 @@ interface AbilityScoreInputGroupProps {
   abilityKey: Exclude<AbilityName, 'none'>;
   detailedScore: DetailedAbilityScores[keyof DetailedAbilityScores];
   baseScoreValue: number;
-  onBaseScoreChange: (value: number) => void;
+  onBaseScoreChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   tempModValue: number;
-  onTempModChange: (value: number) => void;
+  onTempModChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   panelIsLocked: boolean;
   translations: {
     ABILITY_LABELS: ReturnType<typeof useI18n>['translations']['ABILITY_LABELS'],
@@ -56,6 +55,17 @@ const AbilityScoreInputGroup = ({
 
   const { ABILITY_LABELS, UI_STRINGS } = translations;
 
+  const handleDebouncedBaseScoreChange = React.useCallback((value: number) => {
+    onBaseScoreChange(abilityKey, value);
+  }, [onBaseScoreChange, abilityKey]);
+  
+  const handleDebouncedTempModChange = React.useCallback((value: number) => {
+    onTempModChange(abilityKey, value);
+  }, [onTempModChange, abilityKey]);
+
+  const [localBaseScore, setLocalBaseScore] = useDebouncedFormField(baseScoreValue, handleDebouncedBaseScoreChange, DEBOUNCE_DELAY_FORM_INPUT);
+  const [localTempMod, setLocalTempMod] = useDebouncedFormField(tempModValue, handleDebouncedTempModChange, DEBOUNCE_DELAY_FORM_INPUT);
+
   return (
     <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
       <Label htmlFor={!panelIsLocked ? `base-score-${abilityKey}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
@@ -64,24 +74,24 @@ const AbilityScoreInputGroup = ({
       </Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{detailedScore.finalScore}</p>
-        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenBreakdownDialog(abilityKey)} aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label)}><Info /></Button>
+        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenBreakdownDialog(abilityKey)} aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Detailed breakdown for {abilityName}").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Info /></Button>
       </div>
       <div className="flex flex-col items-center">
         <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
           <p className={cn(textStyleModifier, modifierColorClass)}>{finalModifier >= 0 ? '+' : ''}{finalModifier}</p>
-          <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenRollDialog(abilityKey)} aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label)}><Dices /></Button>
+          <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenRollDialog(abilityKey)} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
         </div>
       </div>
       {!panelIsLocked && (
         <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
           <div className={cn("w-full", panelFieldVerticalGap)}>
             <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-            <Input id={`base-score-${abilityKey}`} type="number" value={baseScoreValue} onChange={(e) => onBaseScoreChange(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
+            <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
           </div>
           <div className={cn("w-full", panelFieldVerticalGap)}>
             <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-            <Input id={`temp-mod-${abilityKey}`} type="number" value={tempModValue} onChange={(e) => onTempModChange(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
+            <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
           </div>
         </div>
       )}
@@ -122,34 +132,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
     pointBuyBudget: state.pointBuyBudget,
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
-
-  const handleBaseScoreChange = React.useCallback((ability: Exclude<AbilityName, 'none'>) => (value: number) => {
-    onBaseAbilityScoreChange(ability, value);
-  }, [onBaseAbilityScoreChange]);
-
-  const handleTempModChange = React.useCallback((ability: Exclude<AbilityName, 'none'>) => (value: number) => {
-    onAbilityScoreTempCustomModifierChange(ability, value);
-  }, [onAbilityScoreTempCustomModifierChange]);
-
-  const debouncedStateSetters = {
-    strength: useDebouncedFormField(abilityScoresData.abilityScores.strength, handleBaseScoreChange('strength'), DEBOUNCE_DELAY_FORM_INPUT),
-    dexterity: useDebouncedFormField(abilityScoresData.abilityScores.dexterity, handleBaseScoreChange('dexterity'), DEBOUNCE_DELAY_FORM_INPUT),
-    constitution: useDebouncedFormField(abilityScoresData.abilityScores.constitution, handleBaseScoreChange('constitution'), DEBOUNCE_DELAY_FORM_INPUT),
-    intelligence: useDebouncedFormField(abilityScoresData.abilityScores.intelligence, handleBaseScoreChange('intelligence'), DEBOUNCE_DELAY_FORM_INPUT),
-    wisdom: useDebouncedFormField(abilityScoresData.abilityScores.wisdom, handleBaseScoreChange('wisdom'), DEBOUNCE_DELAY_FORM_INPUT),
-    charisma: useDebouncedFormField(abilityScoresData.abilityScores.charisma, handleBaseScoreChange('charisma'), DEBOUNCE_DELAY_FORM_INPUT),
-  };
-
-  const debouncedTempModSetters = {
-    strength: useDebouncedFormField(abilityScoresData.abilityScoreTempCustomModifiers?.strength, handleTempModChange('strength'), DEBOUNCE_DELAY_FORM_INPUT),
-    dexterity: useDebouncedFormField(abilityScoresData.abilityScoreTempCustomModifiers?.dexterity, handleTempModChange('dexterity'), DEBOUNCE_DELAY_FORM_INPUT),
-    constitution: useDebouncedFormField(abilityScoresData.abilityScoreTempCustomModifiers?.constitution, handleTempModChange('constitution'), DEBOUNCE_DELAY_FORM_INPUT),
-    intelligence: useDebouncedFormField(abilityScoresData.abilityScoreTempCustomModifiers?.intelligence, handleTempModChange('intelligence'), DEBOUNCE_DELAY_FORM_INPUT),
-    wisdom: useDebouncedFormField(abilityScoresData.abilityScoreTempCustomModifiers?.wisdom, handleTempModChange('wisdom'), DEBOUNCE_DELAY_FORM_INPUT),
-    charisma: useDebouncedFormField(abilityScoresData.abilityScoreTempCustomModifiers?.charisma, handleTempModChange('charisma'), DEBOUNCE_DELAY_FORM_INPUT),
-  };
-
-
+  
   const handleApplyRolledScores = React.useCallback((newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
     setIsRollerDialogOpen(false);
@@ -162,16 +145,17 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
   const handleOpenRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
     if (!detailedAbilityScores || !translations) return;
+
     const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.id === ability);
     const abilityName = abilityLabelInfo?.label;
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
 
     const breakdown: GenericBreakdownItem[] = [
-      { label: translations.UI_STRINGS.rollDialogAbilityModifierLabel.replace("{abilityAbbr}", abilityLabelInfo?.abbr || ability.toUpperCase().substring(0,3)), value: finalModifier, isBold: true }
+      { label: (translations.UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", abilityLabelInfo?.abbr || ability.toUpperCase().substring(0,3)), value: finalModifier, isBold: true }
     ];
 
     setRollAbilityDialogData({
-      dialogTitle: translations.UI_STRINGS.rollDialogTitleAbilityCheck.replace("{abilityName}", abilityName || ''),
+      dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName || ''),
       rollType: `ability_check_${ability}`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
@@ -186,13 +170,15 @@ const CharacterFormAbilityScoresSectionComponent = ({
     // This is a no-op currently, but could be used to show a toast or log the result.
   }, []);
 
-  if (translationsLoading || !translations || !detailedAbilityScores) {
+  const translationSubsetForChild = React.useMemo(() => {
+    if (!translations) return null;
+    return { ABILITY_LABELS: translations.ABILITY_LABELS, UI_STRINGS: translations.UI_STRINGS };
+  }, [translations]);
+
+  if (translationsLoading || !translations || !detailedAbilityScores || !translationSubsetForChild) {
     return null;
   }
-  const { ABILITY_LABELS, UI_STRINGS } = translations;
-
-  const translationSubsetForChild = { ABILITY_LABELS, UI_STRINGS };
-
+  const { UI_STRINGS } = translations;
 
   return (
     <>
@@ -217,10 +203,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 key={ability}
                 abilityKey={ability}
                 detailedScore={detailedAbilityScores[ability]}
-                baseScoreValue={debouncedStateSetters[ability][0]}
-                onBaseScoreChange={debouncedStateSetters[ability][1]}
-                tempModValue={debouncedTempModSetters[ability][0]}
-                onTempModChange={debouncedTempModSetters[ability][1]}
+                baseScoreValue={abilityScoresData.abilityScores[ability]}
+                onBaseScoreChange={onBaseAbilityScoreChange}
+                tempModValue={abilityScoresData.abilityScoreTempCustomModifiers[ability]}
+                onTempModChange={onAbilityScoreTempCustomModifierChange}
                 panelIsLocked={panelIsLocked}
                 translations={translationSubsetForChild}
                 onOpenBreakdownDialog={onOpenAbilityScoreBreakdownDialog}
