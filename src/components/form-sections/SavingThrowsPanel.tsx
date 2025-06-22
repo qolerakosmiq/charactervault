@@ -77,52 +77,52 @@ const SavingThrowCard = React.memo(({
 
   return (
     <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
-        <Label className="text-center text-md font-medium">{saveTypeLabel}</Label>
-        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-            <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
-            <Button
-              type="button" variant="ghost" size="icon-xs"
-              className="text-muted-foreground hover:text-primary self-center"
-              onClick={() => onOpenInfoDialog(saveType)}
-              aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
-            > <Info /> </Button>
-            <Button
-              type="button" variant="ghost" size="icon-xs"
-              className="text-muted-foreground hover:text-primary self-center"
-              onClick={() => onOpenRollDialog(saveType)}
-              aria-label={(uiStrings.rollDialogSavingThrowAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
-            > <Dices /> </Button>
-        </div>
+      <Label className="text-center text-md font-medium">{saveTypeLabel}</Label>
+      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+        <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
+        <Button
+          type="button" variant="ghost" size="icon-xs"
+          className="text-muted-foreground hover:text-primary self-center"
+          onClick={() => onOpenInfoDialog(saveType)}
+          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+        > <Info /> </Button>
+        <Button
+          type="button" variant="ghost" size="icon-xs"
+          className="text-muted-foreground hover:text-primary self-center"
+          onClick={() => onOpenRollDialog(saveType)}
+          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+        > <Dices /> </Button>
+      </div>
 
-        {!panelIsLocked && (
-            <div className={cn("mt-auto flex flex-col pt-2", panelFieldVerticalGap)}>
-                <div className="flex justify-between items-center text-sm">
-                    <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelBase}</Label>
-                    <p className="font-semibold">{baseValue}</p>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                    <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-                    <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                    <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
-                    <p className="font-semibold">{renderModifierValue(miscBonus)}</p>
-                </div>
-                <div className="flex justify-between items-center text-sm">
-                    <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubtle}>
-                        {uiStrings.savingThrowsRowLabelTemporaryModifier}
-                    </Label>
-                    <Input
-                        id={`temp-mod-${saveType}`}
-                        type="number"
-                        value={localTemporaryMod}
-                        onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                        className="h-8 w-20 text-center"
-                        disabled={panelIsLocked}
-                    />
-                </div>
-            </div>
-        )}
+      {!panelIsLocked && (
+        <div className={cn("w-full mt-auto pt-2 space-y-4 text-center")}>
+          <div className="space-y-1">
+            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelBase}</Label>
+            <p className="font-semibold text-lg">{renderModifierValue(baseValue)}</p>
+          </div>
+          <div className="space-y-1">
+            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+            <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
+          </div>
+          <div className="space-y-1">
+            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
+            <p className="font-semibold text-lg">{renderModifierValue(miscBonus)}</p>
+          </div>
+          <div className="space-y-1">
+            <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubtle}>
+              {uiStrings.savingThrowsRowLabelTemporaryModifier}
+            </Label>
+            <Input
+              id={`temp-mod-${saveType}`}
+              type="number"
+              value={localTemporaryMod}
+              onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
+              className="h-8 w-20 text-center mx-auto"
+              disabled={panelIsLocked}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 });
@@ -178,7 +178,7 @@ const SavingThrowsPanelComponent = ({
     const totalModifier = breakdown.reduce((sum, item) => sum + (typeof item.value === 'number' ? item.value : 0), 0);
 
     onOpenRollDialog({
-      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
+      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow).replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
       rollType: `saving_throw_${saveType}`,
       baseModifier: totalModifier,
       calculationBreakdown: breakdown,
