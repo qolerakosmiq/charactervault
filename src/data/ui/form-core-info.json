@@ -14,16 +14,7 @@
   "hitDiceBadgeLabel": { "en": "HD", "fr": "DV" },
   "favoredEnemySlotsAvailableShort": { "en": "{slots} Slot(s)", "fr": "{slots} Emplacement(s)"},
   "favoredEnemyBonusDisplayInfo": { "en": "Bonuses vs Favored Enemies: +{skillBonus} to skills (Bluff, Listen, Sense Motive, Spot, Survival), +{damageBonus} to damage.", "fr": "Bonus vs Ennemis Jurés : +{skillBonus} aux compétences (Bluff, Perception auditive, Psychologie, Détection, Survie), +{damageBonus} aux dégâts." },
-  "toastAlignmentAutoChangedTitle": { "en": "Alignment Updated", "fr": "Alignement mis à jour" },
-  "toastAlignmentAutoChangedDesc": { "en": "Your alignment was changed to '{newAlignment}' to be compatible with the {className} class restrictions.", "fr": "Votre alignement a été changé en '{newAlignment}' pour être compatible avec les restrictions de la classe {className}." },
-  "toastInvalidDeityForClassTitle": { "en": "Invalid Deity Choice", "fr": "Choix de Divinité Invalide" },
-  "toastInvalidDeityForClassDesc": { "en": "The deity '{deityName}' is not compatible with the alignment restrictions of the {className} class.", "fr": "La divinité '{deityName}' n'est pas compatible avec les restrictions d'alignement de la classe {className}." },
-  "toastInvalidDeityForAlignmentTitle": { "en": "Deity Alignment Mismatch", "fr": "Désaccord d'Alignement de Divinité" },
-  "toastInvalidDeityForAlignmentDesc": { "en": "The deity '{deityName}' is not compatible with your character's alignment '{alignment}'.", "fr": "La divinité '{deityName}' n'est pas compatible avec l'alignement de votre personnage '{alignment}'." },
   "ageCategoryBadgeLabel": { "en": "Age Cat.", "fr": "Cat. Âge" },
   "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" },
   "abilityUsesPoolPlaceholder": { "en": "Pool", "fr": "Réserve" }
 }
-    
-    
-
