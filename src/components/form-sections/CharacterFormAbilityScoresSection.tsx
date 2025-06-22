@@ -219,11 +219,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
         headerClassName="bg-muted/20"
         initialLockedState={false}
         footer={
-            <p className="text-sm text-muted-foreground">
-              {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
-                badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
-              })}
-            </p>
+          <p className="text-sm text-muted-foreground">
+            {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
+              badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+            })}
+          </p>
         }
       >
         {({ isLocked: panelIsLocked }) => (
