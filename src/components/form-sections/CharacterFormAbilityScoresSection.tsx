@@ -170,6 +170,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
         icon={Dices}
         headerClassName="bg-muted/20"
         initialLockedState={false}
+        footer={
+          <p className="text-sm text-muted-foreground">
+            {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full)}
+          </p>
+        }
       >
         {({ isLocked: panelIsLocked }) => (
           <>
@@ -261,20 +266,14 @@ const CharacterFormAbilityScoresSectionComponent = ({
             </div>
 
             {!panelIsLocked && (
-              <>
-                <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4 mb-2">
-                    <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} disabled={panelIsLocked}>
-                        <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton}
-                    </Button>
-                    <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} disabled={panelIsLocked}>
-                        <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton}
-                    </Button>
-                </div>
-                
-                <p className="text-sm text-muted-foreground mt-4 pt-2 border-t border-border/30">
-                  {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full)}
-                </p>
-              </>
+              <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4">
+                  <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} disabled={panelIsLocked}>
+                      <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton}
+                  </Button>
+                  <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} disabled={panelIsLocked}>
+                      <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton}
+                  </Button>
+              </div>
             )}
           </>
         )}

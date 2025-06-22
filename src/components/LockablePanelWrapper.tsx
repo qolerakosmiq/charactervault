@@ -1,7 +1,7 @@
 'use client';
 
 import *as React from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -19,6 +19,7 @@ interface LockablePanelWrapperProps {
   cardContentClassName?: string;
   headerClassName?: string;
   headerActions?: ((isPanelLocked: boolean) => React.ReactNode) | React.ReactNode;
+  footer?: React.ReactNode;
 }
 
 const LockablePanelWrapperComponent = ({
@@ -32,6 +33,7 @@ const LockablePanelWrapperComponent = ({
   cardContentClassName,
   headerClassName,
   headerActions,
+  footer,
 }: LockablePanelWrapperProps) => {
   const [isLocked, setIsLocked] = React.useState(initialLockedState);
   const { translations } = useI18n();
@@ -84,6 +86,11 @@ const LockablePanelWrapperComponent = ({
       <CardContent className={cn(panelContentPadding, cardContentClassName)}>
         {typeof children === 'function' ? children({ isLocked }) : children}
       </CardContent>
+      {footer && (
+        <CardFooter className={cn("bg-muted/20 border-t", panelHeaderPadding)}>
+          {footer}
+        </CardFooter>
+      )}
     </Card>
   );
 };
