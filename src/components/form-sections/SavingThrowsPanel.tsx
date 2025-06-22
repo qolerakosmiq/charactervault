@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Info, Dices } from 'lucide-react';
-import { cn, parseAndRenderUIString } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
@@ -15,7 +15,7 @@ import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelGridGap, panelBadgeGroupGap, textStyleModifier, textStyleSubtle, textStyleValueBig, panelFieldVerticalGap } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelGridGap, textStyleSubtle, textStyleValueBig, panelFieldVerticalGap } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 
@@ -44,6 +44,7 @@ interface SavingThrowCardProps {
   onOpenInfoDialog: (saveType: SavingThrowType) => void;
   onOpenRollDialog: (saveType: SavingThrowType) => void;
   uiStrings: Record<string, string>;
+  translations: ReturnType<typeof useI18n>['translations'];
 }
 
 const SavingThrowCard = React.memo(({
@@ -60,6 +61,7 @@ const SavingThrowCard = React.memo(({
   onOpenInfoDialog,
   onOpenRollDialog,
   uiStrings,
+  translations,
 }: SavingThrowCardProps) => {
 
   const handleDebouncedChange = React.useCallback((value: number) => {
@@ -73,42 +75,63 @@ const SavingThrowCard = React.memo(({
   let badgeColor: DualBadgeProps['color'] = 'default';
   if (abilityModifier > 0) badgeColor = 'emerald';
   else if (abilityModifier < 0) badgeColor = 'destructive';
+  
+  const { UI_STRINGS } = translations || { UI_STRINGS: {} };
+
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelGridGap)}>
-      <Label className="text-md font-medium">{saveTypeLabel}</Label>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+      {/* Title */}
+      <Label className="text-center text-md font-medium flex flex-col items-center">
+        <span>{saveTypeLabel}</span>
+      </Label>
+      
+      {/* Base Value + Info Button */}
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-        <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
+        <p className="text-lg font-bold text-accent">{baseValue}</p>
         <Button
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenInfoDialog(saveType)}
-          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel || "Detailed breakdown for {saveTypeLabel} save").replace("{saveTypeLabel}", saveTypeLabel)}
-        > <Info /> </Button>
-        <Button
-          type="button" variant="ghost" size="icon-xs"
-          className="text-muted-foreground hover:text-primary self-center"
-          onClick={() => onOpenRollDialog(saveType)}
-          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
-        > <Dices /> </Button>
+          aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Detailed breakdown for {saveTypeLabel} save").replace("{saveTypeLabel}", saveTypeLabel)}
+        >
+          <Info />
+        </Button>
+      </div>
+
+      {/* Final Modifier + Roll Button */}
+      <div className="flex flex-col items-center">
+        <Label className={cn(textStyleSubtle, "font-bold")}>{UI_STRINGS.infoDialogFinalModifierLabel || "Final Modifier"}</Label>
+        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+          <p className={cn(textStyleValueBig, 'text-center')}>{renderModifierValue(totalValue)}</p>
+          <Button
+            type="button" variant="ghost" size="icon-xs"
+            className="text-muted-foreground hover:text-primary self-center"
+            onClick={() => onOpenRollDialog(saveType)}
+            aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
+          >
+            <Dices />
+          </Button>
+        </div>
       </div>
 
       {!panelIsLocked && (
-        <div className={cn("w-full flex flex-col items-center", panelFieldVerticalGap)}>
-          <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelBase}</Label>
-            <p className={cn("font-bold text-accent")}>{baseValue}</p>
-          </div>
+        <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
+          {/* Ability Modifier */}
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
             <DualBadge leftLabel={abilityAbbr} rightLabel={`${abilityModifier >= 0 ? '+' : ''}${abilityModifier}`} color={badgeColor} />
           </div>
+
+          {/* Misc Modifier */}
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={cn(textStyleSubtle, "font-bold")}>
               {uiStrings.savingThrowsRowLabelMiscModifier}
             </Label>
             <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
           </div>
+          
+          {/* Temporary Modifier Input */}
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
               <Label htmlFor={`temp-mod-${saveType}`} className={cn("font-bold", textStyleSubtle)}>
                 {uiStrings.savingThrowsRowLabelTemporaryModifier}
@@ -246,6 +269,7 @@ const SavingThrowsPanelComponent = ({
                 onOpenInfoDialog={handleOpenInfo}
                 onOpenRollDialog={handleOpenSavingThrowRollDialog}
                 uiStrings={UI_STRINGS}
+                translations={translations}
               />
             );
           })}
