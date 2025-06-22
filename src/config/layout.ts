@@ -12,3 +12,4 @@ export const textStyleValueBig = "text-lg font-bold text-accent text-center";
 export const textStyleValueMedium = "text-base font-bold";
 export const textStyleModifier = "text-xl font-bold";
 export const textStyleSubtle = "text-xs text-muted-foreground";
+export const textStyleSubLabelTitle = "text-xs font-bold";

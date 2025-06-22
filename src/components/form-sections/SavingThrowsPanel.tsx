@@ -15,7 +15,7 @@ import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, textStyleSubtle, panelFieldVerticalGap, panelGridGap, textStyleValueMedium } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, textStyleSubtle, panelFieldVerticalGap, panelGridGap, textStyleValueMedium, textStyleSubLabelTitle } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 
@@ -79,7 +79,7 @@ const SavingThrowCard = React.memo(({
   const { UI_STRINGS } = translations || { UI_STRINGS: {} };
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelGridGap)}>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
       <Label className="text-center text-md font-medium flex flex-col items-center">
         <span>{saveTypeLabel}</span>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
@@ -96,9 +96,9 @@ const SavingThrowCard = React.memo(({
       </Label>
 
       <div className="flex flex-col items-center">
-        <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
+        <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-          <p className={cn('text-xl font-bold', 'text-center')}>{renderModifierValue(totalValue)}</p>
+          <p className={cn(textStyleValueMedium, 'text-center')}>{renderModifierValue(totalValue)}</p>
            <Button
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
@@ -113,19 +113,19 @@ const SavingThrowCard = React.memo(({
       {!panelIsLocked && (
         <div className={cn("w-full mt-auto flex flex-col", panelGridGap)}>
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+            <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
             <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
           </div>
 
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-            <Label className={cn(textStyleSubtle, "font-bold")}>
+            <Label className={textStyleSubLabelTitle}>
               {uiStrings.savingThrowsRowLabelMiscModifier}
             </Label>
             <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
           </div>
           
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-              <Label htmlFor={`temp-mod-${saveType}`} className={cn("font-bold", textStyleSubtle)}>
+              <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubLabelTitle}>
                 {uiStrings.savingThrowsRowLabelTemporaryModifier}
               </Label>
               <div className="flex justify-center w-full">

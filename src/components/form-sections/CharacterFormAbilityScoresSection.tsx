@@ -16,7 +16,7 @@ import { useDefinitionsStore } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleValueMedium } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleSubLabelTitle } from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
 
@@ -99,7 +99,7 @@ const AbilityScoreInputGroup = React.memo((({
         <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleOpenBreakdown} aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Info /></Button>
       </div>
       <div className="flex flex-col items-center">
-        <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
+        <Label className={textStyleSubLabelTitle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
           <p className={cn(modifierColorClass, "self-center")}>{finalModifier >= 0 ? '+' : ''}{finalModifier}</p>
           <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleTriggerRoll} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel).replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
@@ -108,11 +108,11 @@ const AbilityScoreInputGroup = React.memo((({
       {!panelIsLocked && (
         <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
           <div className={cn("w-full", panelFieldVerticalGap)}>
-            <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
+            <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
             <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
           </div>
           <div className={cn("w-full", panelFieldVerticalGap)}>
-            <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
+            <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
             <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className="text-base text-center" disabled={panelIsLocked} />
           </div>
         </div>
@@ -176,7 +176,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
       if (!detailedAbilityScores || !translations) return;
 
       const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.id === abilityForRollDialog);
-      const abilityName = abilityLabelInfo?.label;
+      const abilityName = abilityLabelInfo?.label || abilityForRollDialog;
       const finalModifier = calculateAbilityModifier(detailedAbilityScores[abilityForRollDialog].finalScore);
 
       const breakdown: GenericBreakdownItem[] = [
