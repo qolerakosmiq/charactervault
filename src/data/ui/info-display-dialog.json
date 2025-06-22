@@ -46,6 +46,7 @@
   "synergyTextPart4BonusToTargetSkillStart": { "en": " bonus to ", "fr": " bonus à " },
   "synergyTextPart4BonusToTargetSkillEnd": { "en": ".", "fr": "." },
   "synergyTextPart1Received": { "en": ", with ", "fr": ", avec " },
-  "synergyTextPart4BonusToThisSkill": { "en": " bonus to this skill.", "fr": " bonus à cette compétence." }
+  "synergyTextPart4BonusToThisSkill": { "en": " bonus to this skill.", "fr": " bonus à cette compétence." },
+  "rollDialogSavingThrowAriaLabel": { "en": "Roll {saveTypeLabel} Save", "fr": "Lancer un jet de {saveTypeLabel}" }
 }
     

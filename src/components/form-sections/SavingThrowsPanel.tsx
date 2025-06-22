@@ -84,29 +84,31 @@ const SavingThrowCard = React.memo(({
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenInfoDialog(saveType)}
-          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel || "Detailed breakdown for {saveTypeLabel} save").replace("{saveTypeLabel}", saveTypeLabel)}
         > <Info /> </Button>
         <Button
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenRollDialog(saveType)}
-          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
         > <Dices /> </Button>
       </div>
 
       {!panelIsLocked && (
-        <div className={cn("w-full mt-auto pt-2 space-y-4 text-center")}>
+        <div className="w-full mt-auto pt-2 space-y-2 text-center">
           <div className="space-y-1">
             <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelBase}</Label>
-            <p className="font-semibold text-lg">{renderModifierValue(baseValue)}</p>
+            <p className="font-bold text-accent text-lg">{baseValue}</p>
           </div>
           <div className="space-y-1">
             <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-            <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
+            <div className="flex justify-center">
+              <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
+            </div>
           </div>
           <div className="space-y-1">
             <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
-            <p className="font-semibold text-lg">{renderModifierValue(miscBonus)}</p>
+            <p className="font-semibold">{renderModifierValue(miscBonus)}</p>
           </div>
           <div className="space-y-1">
             <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubtle}>
@@ -117,7 +119,7 @@ const SavingThrowCard = React.memo(({
               type="number"
               value={localTemporaryMod}
               onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-              className="h-8 w-20 text-center mx-auto"
+              className="h-8 w-20 text-center mx-auto text-base"
               disabled={panelIsLocked}
             />
           </div>
@@ -168,7 +170,7 @@ const SavingThrowsPanelComponent = ({
     
     const breakdown: GenericBreakdownItem[] = [
       { label: UI_STRINGS.savingThrowsRowLabelBase, value: baseSaves[saveType] },
-      { label: (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
+      { label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
     ];
     const miscBonus = calculateCalculatedTotalMiscBonusForSave(saveType);
     if(miscBonus !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier, value: miscBonus });

@@ -10,6 +10,6 @@
   "savingThrowsRowLabelMiscModifier": { "en": "Misc Modifier", "fr": "Mod. Divers" },
   "savingThrowsRowLabelTemporaryModifier": { "en": "Temporary Modifier", "fr": "Mod. Temporaire" },
   "savingThrowsFeatsModifierLabel": { "en": "Feats Modifiers", "fr": "Modificateurs de Dons" },
-  "savingThrowsPanelMiscModInfoNote_full": { "en": "<b>Note:</b> The <badge outline>Misc Modifier</badge> line includes bonuses from magic items, active feats, and other persistent effects.", "fr": "<b>Note :</b> La ligne <badge outline>Modificateur Divers</badge> inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." }
+  "savingThrowsPanelMiscModInfoNote_full": { "en": "<b>Note:</b> The <badge>Misc Modifier</badge> line includes bonuses from magic items, active feats, and other persistent effects.", "fr": "<b>Note :</b> La ligne <badge>Modificateur Divers</badge> inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." }
 }
     
