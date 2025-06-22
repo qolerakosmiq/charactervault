@@ -65,6 +65,15 @@ const AbilityScoreInputGroup = ({
 
   const [localBaseScore, setLocalBaseScore] = useDebouncedFormField(baseScoreValue, handleDebouncedBaseScoreChange, DEBOUNCE_DELAY_FORM_INPUT);
   const [localTempMod, setLocalTempMod] = useDebouncedFormField(tempModValue, handleDebouncedTempModChange, DEBOUNCE_DELAY_FORM_INPUT);
+  
+  const handleOpenBreakdown = React.useCallback(() => {
+    onOpenBreakdownDialog(abilityKey);
+  }, [onOpenBreakdownDialog, abilityKey]);
+  
+  const handleOpenRoll = React.useCallback(() => {
+    onOpenRollDialog(abilityKey);
+  }, [onOpenRollDialog, abilityKey]);
+
 
   return (
     <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
@@ -74,13 +83,13 @@ const AbilityScoreInputGroup = ({
       </Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{detailedScore.finalScore}</p>
-        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenBreakdownDialog(abilityKey)} aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Detailed breakdown for {abilityName}").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Info /></Button>
+        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleOpenBreakdown} aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Detailed breakdown for {abilityName}").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Info /></Button>
       </div>
       <div className="flex flex-col items-center">
         <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
           <p className={cn(textStyleModifier, modifierColorClass)}>{finalModifier >= 0 ? '+' : ''}{finalModifier}</p>
-          <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={() => onOpenRollDialog(abilityKey)} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
+          <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleOpenRoll} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
         </div>
       </div>
       {!panelIsLocked && (
