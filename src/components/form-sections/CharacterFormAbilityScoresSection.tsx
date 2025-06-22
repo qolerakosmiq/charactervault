@@ -54,7 +54,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
     pointBuyBudget: state.pointBuyBudget,
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
-
+  
   const [str, setStr] = useDebouncedFormField(
     abilityScoresData.abilityScores.strength,
     React.useCallback((value: number) => onBaseAbilityScoreChange('strength', value), [onBaseAbilityScoreChange]),
@@ -120,7 +120,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
     React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('charisma', value), [onAbilityScoreTempCustomModifierChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
-
 
   const handleApplyRolledScores = React.useCallback((newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
@@ -190,7 +189,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         }
       >
         {({ isLocked: panelIsLocked }) => (
-          <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-strength` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'strength')?.abbr}</span>
@@ -366,30 +365,29 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 )}
               </div>
             
-            {/* Generator Buttons */}
             {!panelIsLocked && (
-              <Button
-                type="button"
-                variant="outline"
-                size="default"
-                onClick={() => setIsRollerDialogOpen(true)}
-                disabled={panelIsLocked}
-                className="w-full sm:col-start-2 lg:col-start-5"
-              >
-                <Dices /> {UI_STRINGS.abilityScoresRollButton}
-              </Button>
-            )}
-            {!panelIsLocked && (
-              <Button
-                type="button"
-                variant="outline"
-                size="default"
-                onClick={() => setIsPointBuyDialogOpen(true)}
-                disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
-                className="w-full"
-              >
-                <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
-              </Button>
+              <>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="default"
+                  onClick={() => setIsRollerDialogOpen(true)}
+                  disabled={panelIsLocked}
+                  className="w-full sm:col-start-2 lg:col-start-5"
+                >
+                  <Dices /> {UI_STRINGS.abilityScoresRollButton}
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="default"
+                  onClick={() => setIsPointBuyDialogOpen(true)}
+                  disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
+                  className="w-full"
+                >
+                  <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
+                </Button>
+              </>
             )}
           </div>
         )}
