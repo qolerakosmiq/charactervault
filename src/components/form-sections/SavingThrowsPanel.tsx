@@ -76,7 +76,7 @@ const SavingThrowCard = React.memo(({
   else if (abilityModifier < 0) badgeColor = 'destructive';
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center", panelContentPadding, panelFieldVerticalGap)}>
       <Label className="text-center text-md font-medium">{saveTypeLabel}</Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
@@ -96,21 +96,21 @@ const SavingThrowCard = React.memo(({
 
       {!panelIsLocked && (
         <div className="w-full mt-auto pt-2 space-y-2 text-center">
-          <div className="space-y-1">
+          <div className={cn("space-y-0.5", panelFieldVerticalGap)}>
             <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelBase}</Label>
-            <p className="font-bold text-accent text-lg">{baseValue}</p>
+            <p className="font-bold text-accent">{baseValue}</p>
           </div>
-          <div className="space-y-1">
+          <div className={cn("space-y-0.5", panelFieldVerticalGap)}>
             <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
             <div className="flex justify-center">
               <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
             </div>
           </div>
-          <div className="space-y-1">
+          <div className={cn("space-y-0.5", panelFieldVerticalGap)}>
             <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
-            <p className="font-semibold">{renderModifierValue(miscBonus)}</p>
+            <p className={cn("font-semibold", textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
           </div>
-          <div className="space-y-1">
+          <div className={cn("space-y-0.5", panelFieldVerticalGap)}>
             <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubtle}>
               {uiStrings.savingThrowsRowLabelTemporaryModifier}
             </Label>
@@ -126,7 +126,7 @@ const SavingThrowCard = React.memo(({
         </div>
       )}
     </div>
-  );
+  )
 });
 SavingThrowCard.displayName = 'SavingThrowCard';
 
