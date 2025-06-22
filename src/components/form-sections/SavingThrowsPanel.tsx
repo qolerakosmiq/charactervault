@@ -85,7 +85,7 @@ const SavingThrowCard = React.memo(({
     <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
        <Label className="text-center flex flex-col items-center gap-1">
         <span className={textStyleCardTitle}>{saveTypeLabel}</span>
-        <div className="flex items-center justify-center">
+        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
             <p className="text-lg font-bold text-accent text-center">{baseValue}</p>
             <Button
             type="button" variant="ghost" size="icon-xs"
@@ -189,7 +189,7 @@ const SavingThrowsPanelComponent = ({
     
     const breakdown: GenericBreakdownItem[] = [
       { label: UI_STRINGS.savingThrowsRowLabelBase, value: baseSaves[saveType] },
-      { label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
+      { label: (UI_STRINGS.rollDialogAbilityModifierLabel || "").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
     ];
     const miscBonus = calculateCalculatedTotalMiscBonusForSave(saveType);
     if(miscBonus !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier, value: miscBonus });
