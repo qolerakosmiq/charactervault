@@ -18,7 +18,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, textStyleValueBig, textStyleValueMedium, textStyleSubtle, panelBadgeGroupGap } from '@/config/layout';
+import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, textStyleValueBig, textStyleValueMedium, textStyleSubtle } from '@/config/layout';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -134,7 +134,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
         icon={Dices}
         headerClassName="bg-muted/20"
         initialLockedState={false}
-        cardContentClassName="space-y-4"
         footer={
           <p className="text-sm text-muted-foreground">
             {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full)}
@@ -158,7 +157,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
 
                 return (
-                  <div key={ability} className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelBadgeGroupGap)}>
+                  <div key={ability} className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                     <Label htmlFor={!panelIsLocked ? `base-score-${ability}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                       <span>{abilityAbbr}</span>
                       <span className={textStyleSubtle}>{abilityDisplayName}</span>
@@ -232,7 +231,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
             {!panelIsLocked && (
               <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
-                <div className="sm:col-start-2 lg:col-start-5">
+                <div className="lg:col-start-5">
                   <Button
                       type="button"
                       variant="outline"
@@ -250,7 +249,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                       variant="outline"
                       size="default"
                       onClick={() => setIsPointBuyDialogOpen(true)}
-                      disabled={panelIsLocked}
+                      disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
                       className="w-full"
                   >
                       <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
