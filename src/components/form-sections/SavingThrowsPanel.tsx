@@ -76,7 +76,7 @@ const SavingThrowCard = React.memo(({
   else if (abilityModifier < 0) badgeColor = 'destructive';
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center", panelContentPadding, panelFieldVerticalGap)}>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center", panelContentPadding, "gap-y-2")}>
       <Label className="text-center text-md font-medium">{saveTypeLabel}</Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
@@ -84,44 +84,46 @@ const SavingThrowCard = React.memo(({
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenInfoDialog(saveType)}
-          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel || "Detailed breakdown for {saveTypeLabel} save").replace("{saveTypeLabel}", saveTypeLabel)}
+          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
         > <Info /> </Button>
         <Button
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenRollDialog(saveType)}
-          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
+          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
         > <Dices /> </Button>
       </div>
 
       {!panelIsLocked && (
         <div className="w-full mt-auto pt-2 space-y-2 text-center">
-          <div className={cn("space-y-0.5", panelFieldVerticalGap)}>
-            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelBase}</Label>
+          <div className="space-y-1">
+            <Label className="font-bold text-sm">{uiStrings.savingThrowsRowLabelBase}</Label>
             <p className="font-bold text-accent">{baseValue}</p>
           </div>
-          <div className={cn("space-y-0.5", panelFieldVerticalGap)}>
-            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+          <div className="space-y-1">
+            <Label className="font-bold text-sm">{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
             <div className="flex justify-center">
               <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
             </div>
           </div>
-          <div className={cn("space-y-0.5", panelFieldVerticalGap)}>
-            <Label className={textStyleSubtle}>{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
-            <p className={cn("font-semibold", textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
+          <div className="space-y-1">
+            <Label className="font-bold text-sm">{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
+            <p className={cn("font-semibold text-xs text-muted-foreground")}>{renderModifierValue(miscBonus)}</p>
           </div>
-          <div className={cn("space-y-0.5", panelFieldVerticalGap)}>
-            <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubtle}>
+          <div className="space-y-1">
+            <Label htmlFor={`temp-mod-${saveType}`} className="font-bold text-sm">
               {uiStrings.savingThrowsRowLabelTemporaryModifier}
             </Label>
-            <Input
-              id={`temp-mod-${saveType}`}
-              type="number"
-              value={localTemporaryMod}
-              onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-              className="h-8 w-20 text-center mx-auto text-base"
-              disabled={panelIsLocked}
-            />
+            <div className="flex justify-center">
+                <Input
+                id={`temp-mod-${saveType}`}
+                type="number"
+                value={localTemporaryMod}
+                onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
+                className="w-24 text-center"
+                disabled={panelIsLocked}
+                />
+            </div>
           </div>
         </div>
       )}
