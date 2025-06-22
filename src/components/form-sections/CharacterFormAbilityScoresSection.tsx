@@ -189,8 +189,9 @@ const CharacterFormAbilityScoresSectionComponent = ({
         }
       >
         {({ isLocked: panelIsLocked }) => (
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-strength` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'strength')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'strength')?.label}</span>
@@ -219,7 +220,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-dexterity` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'dexterity')?.label}</span>
@@ -248,7 +249,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-constitution` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'constitution')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'constitution')?.label}</span>
@@ -277,7 +278,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-intelligence` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'intelligence')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'intelligence')?.label}</span>
@@ -306,7 +307,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-wisdom` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'wisdom')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'wisdom')?.label}</span>
@@ -335,7 +336,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-charisma` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'charisma')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'charisma')?.label}</span>
@@ -364,16 +365,17 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
+            </div>
             
             {!panelIsLocked && (
-              <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
                 <Button
                   type="button"
                   variant="outline"
                   size="default"
                   onClick={() => setIsRollerDialogOpen(true)}
                   disabled={panelIsLocked}
-                  className="w-full sm:col-start-2 lg:col-start-5"
+                  className="w-full lg:col-start-5"
                 >
                   <Dices /> {UI_STRINGS.abilityScoresRollButton}
                 </Button>
@@ -387,9 +389,9 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 >
                   <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
                 </Button>
-              </>
+              </div>
             )}
-          </div>
+          </>
         )}
       </LockablePanelWrapper>
       <AbilityScoreRollerDialog
