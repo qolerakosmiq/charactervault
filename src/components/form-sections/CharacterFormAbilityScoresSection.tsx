@@ -56,67 +56,67 @@ const CharacterFormAbilityScoresSectionComponent = ({
   }));
 
   const [str, setStr] = useDebouncedFormField(
-    abilityScoresData.abilityScores.strength || 0,
+    abilityScoresData.abilityScores.strength,
     React.useCallback((value: number) => onBaseAbilityScoreChange('strength', value), [onBaseAbilityScoreChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [strMod, setStrMod] = useDebouncedFormField(
-    abilityScoresData.abilityScoreTempCustomModifiers?.strength || 0,
+    abilityScoresData.abilityScoreTempCustomModifiers?.strength,
     React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('strength', value), [onAbilityScoreTempCustomModifierChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [dex, setDex] = useDebouncedFormField(
-    abilityScoresData.abilityScores.dexterity || 0,
+    abilityScoresData.abilityScores.dexterity,
     React.useCallback((value: number) => onBaseAbilityScoreChange('dexterity', value), [onBaseAbilityScoreChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [dexMod, setDexMod] = useDebouncedFormField(
-    abilityScoresData.abilityScoreTempCustomModifiers?.dexterity || 0,
+    abilityScoresData.abilityScoreTempCustomModifiers?.dexterity,
     React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('dexterity', value), [onAbilityScoreTempCustomModifierChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [con, setCon] = useDebouncedFormField(
-    abilityScoresData.abilityScores.constitution || 0,
+    abilityScoresData.abilityScores.constitution,
     React.useCallback((value: number) => onBaseAbilityScoreChange('constitution', value), [onBaseAbilityScoreChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [conMod, setConMod] = useDebouncedFormField(
-    abilityScoresData.abilityScoreTempCustomModifiers?.constitution || 0,
+    abilityScoresData.abilityScoreTempCustomModifiers?.constitution,
     React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('constitution', value), [onAbilityScoreTempCustomModifierChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [int, setInt] = useDebouncedFormField(
-    abilityScoresData.abilityScores.intelligence || 0,
+    abilityScoresData.abilityScores.intelligence,
     React.useCallback((value: number) => onBaseAbilityScoreChange('intelligence', value), [onBaseAbilityScoreChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [intMod, setIntMod] = useDebouncedFormField(
-    abilityScoresData.abilityScoreTempCustomModifiers?.intelligence || 0,
+    abilityScoresData.abilityScoreTempCustomModifiers?.intelligence,
     React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('intelligence', value), [onAbilityScoreTempCustomModifierChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [wis, setWis] = useDebouncedFormField(
-    abilityScoresData.abilityScores.wisdom || 0,
+    abilityScoresData.abilityScores.wisdom,
     React.useCallback((value: number) => onBaseAbilityScoreChange('wisdom', value), [onBaseAbilityScoreChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [wisMod, setWisMod] = useDebouncedFormField(
-    abilityScoresData.abilityScoreTempCustomModifiers?.wisdom || 0,
+    abilityScoresData.abilityScoreTempCustomModifiers?.wisdom,
     React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('wisdom', value), [onAbilityScoreTempCustomModifierChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [cha, setCha] = useDebouncedFormField(
-    abilityScoresData.abilityScores.charisma || 0,
+    abilityScoresData.abilityScores.charisma,
     React.useCallback((value: number) => onBaseAbilityScoreChange('charisma', value), [onBaseAbilityScoreChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [chaMod, setChaMod] = useDebouncedFormField(
-    abilityScoresData.abilityScoreTempCustomModifiers?.charisma || 0,
+    abilityScoresData.abilityScoreTempCustomModifiers?.charisma,
     React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('charisma', value), [onAbilityScoreTempCustomModifierChange]),
     DEBOUNCE_DELAY_FORM_INPUT
   );
@@ -178,7 +178,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
   return (
     <>
       <LockablePanelWrapper
-        title={UI_STRINGS.abilityScoresSectionTitle}
+        title={UI_STRINGS.abilityScoresPanelTitle}
         description={UI_STRINGS.abilityScoresPanelDescription}
         icon={Dices}
         headerClassName="bg-muted/20"
@@ -190,10 +190,9 @@ const CharacterFormAbilityScoresSectionComponent = ({
         }
       >
         {({ isLocked: panelIsLocked }) => (
-          <>
-            <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
-              {/* Strength */}
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+          <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
+            {/* Ability Cards */}
+            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-strength` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'strength')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'strength')?.label}</span>
@@ -222,8 +221,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-              {/* Dexterity */}
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-dexterity` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'dexterity')?.label}</span>
@@ -252,8 +250,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-              {/* Constitution */}
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-constitution` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'constitution')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'constitution')?.label}</span>
@@ -282,8 +279,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-              {/* Intelligence */}
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-intelligence` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'intelligence')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'intelligence')?.label}</span>
@@ -312,8 +308,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-              {/* Wisdom */}
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-wisdom` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'wisdom')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'wisdom')?.label}</span>
@@ -342,8 +337,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-              {/* Charisma */}
-              <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+            <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-charisma` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'charisma')?.abbr}</span>
                   <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === 'charisma')?.label}</span>
@@ -372,17 +366,17 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   </div>
                 )}
               </div>
-            </div>
-
+            
+            {/* Generator Buttons */}
             {!panelIsLocked && (
-              <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
-                <div className="sm:col-span-3 lg:col-start-5 lg:col-span-2 flex flex-col items-stretch gap-2">
+              <div className="sm:col-start-2 sm:col-span-2 lg:col-start-5 lg:col-span-2 flex flex-col items-stretch gap-2">
                   <Button
                       type="button"
                       variant="outline"
                       size="default"
                       onClick={() => setIsRollerDialogOpen(true)}
                       disabled={panelIsLocked}
+                      className="w-full"
                   >
                       <Dices /> {UI_STRINGS.abilityScoresRollButton}
                   </Button>
@@ -392,13 +386,13 @@ const CharacterFormAbilityScoresSectionComponent = ({
                       size="default"
                       onClick={() => setIsPointBuyDialogOpen(true)}
                       disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
+                      className="w-full"
                   >
                       <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
                   </Button>
-                </div>
               </div>
             )}
-          </>
+          </div>
         )}
       </LockablePanelWrapper>
       <AbilityScoreRollerDialog
