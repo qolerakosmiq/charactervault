@@ -193,7 +193,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
 
                 return (
-                  <div key={ability} className="flex flex-col p-3 border rounded-md bg-card shadow-sm gap-2">
+                  <div key={ability} className="flex flex-col p-3 border rounded-md bg-card shadow-sm">
                     <Label htmlFor={!panelIsLocked ? `base-score-${ability}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                       <span>{abilityAbbr}</span>
                       <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
@@ -266,13 +266,31 @@ const CharacterFormAbilityScoresSectionComponent = ({
             </div>
 
             {!panelIsLocked && (
-              <div className="flex flex-col sm:flex-row sm:justify-end gap-2 mt-4">
-                  <Button type="button" variant="outline" size="sm" onClick={() => setIsRollerDialogOpen(true)} disabled={panelIsLocked}>
+              <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 mt-4", panelGridGap)}>
+                <div className="sm:col-start-2 lg:col-start-5">
+                  <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsRollerDialogOpen(true)}
+                      disabled={panelIsLocked}
+                      className="w-full"
+                  >
                       <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton}
                   </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => setIsPointBuyDialogOpen(true)} disabled={panelIsLocked}>
+                </div>
+                <div className="lg:col-span-1">
+                  <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setIsPointBuyDialogOpen(true)}
+                      disabled={panelIsLocked}
+                      className="w-full"
+                  >
                       <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton}
                   </Button>
+                </div>
               </div>
             )}
           </>
@@ -311,3 +329,4 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
+
