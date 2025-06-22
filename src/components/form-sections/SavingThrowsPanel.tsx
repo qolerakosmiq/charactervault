@@ -15,7 +15,7 @@ import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, textStyleSubtle, panelFieldVerticalGap, panelGridGap } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, textStyleSubtle, panelFieldVerticalGap, panelGridGap, textStyleValueMedium } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 
@@ -79,31 +79,31 @@ const SavingThrowCard = React.memo(({
   const { UI_STRINGS } = translations || { UI_STRINGS: {} };
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelGridGap)}>
       <Label className="text-center text-md font-medium flex flex-col items-center">
         <span>{saveTypeLabel}</span>
+        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+          <p className={cn("text-lg font-bold text-accent", 'text-center')}>{baseValue}</p>
+          <Button
+            type="button" variant="ghost" size="icon-xs"
+            className="text-muted-foreground hover:text-primary self-center"
+            onClick={() => onOpenInfoDialog(saveType)}
+            aria-label={UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel.replace("{saveTypeLabel}", saveTypeLabel)}
+          >
+            <Info />
+          </Button>
+        </div>
       </Label>
-      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-        <p className="text-lg font-bold text-accent">{baseValue}</p>
-        <Button
-          type="button" variant="ghost" size="icon-xs"
-          className="text-muted-foreground hover:text-primary self-center"
-          onClick={() => onOpenInfoDialog(saveType)}
-          aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "Detailed breakdown for {saveTypeLabel} save").replace("{saveTypeLabel}", saveTypeLabel)}
-        >
-          <Info />
-        </Button>
-      </div>
 
       <div className="flex flex-col items-center">
-        <Label className={cn(textStyleSubtle, "font-bold")}>{UI_STRINGS.savingThrowsRowLabelBase || "Base"}</Label>
+        <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
           <p className={cn('text-xl font-bold', 'text-center')}>{renderModifierValue(totalValue)}</p>
            <Button
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
             onClick={() => onOpenRollDialog(saveType)}
-            aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", saveTypeLabel)}
+            aria-label={UI_STRINGS.rollDialogSavingThrowAriaLabel.replace("{saveTypeLabel}", saveTypeLabel)}
           >
             <Dices />
           </Button>
@@ -111,7 +111,7 @@ const SavingThrowCard = React.memo(({
       </div>
 
       {!panelIsLocked && (
-        <div className={cn("w-full mt-auto flex flex-col", panelFieldVerticalGap)}>
+        <div className={cn("w-full mt-auto flex flex-col", panelGridGap)}>
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
             <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
@@ -196,7 +196,7 @@ const SavingThrowsPanelComponent = ({
     const totalModifier = breakdown.reduce((sum, item) => sum + (typeof item.value === 'number' ? item.value : 0), 0);
 
     onOpenRollDialog({
-      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow).replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
+      dialogTitle: UI_STRINGS.rollDialogTitleSavingThrow.replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
       rollType: `saving_throw_${saveType}`,
       baseModifier: totalModifier,
       calculationBreakdown: breakdown,

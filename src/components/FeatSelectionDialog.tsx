@@ -177,7 +177,7 @@ export function FeatSelectionDialog({
           </DialogTitle>
           <DialogDescription>
             {filterByCategory
-              ? `${UI_STRINGS.featSelectionDialogDescriptionCategoryFilter} ${UI_STRINGS[`featCategory_${filterByCategory}` as keyof typeof UI_STRINGS] || filterByCategory}`
+              ? `${UI_STRINGS.featSelectionDialogDescriptionCategoryFilter} ${UI_STRINGS[`featCategory_${filterByCategory}` as keyof typeof UI_STRINGS]}`
               : UI_STRINGS.featSelectionDialogDescription
             }
           </DialogDescription>
@@ -237,7 +237,7 @@ export function FeatSelectionDialog({
                   const featSourceClassName = (featDef.isClassFeature && featDef.id.startsWith('class-')) ? getFeatSourceClassNameFromDialog(featDef.id, allClasses) : null;
                   
                   const categoryBadgeVariant = featDef.category ? getCategoryBadgeVariant(featDef.category, characterPrimaryClassId) : "secondary";
-                  const categoryDisplayLabel = featDef.category ? (UI_STRINGS[`featCategory_${featDef.category}` as keyof typeof UI_STRINGS] || featDef.category) : null;
+                  const categoryDisplayLabel = featDef.category ? UI_STRINGS[`featCategory_${featDef.category}` as keyof typeof UI_STRINGS] : null;
 
 
                   return (
