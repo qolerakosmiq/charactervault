@@ -1,10 +1,10 @@
 
 {
   "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" },
-  "rollDialogAbilityModifierLabel": { "en": "Ability Modifier ({abilityAbbr})", "fr": "Modificateur de Caractéristique ({abilityAbbr})" },
-  "rollDialogSkillKeyAbilityLabel": { "en": "Key Ability ({abilityAbbr})", "fr": "Caractéristique clé ({abilityAbbr})" },
+  "rollDialogAbilityCheckAriaLabel": { "en": "Roll {abilityName} Check", "fr": "Lancer un test de {abilityName}" },
   "infoDialogTitleScoreCalculation": { "en": "{abilityName} Score Calculation", "fr": "Calcul du score de {abilityName}" },
   "infoDialogTitleSavingThrowBreakdown": { "en": "Saving Throw Breakdown ({saveTypeLabel})", "fr": "Détail du Jet de Sauvegarde ({saveTypeLabel})" },
+  "infoDialogSavingThrowBreakdownAriaLabel": { "en": "Detailed breakdown for {saveTypeLabel} save", "fr": "Détail du calcul pour le jet de {saveTypeLabel}" },
   "infoDialogTitleAcBreakdown": { "en": "Armor Class Breakdown ({acType})", "fr": "Détail de la Classe d'Armure ({acType})" },
   "infoDialogTitleMeleeAttackBreakdown": { "en": "Melee Attack Breakdown", "fr": "Détail de l'Attaque au Corps à Corps" },
   "infoDialogTitleMeleeDamageBreakdown": { "en": "Melee Damage Breakdown", "fr": "Détail des Dégâts au Corps à Corps" },
