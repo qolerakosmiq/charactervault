@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
 import { Zap, Info, Dices } from 'lucide-react';
-import { cn, parseAndRenderUIString } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
@@ -18,6 +18,7 @@ import { Input } from '@/components/ui/input';
 import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, textStyleSubtle, panelFieldVerticalGap, panelGridGap, textStyleValueMedium, textStyleSubLabelTitle } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
+import { parseAndRenderUIString } from '@/lib/utils';
 
 export interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes' | 'feats'>;
@@ -78,6 +79,8 @@ const SavingThrowCard = React.memo(({
   
   const { UI_STRINGS } = translations || { UI_STRINGS: {} };
 
+  const formattedAbilityModifier = abilityModifier >= 0 ? `+${abilityModifier}` : String(abilityModifier);
+
   return (
     <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
       <Label className="text-center text-md font-medium flex flex-col items-center">
@@ -88,7 +91,7 @@ const SavingThrowCard = React.memo(({
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
             onClick={() => onOpenInfoDialog(saveType)}
-            aria-label={UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel.replace("{saveTypeLabel}", saveTypeLabel)}
+            aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
           >
             <Info />
           </Button>
@@ -103,7 +106,7 @@ const SavingThrowCard = React.memo(({
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
             onClick={() => onOpenRollDialog(saveType)}
-            aria-label={UI_STRINGS.rollDialogSavingThrowAriaLabel.replace("{saveTypeLabel}", saveTypeLabel)}
+            aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
           >
             <Dices />
           </Button>
@@ -111,10 +114,10 @@ const SavingThrowCard = React.memo(({
       </div>
 
       {!panelIsLocked && (
-        <div className={cn("w-full mt-auto flex flex-col", panelGridGap)}>
+        <div className={cn("w-full mt-auto flex flex-col", panelFieldVerticalGap)}>
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-            <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
+            <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} />
           </div>
 
           <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
@@ -196,7 +199,7 @@ const SavingThrowsPanelComponent = ({
     const totalModifier = breakdown.reduce((sum, item) => sum + (typeof item.value === 'number' ? item.value : 0), 0);
 
     onOpenRollDialog({
-      dialogTitle: UI_STRINGS.rollDialogTitleSavingThrow.replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
+      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow || "").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
       rollType: `saving_throw_${saveType}`,
       baseModifier: totalModifier,
       calculationBreakdown: breakdown,
