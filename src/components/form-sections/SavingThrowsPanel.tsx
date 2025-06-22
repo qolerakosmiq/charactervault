@@ -83,7 +83,7 @@ const SavingThrowCard = React.memo(({
 
   return (
     <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-       <Label className="text-center flex flex-col items-center gap-1">
+       <Label className={cn("text-center flex flex-col items-center", panelBadgeGroupGap)}>
         <span className={textStyleCardTitle}>{saveTypeLabel}</span>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
             <p className={textStyleValueBig}>{baseValue}</p>
@@ -101,7 +101,7 @@ const SavingThrowCard = React.memo(({
       <div className="flex flex-col items-center">
         <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-          <p className={cn(textStyleModifier, 'text-center', "text-xl")}>{renderModifierValue(totalValue)}</p>
+          <p className={cn(textStyleModifier, 'text-center')}>{renderModifierValue(totalValue)}</p>
            <Button
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
@@ -146,7 +146,7 @@ const SavingThrowCard = React.memo(({
       )}
     </div>
   )
-});
+}));
 SavingThrowCard.displayName = 'SavingThrowCard';
 
 

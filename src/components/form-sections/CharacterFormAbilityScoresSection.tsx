@@ -16,7 +16,18 @@ import { useDefinitionsStore } from '@/lib/definitions-store';
 import { useI18n } from '@/context/I18nProvider';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleSubLabelTitle, textStyleCardTitle } from '@/config/layout';
+import {
+  DEBOUNCE_DELAY_FORM_INPUT,
+  panelContentPadding,
+  panelFieldHorizontalGap,
+  panelGridGap,
+  panelFieldVerticalGap,
+  textStyleModifier,
+  textStyleSubtle,
+  textStyleValueBig,
+  textStyleSubLabelTitle,
+  textStyleCardTitle
+} from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
 
@@ -106,7 +117,7 @@ const AbilityScoreInputGroup = React.memo((({
         </div>
       </div>
       {!panelIsLocked && (
-        <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
+        <div className={cn("w-full mt-auto flex flex-col", panelFieldVerticalGap)}>
           <div className={cn("w-full", panelFieldVerticalGap)}>
             <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
             <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className="text-base text-center" disabled={panelIsLocked} />
