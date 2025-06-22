@@ -1,6 +1,6 @@
 
 {
-  "abilityScoresSectionTitle": { "en": "Ability Scores", "fr": "Caractéristiques" },
+  "abilityScoresPanelTitle": { "en": "Ability Scores", "fr": "Caractéristiques" },
   "abilityScoresPanelDescription": { "en": "Manage your character's core attributes and generate initial scores.", "fr": "Gérez les attributs principaux de votre personnage et générez les scores initiaux." },
   "abilityScoresRollButton": { "en": "Roll Scores", "fr": "Lancer les scores" },
   "abilityScoresPointBuyButton": { "en": "Point Buy", "fr": "Achat par points" },
