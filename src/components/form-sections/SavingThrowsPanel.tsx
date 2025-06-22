@@ -8,7 +8,7 @@ import { Zap, Info, Dices } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
+import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { DualBadge, type DualBadgeProps } from '@/components/ui/DualBadge';
 import type { RollDialogProps } from '@/components/RollDialog';
@@ -86,12 +86,12 @@ const SavingThrowCard = React.memo(({
        <Label className="text-center flex flex-col items-center gap-1">
         <span className={textStyleCardTitle}>{saveTypeLabel}</span>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-            <p className="text-lg font-bold text-accent text-center">{baseValue}</p>
+            <p className={textStyleValueBig}>{baseValue}</p>
             <Button
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
             onClick={() => onOpenInfoDialog(saveType)}
-            aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+            aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
             >
             <Info />
             </Button>
@@ -106,7 +106,7 @@ const SavingThrowCard = React.memo(({
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
             onClick={() => onOpenRollDialog(saveType)}
-            aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+            aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
           >
             <Dices />
           </Button>
@@ -189,7 +189,7 @@ const SavingThrowsPanelComponent = ({
     
     const breakdown: GenericBreakdownItem[] = [
       { label: UI_STRINGS.savingThrowsRowLabelBase, value: baseSaves[saveType] },
-      { label: (UI_STRINGS.rollDialogAbilityModifierLabel || "").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
+      { label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
     ];
     const miscBonus = calculateCalculatedTotalMiscBonusForSave(saveType);
     if(miscBonus !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier, value: miscBonus });
