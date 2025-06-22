@@ -18,7 +18,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding } from '@/config/layout';
+import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, textStyleValueBig, textStyleValueMedium, textStyleSubtle } from '@/config/layout';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -112,11 +112,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
 
     const breakdown: GenericBreakdownItem[] = [
-      { label: (translations.UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", abilityLabelInfo?.abbr || ability.toUpperCase().substring(0,3)), value: finalModifier, isBold: true }
+      { label: translations.UI_STRINGS.rollDialogAbilityModifierLabel.replace("{abilityAbbr}", abilityLabelInfo?.abbr || ability.toUpperCase().substring(0,3)), value: finalModifier, isBold: true }
     ];
 
     setRollAbilityDialogData({
-      dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck).replace("{abilityName}", abilityName),
+      dialogTitle: translations.UI_STRINGS.rollDialogTitleAbilityCheck.replace("{abilityName}", abilityName),
       rollType: `ability_check_${ability}`,
       baseModifier: finalModifier,
       calculationBreakdown: breakdown,
@@ -168,11 +168,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   <div key={ability} className={cn("flex flex-col border rounded-md bg-card", panelContentPadding)}>
                     <Label htmlFor={!panelIsLocked ? `base-score-${ability}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                       <span>{abilityAbbr}</span>
-                      <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
+                      <span className={textStyleSubtle}>{abilityDisplayName}</span>
                     </Label>
 
                     <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                      <p className="text-2xl font-bold text-accent text-center">{displayTotalScore}</p>
+                      <p className={textStyleValueBig}>{displayTotalScore}</p>
                       {actualScoreData && (
                         <Button
                           type="button"
@@ -180,7 +180,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           size="icon-xs"
                           className="text-muted-foreground hover:text-primary self-center"
                           onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
-                          aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
+                          aria-label={UI_STRINGS.infoDialogAbilityBreakdownAriaLabel.replace("{abilityName}", abilityDisplayName)}
                         >
                           <Info />
                         </Button>
@@ -188,16 +188,16 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     </div>
                     
                     <div className="mt-1 flex flex-col items-center">
-                        <Label className="text-xs text-muted-foreground">{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
+                        <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
                         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                            <p className="text-lg text-accent font-normal">{displayModifier >= 0 ? '+' : ''}{displayModifier}</p>
+                            <p className={textStyleValueMedium}>{displayModifier >= 0 ? '+' : ''}{displayModifier}</p>
                             <Button
                               type="button"
                               variant="ghost"
                               size="icon-xs"
                               className="text-muted-foreground hover:text-primary self-center"
                               onClick={() => handleOpenRollDialog(ability)}
-                              aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
+                              aria-label={UI_STRINGS.rollDialogAbilityCheckAriaLabel.replace("{abilityName}", abilityDisplayName)}
                             >
                               <Dices />
                             </Button>
@@ -205,9 +205,9 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     </div>
 
                     {!panelIsLocked && (
-                      <div className="w-full mt-auto pt-2 space-y-2">
+                      <div className={cn("w-full mt-auto", panelFieldVerticalGap)}>
                         <div className={cn("w-full", panelFieldVerticalGap)}>
-                          <Label htmlFor={`base-score-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
+                          <Label htmlFor={`base-score-${ability}`} className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
                           <Input
                             id={`base-score-${ability}`}
                             type="number"
@@ -219,8 +219,8 @@ const CharacterFormAbilityScoresSectionComponent = ({
                           />
                         </div>
 
-                        <div className={cn("w-full pt-1", panelFieldVerticalGap)}>
-                          <Label htmlFor={`temp-mod-${ability}`} className="text-xs text-muted-foreground text-center block">{UI_STRINGS.abilityScoresTempModLabel}</Label>
+                        <div className={cn("w-full", panelFieldVerticalGap)}>
+                          <Label htmlFor={`temp-mod-${ability}`} className={cn(textStyleSubtle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
                           <Input
                             id={`temp-mod-${ability}`}
                             type="number"
@@ -248,7 +248,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                       disabled={panelIsLocked}
                       className="w-full"
                   >
-                      <Dices className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresRollButton}
+                      <Dices /> {UI_STRINGS.abilityScoresRollButton}
                   </Button>
                 </div>
                 <div className="lg:col-span-1">
@@ -260,7 +260,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                       disabled={panelIsLocked}
                       className="w-full"
                   >
-                      <Calculator className="mr-2 h-4 w-4" /> {UI_STRINGS.abilityScoresPointBuyButton}
+                      <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
                   </Button>
                 </div>
               </div>
