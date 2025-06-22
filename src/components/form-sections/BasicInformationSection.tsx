@@ -38,7 +38,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, textStyleSubtle, debounceDelayFormInput } from '@/config/layout';
+import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, textStyleSubtle, debounceDelayFormInput, textStyleDescription, textStyleCardTitle, textStyleInput } from '@/config/layout';
 
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
@@ -46,15 +46,15 @@ const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 interface ClassSpecificFieldProps {
   uiBlock: ClassSpecificUIBlock;
   isVisuallyDisabled: boolean;
-  onValueChange: (newValue: string) => void;
-  onOpenInfoDialog: () => void;
+  onChoiceChange: (featureKey: string, newValue: string) => void;
+  onOpenInfoDialog: (uiBlock: ClassSpecificUIBlock) => void;
   allChoices: CharacterClassSpecificChoice[];
 }
 
 const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   uiBlock,
   isVisuallyDisabled,
-  onValueChange,
+  onChoiceChange,
   onOpenInfoDialog,
   allChoices,
 }) => {
@@ -114,14 +114,15 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
 
   const currentValue = getCurrentValue(uiBlock.key);
   const uiValueForComponent = currentValue === "" ? UI_EMPTY_SELECTION_VALUE : currentValue;
-  const handleChange = (val: string) => { onValueChange(val === UI_EMPTY_SELECTION_VALUE ? "" : val); };
+  const handleChange = (val: string) => { onChoiceChange(uiBlock.key, val === UI_EMPTY_SELECTION_VALUE ? "" : val); };
+  const handleOpenInfo = () => onOpenInfoDialog(uiBlock);
 
   const hasInfoContentForDialog = uiBlock.optionsSource || uiBlock.infoDialogContent || uiBlock.description;
   const commonInfoButton = (hasInfoContentForDialog && onOpenInfoDialog) ? (
     <Button
       type="button" variant="ghost" size="icon-sm"
       className="shrink-0 text-muted-foreground hover:text-foreground"
-      onClick={onOpenInfoDialog}
+      onClick={handleOpenInfo}
       disabled={isVisuallyDisabled && !hasInfoContentForDialog}
       aria-label={UI_STRINGS.infoDialogClassSpecificChoiceAriaLabel.replace("{choiceName}", blockLabel)}
     >
@@ -157,33 +158,9 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
   }
   return <div key={`${uiBlock.key}-error`} className="text-destructive">Unsupported choiceType: {uiBlock.choiceType} for {uiBlock.key}</div>;
 };
+ClassSpecificFieldComponent.displayName = 'ClassSpecificFieldComponent';
 
-const classSpecificFieldAreEqual = (prevProps: Readonly<ClassSpecificFieldProps>, nextProps: Readonly<ClassSpecificFieldProps>): boolean => {
-  if (prevProps.isVisuallyDisabled !== nextProps.isVisuallyDisabled) return false;
-  
-  const currentKey = nextProps.uiBlock.key;
-  const prevValue = prevProps.allChoices.find(c => c.featureKey === currentKey)?.value;
-  const nextValue = nextProps.allChoices.find(c => c.featureKey === currentKey)?.value;
-  if (prevValue !== nextValue) return false;
-
-  const dependentKeys = [
-    ...(nextProps.uiBlock.excludeOptionsFromKeys || []),
-    nextProps.uiBlock.relatedSlotKeyForDisable,
-    nextProps.uiBlock.disabledIfChoiceValue?.featureKey,
-  ].filter(Boolean) as string[];
-
-  for (const key of dependentKeys) {
-    const prevDepValue = prevProps.allChoices.find(c => c.featureKey === key)?.value;
-    const nextDepValue = nextProps.allChoices.find(c => c.featureKey === key)?.value;
-    if (prevDepValue !== nextDepValue) {
-      return false;
-    }
-  }
-  
-  return true;
-};
-
-const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent, classSpecificFieldAreEqual);
+const MemoizedClassSpecificField = React.memo(ClassSpecificFieldComponent);
 
 
 export interface BasicInformationSectionProps {
@@ -431,7 +408,7 @@ const BasicInformationSectionComponent = ({
         }
         if (newAlignmentToSet && newAlignmentToSet !== localAlignment) setLocalAlignment(newAlignmentToSet);
     }
-  }, [localClassName]);
+  }, [localClassName, selectedClassInfo, PREFERRED_DEFAULT_ALIGNMENT_IDS, ALIGNMENTS, localAlignment, setLocalAlignment]);
 
   React.useEffect(() => {
     if (localDeity === "" || !DND_DEITIES) return;
@@ -445,7 +422,7 @@ const BasicInformationSectionComponent = ({
       if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, currentClassInfo.deityAlignmentRestriction)) deityIsValid = false;
     }
     if (!deityIsValid) setLocalDeity("");
-  }, [localAlignment, localClassName]);
+  }, [localAlignment, localClassName, localDeity, DND_DEITIES, DND_CLASSES, setLocalDeity]);
   
   const disabledStates = React.useMemo(() => {
     const states: Record<string, boolean> = {};
@@ -601,8 +578,8 @@ const BasicInformationSectionComponent = ({
                       key={`csf-memo-${uiBlock.key}-${index}`}
                       uiBlock={uiBlock}
                       isVisuallyDisabled={isVisuallyDisabled}
-                      onValueChange={(newValue) => handleClassSpecificChoiceChange(uiBlock.key, newValue)}
-                      onOpenInfoDialog={() => handleOpenClassSpecificChoiceInfoDialogInternal(uiBlock)}
+                      onChoiceChange={handleClassSpecificChoiceChange}
+                      onOpenInfoDialog={handleOpenClassSpecificChoiceInfoDialogInternal}
                       allChoices={classSpecificChoices}
                     />
                   );
