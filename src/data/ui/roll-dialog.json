@@ -18,7 +18,6 @@
   "rollDialogFinalDamageStringLabel": { "en": "Total Damage", "fr": "Total des Dégâts" },
   "rollDialogTotalBonusLabel": { "en": "Total Bonus", "fr": "Bonus total" },
   "rollDialogTitleSavingThrow": { "en": "{saveTypeLabel} Save", "fr": "Jet de {saveTypeLabel}" },
-  "rollDialogSavingThrowAriaLabel": { "en": "Roll {saveTypeLabel} Save", "fr": "Lancer un Jet de {saveTypeLabel}" },
   "rollDialogTitleAbilityCheck": { "en": "{abilityName} Check", "fr": "Test de {abilityName}" },
   "rollDialogAbilityCheckAriaLabel": { "en": "Roll {abilityName} Check", "fr": "Lancer un test de {abilityName}" },
   "rollDialogTitleInitiative": { "en": "Roll Initiative", "fr": "Lancer l'Initiative" },
@@ -46,4 +45,3 @@
   "rollDialogTitleSkillCheck": { "en": "{skillName} Check", "fr": "Test de {skillName}" },
   "rollDialogTotalNumericBonusLabel": { "en": "Total Numeric Bonus", "fr": "Bonus Numérique Total"}
 }
-    

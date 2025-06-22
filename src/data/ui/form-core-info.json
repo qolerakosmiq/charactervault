@@ -16,5 +16,6 @@
   "favoredEnemyBonusDisplayInfo": { "en": "Bonuses vs Favored Enemies: +{skillBonus} to skills (Bluff, Listen, Sense Motive, Spot, Survival), +{damageBonus} to damage.", "fr": "Bonus vs Ennemis Jurés : +{skillBonus} aux compétences (Bluff, Perception auditive, Psychologie, Détection, Survie), +{damageBonus} aux dégâts." },
   "ageCategoryBadgeLabel": { "en": "Age Cat.", "fr": "Cat. Âge" },
   "sizeAcModLeftBadgeLabel": { "en": "AC", "fr": "CA" },
-  "abilityUsesPoolPlaceholder": { "en": "Pool", "fr": "Réserve" }
+  "abilityUsesPoolPlaceholder": { "en": "Pool", "fr": "Réserve" },
+  "infoDialogClassSpecificChoiceAriaLabel": { "en": "More information about {choiceName}", "fr": "Plus d'informations sur {choiceName}" }
 }

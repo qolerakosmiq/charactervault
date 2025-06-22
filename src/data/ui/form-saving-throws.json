@@ -9,6 +9,7 @@
   "savingThrowsRowLabelTemporaryModifier": { "en": "Temporary Modifier", "fr": "Mod. Temporaire" },
   "savingThrowsFeatsModifierLabel": { "en": "Feats Modifiers", "fr": "Modificateurs de Dons" },
   "savingThrowsPanelMiscModInfoNoteFull": { "en": "<b>Note:</b> The <badge outline>Misc Modifier</badge> line includes bonuses from magic items, active feats, and other persistent effects.", "fr": "<b>Note :</b> La ligne <badge outline>Modificateur Divers</badge> inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." },
-  "savingThrowsRowLabelFinalModifier": { "en": "Final Modifier", "fr": "Modificateur Final" }
+  "savingThrowsRowLabelFinalModifier": { "en": "Final Modifier", "fr": "Modificateur Final" },
+  "infoDialogSavingThrowBreakdownAriaLabel": { "en": "Detailed breakdown for {saveTypeLabel} save", "fr": "Détail du calcul pour le jet de {saveTypeLabel}" },
+  "rollDialogSavingThrowAriaLabel": { "en": "Roll {saveTypeLabel} Save", "fr": "Lancer un Jet de {saveTypeLabel}" }
 }
-    

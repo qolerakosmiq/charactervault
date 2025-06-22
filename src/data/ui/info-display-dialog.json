@@ -1,11 +1,8 @@
 
 {
   "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" },
-  "rollDialogAbilityCheckAriaLabel": { "en": "Roll {abilityName} Check", "fr": "Lancer un test de {abilityName}" },
-  "infoDialogClassSpecificChoiceAriaLabel": { "en": "More information about {choiceName}", "fr": "Plus d'informations sur {choiceName}" },
   "infoDialogTitleScoreCalculation": { "en": "{abilityName} Score Calculation", "fr": "Calcul du score de {abilityName}" },
   "infoDialogTitleSavingThrowBreakdown": { "en": "Saving Throw Breakdown ({saveTypeLabel})", "fr": "Détail du Jet de Sauvegarde ({saveTypeLabel})" },
-  "infoDialogSavingThrowBreakdownAriaLabel": { "en": "Detailed breakdown for {saveTypeLabel} save", "fr": "Détail du calcul pour le jet de {saveTypeLabel}" },
   "infoDialogTitleAcBreakdown": { "en": "Armor Class Breakdown ({acType})", "fr": "Détail de la Classe d'Armure ({acType})" },
   "infoDialogTitleMeleeAttackBreakdown": { "en": "Melee Attack Breakdown", "fr": "Détail de l'Attaque au Corps à Corps" },
   "infoDialogTitleMeleeDamageBreakdown": { "en": "Melee Damage Breakdown", "fr": "Détail des Dégâts au Corps à Corps" },
@@ -33,4 +30,3 @@
   "acBreakdownMonkScalingLabel": { "en": "Monk Scaling AC", "fr": "CA Évolutive du Moine" },
   "abilityScoreSourceMonkWisdom": { "en": "Monk Wisdom Bonus", "fr": "Bonus de Sagesse du Moine"}
 }
-    
