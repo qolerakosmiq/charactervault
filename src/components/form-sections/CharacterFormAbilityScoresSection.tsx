@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -24,7 +25,7 @@ const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'c
 
 interface AbilityScoreInputGroupProps {
   abilityKey: Exclude<AbilityName, 'none'>;
-  detailedScore: DetailedAbilityScores[keyof DetailedAbilityScores];
+  finalScore: number;
   baseScoreValue: number;
   onBaseScoreChange: (ability: Exclude<AbilityName, 'none'>, value: number) => void;
   tempModValue: number;
@@ -40,7 +41,7 @@ interface AbilityScoreInputGroupProps {
 
 const AbilityScoreInputGroup = ({
   abilityKey,
-  detailedScore,
+  finalScore,
   baseScoreValue,
   onBaseScoreChange,
   tempModValue,
@@ -50,11 +51,7 @@ const AbilityScoreInputGroup = ({
   onOpenBreakdownDialog,
   onOpenRollDialog,
 }: AbilityScoreInputGroupProps) => {
-  const finalModifier = calculateAbilityModifier(detailedScore.finalScore);
-  const modifierColorClass = finalModifier > 0 ? "text-emerald-500" : finalModifier < 0 ? "text-destructive" : "text-muted-foreground";
-
-  const { ABILITY_LABELS, UI_STRINGS } = translations;
-
+  
   const handleDebouncedBaseScoreChange = React.useCallback((value: number) => {
     onBaseScoreChange(abilityKey, value);
   }, [onBaseScoreChange, abilityKey]);
@@ -62,9 +59,14 @@ const AbilityScoreInputGroup = ({
   const handleDebouncedTempModChange = React.useCallback((value: number) => {
     onTempModChange(abilityKey, value);
   }, [onTempModChange, abilityKey]);
-
+  
   const [localBaseScore, setLocalBaseScore] = useDebouncedFormField(baseScoreValue, handleDebouncedBaseScoreChange, DEBOUNCE_DELAY_FORM_INPUT);
   const [localTempMod, setLocalTempMod] = useDebouncedFormField(tempModValue, handleDebouncedTempModChange, DEBOUNCE_DELAY_FORM_INPUT);
+  
+  const finalModifier = calculateAbilityModifier(finalScore);
+  const modifierColorClass = finalModifier > 0 ? "text-emerald-500" : finalModifier < 0 ? "text-destructive" : "text-muted-foreground";
+
+  const { ABILITY_LABELS, UI_STRINGS } = translations;
   
   const handleOpenBreakdown = React.useCallback(() => {
     onOpenBreakdownDialog(abilityKey);
@@ -82,7 +84,7 @@ const AbilityScoreInputGroup = ({
         <span className={textStyleSubtle}>{ABILITY_LABELS.find(al => al.id === abilityKey)?.label}</span>
       </Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-        <p className={textStyleValueBig}>{detailedScore.finalScore}</p>
+        <p className={textStyleValueBig}>{finalScore}</p>
         <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleOpenBreakdown} aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel || "Detailed breakdown for {abilityName}").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Info /></Button>
       </div>
       <div className="flex flex-col items-center">
@@ -132,6 +134,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const [isRollerDialogOpen, setIsRollerDialogOpen] = React.useState(false);
   const [isPointBuyDialogOpen, setIsPointBuyDialogOpen] = React.useState(false);
   const [isRollAbilityDialogOpen, setIsRollAbilityDialogOpen] = React.useState(false);
+  const [abilityForRollDialog, setAbilityForRollDialog] = React.useState<Exclude<AbilityName, 'none'> | null>(null);
   const [rollAbilityDialogData, setRollAbilityDialogData] = React.useState<Omit<RollDialogProps, 'isOpen' | 'onOpenChange' | 'onRoll'> | null>(null);
 
   const { translations, isLoading: translationsLoading } = useI18n();
@@ -152,28 +155,35 @@ const CharacterFormAbilityScoresSectionComponent = ({
     setIsPointBuyDialogOpen(false);
   }, [onMultipleBaseAbilityScoresChange]);
 
-  const handleOpenRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
-    if (!detailedAbilityScores || !translations) return;
-
-    const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.id === ability);
-    const abilityName = abilityLabelInfo?.label;
-    const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
-
-    const breakdown: GenericBreakdownItem[] = [
-      { label: (translations.UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", abilityLabelInfo?.abbr || ability.toUpperCase().substring(0,3)), value: finalModifier, isBold: true }
-    ];
-
-    setRollAbilityDialogData({
-      dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName || ''),
-      rollType: `ability_check_${ability}`,
-      baseModifier: finalModifier,
-      calculationBreakdown: breakdown,
-      rerollTwentiesForChecks: rerollTwentiesForChecks,
-      weaponDamageDiceString: "", 
-      weaponCriticalMultiplier: 1,
-    });
+  const handleTriggerRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
+    setAbilityForRollDialog(ability);
     setIsRollAbilityDialogOpen(true);
-  }, [detailedAbilityScores, translations, rerollTwentiesForChecks]);
+  }, []);
+
+  React.useEffect(() => {
+    if (isRollAbilityDialogOpen && abilityForRollDialog) {
+      if (!detailedAbilityScores || !translations) return;
+
+      const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.id === abilityForRollDialog);
+      const abilityName = abilityLabelInfo?.label;
+      const finalModifier = calculateAbilityModifier(detailedAbilityScores[abilityForRollDialog].finalScore);
+
+      const breakdown: GenericBreakdownItem[] = [
+        { label: (translations.UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", abilityLabelInfo?.abbr || abilityForRollDialog.toUpperCase().substring(0,3)), value: finalModifier, isBold: true }
+      ];
+
+      setRollAbilityDialogData({
+        dialogTitle: (translations.UI_STRINGS.rollDialogTitleAbilityCheck || "{abilityName} Check").replace("{abilityName}", abilityName || ''),
+        rollType: `ability_check_${abilityForRollDialog}`,
+        baseModifier: finalModifier,
+        calculationBreakdown: breakdown,
+        rerollTwentiesForChecks: rerollTwentiesForChecks,
+        weaponDamageDiceString: "", 
+        weaponCriticalMultiplier: 1,
+      });
+    }
+  }, [isRollAbilityDialogOpen, abilityForRollDialog, detailedAbilityScores, translations, rerollTwentiesForChecks]);
+
 
   const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
     // This is a no-op currently, but could be used to show a toast or log the result.
@@ -211,7 +221,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
               <MemoizedAbilityScoreInputGroup
                 key={ability}
                 abilityKey={ability}
-                detailedScore={detailedAbilityScores[ability]}
+                finalScore={detailedAbilityScores[ability].finalScore}
                 baseScoreValue={abilityScoresData.abilityScores[ability]}
                 onBaseScoreChange={onBaseAbilityScoreChange}
                 tempModValue={abilityScoresData.abilityScoreTempCustomModifiers[ability]}
@@ -219,7 +229,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 panelIsLocked={panelIsLocked}
                 translations={translationSubsetForChild}
                 onOpenBreakdownDialog={onOpenAbilityScoreBreakdownDialog}
-                onOpenRollDialog={handleOpenRollDialog}
+                onOpenRollDialog={handleTriggerRollDialog}
               />
             ))}
             <Button
