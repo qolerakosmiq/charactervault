@@ -97,21 +97,21 @@ const SavingThrowCard = React.memo(({
       {!panelIsLocked && (
         <div className="w-full mt-auto pt-2 space-y-2 text-center">
           <div className="space-y-1">
-            <Label className="font-bold text-sm">{uiStrings.savingThrowsRowLabelBase}</Label>
+            <Label className="font-bold text-xs text-muted-foreground">{uiStrings.savingThrowsRowLabelBase}</Label>
             <p className="font-bold text-accent">{baseValue}</p>
           </div>
           <div className="space-y-1">
-            <Label className="font-bold text-sm">{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+            <Label className="font-bold text-xs text-muted-foreground">{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
             <div className="flex justify-center">
               <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
             </div>
           </div>
           <div className="space-y-1">
-            <Label className="font-bold text-sm">{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
+            <Label className="font-bold text-xs text-muted-foreground">{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
             <p className={cn("font-semibold text-xs text-muted-foreground")}>{renderModifierValue(miscBonus)}</p>
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`temp-mod-${saveType}`} className="font-bold text-sm">
+            <Label htmlFor={`temp-mod-${saveType}`} className="font-bold text-xs text-muted-foreground">
               {uiStrings.savingThrowsRowLabelTemporaryModifier}
             </Label>
             <div className="flex justify-center">
@@ -120,7 +120,7 @@ const SavingThrowCard = React.memo(({
                 type="number"
                 value={localTemporaryMod}
                 onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                className="w-24 text-center"
+                className="w-24 text-center h-8"
                 disabled={panelIsLocked}
                 />
             </div>
@@ -187,8 +187,6 @@ const SavingThrowsPanelComponent = ({
       baseModifier: totalModifier,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rerollTwentiesForChecks,
-      weaponDamageDiceString: "",
-      weaponCriticalMultiplier: 1,
     });
   }, [translations, savingThrowsData, abilityScores, aggregatedFeatEffects, calculateCalculatedTotalMiscBonusForSave, rerollTwentiesForChecks, onOpenRollDialog]);
 
