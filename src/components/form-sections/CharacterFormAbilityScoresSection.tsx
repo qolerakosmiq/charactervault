@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Dices, Info, Calculator, Loader2 } from 'lucide-react';
+import { Dices, Info, Calculator } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -131,25 +131,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
   }, []);
 
 
-  if (translationsLoading || !translations || !detailedAbilityScores) {
-    return (
-       <LockablePanelWrapper
-        title={translations?.UI_STRINGS.abilityScoresSectionTitle || "Ability Scores"}
-        description={translations?.UI_STRINGS.abilityScoresPanelDescription || "Manage your character's core attributes and generate initial scores."}
-        icon={Dices}
-        headerClassName="bg-muted/20"
-        initialLockedState={false}
-       >
-        {() => (
-          <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.abilityScoresPanelLoading || "Loading ability scores..."}</p>
-          </div>
-        )}
-      </LockablePanelWrapper>
-    );
-  }
-  const { ABILITY_LABELS, UI_STRINGS } = translations;
+  const { ABILITY_LABELS, UI_STRINGS } = translations!;
 
 
   return (
@@ -173,7 +155,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 const [baseScoreValue, setBaseScoreValue] = debouncedStates[ability];
                 const [tempCustomModValue, setTempCustomModValue] = debouncedStates[`${ability}TempMod`];
 
-                const actualScoreData = detailedAbilityScores[ability];
+                const actualScoreData = detailedAbilityScores![ability];
                 const displayTotalScore = actualScoreData.finalScore;
                 const displayModifier = calculateAbilityModifier(displayTotalScore);
 
