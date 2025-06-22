@@ -76,7 +76,7 @@ const SavingThrowCard = React.memo(({
   else if (abilityModifier < 0) badgeColor = 'destructive';
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center", panelContentPadding, "gap-y-2")}>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center", panelContentPadding, "gap-y-1")}>
       <Label className="text-center text-md font-medium">{saveTypeLabel}</Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
@@ -84,34 +84,34 @@ const SavingThrowCard = React.memo(({
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenInfoDialog(saveType)}
-          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
+          aria-label={(uiStrings.infoDialogSavingThrowBreakdownAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
         > <Info /> </Button>
         <Button
           type="button" variant="ghost" size="icon-xs"
           className="text-muted-foreground hover:text-primary self-center"
           onClick={() => onOpenRollDialog(saveType)}
-          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
+          aria-label={(uiStrings.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
         > <Dices /> </Button>
       </div>
 
       {!panelIsLocked && (
         <div className="w-full mt-auto pt-2 space-y-2 text-center">
           <div className="space-y-1">
-            <Label className="font-bold text-xs text-muted-foreground">{uiStrings.savingThrowsRowLabelBase}</Label>
+            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelBase}</Label>
             <p className="font-bold text-accent">{baseValue}</p>
           </div>
           <div className="space-y-1">
-            <Label className="font-bold text-xs text-muted-foreground">{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
             <div className="flex justify-center">
               <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
             </div>
           </div>
           <div className="space-y-1">
-            <Label className="font-bold text-xs text-muted-foreground">{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
-            <p className={cn("font-semibold text-xs text-muted-foreground")}>{renderModifierValue(miscBonus)}</p>
+            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
+            <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`temp-mod-${saveType}`} className="font-bold text-xs text-muted-foreground">
+            <Label htmlFor={`temp-mod-${saveType}`} className={cn(textStyleSubtle, "font-bold")}>
               {uiStrings.savingThrowsRowLabelTemporaryModifier}
             </Label>
             <div className="flex justify-center">
@@ -120,7 +120,7 @@ const SavingThrowCard = React.memo(({
                 type="number"
                 value={localTemporaryMod}
                 onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                className="w-24 text-center h-8"
+                className="text-center"
                 disabled={panelIsLocked}
                 />
             </div>
@@ -187,6 +187,8 @@ const SavingThrowsPanelComponent = ({
       baseModifier: totalModifier,
       calculationBreakdown: breakdown,
       rerollTwentiesForChecks: rerollTwentiesForChecks,
+      weaponDamageDiceString: "",
+      weaponCriticalMultiplier: 1,
     });
   }, [translations, savingThrowsData, abilityScores, aggregatedFeatEffects, calculateCalculatedTotalMiscBonusForSave, rerollTwentiesForChecks, onOpenRollDialog]);
 
