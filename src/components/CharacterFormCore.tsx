@@ -67,8 +67,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 
-import { Loader2 } from 'lucide-react';
-
 
 interface CharacterFormCoreProps {
   onSave: (character: Character) => void;
@@ -1156,16 +1154,7 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
     !aggregatedFeatEffects ||
     allItemDefinitions.length === 0
   ) {
-    return (
-      <div className="container mx-auto px-4 py-8 space-y-8">
-        <div className="flex justify-center items-center py-10 min-h-[50vh]">
-          <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          <p className="ml-4 text-muted-foreground text-lg">
-            {translations?.UI_STRINGS.loadingCharacterDetailsTitle}
-          </p>
-        </div>
-      </div>
-    );
+    return null;
   }
   const { UI_STRINGS } = translations;
 
@@ -1437,6 +1426,3 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
 };
 CharacterFormCoreComponent.displayName = "CharacterFormCoreComponent";
 export const CharacterFormCore = React.memo(CharacterFormCoreComponent);
-
-
-    

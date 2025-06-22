@@ -17,10 +17,10 @@ import {
 } from '@/types/character';
 import type { CustomSkillDefinition, CustomSynergyRule } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardHeader } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { ScrollText, Info, Loader2, Dices, Lock, Unlock } from 'lucide-react';
+import { ScrollText, Info, Dices } from 'lucide-react';
 import { getAbilityModifierByName } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
@@ -28,7 +28,6 @@ import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import type { RollDialogProps } from '@/components/RollDialog';
 import type { GenericBreakdownItem } from '@/types/character-core';
@@ -308,24 +307,7 @@ const SkillsFormSectionComponent = ({
 
 
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
-    return (
-      <LockablePanelWrapper
-        title={translations?.UI_STRINGS.skillsPanelTitle || "Skills"}
-        description={translations?.UI_STRINGS.skillsPanelDescription || "Allocate skill points based on your class and Intelligence."}
-        icon={ScrollText}
-        initialLockedState={false}
-      >
-        {() => (
-          <CardContent>
-            <Skeleton className="h-16 w-full mb-4" />
-            <Skeleton className="h-10 w-full mb-2" />
-            <Skeleton className="h-8 w-full mb-1" />
-            <Skeleton className="h-8 w-full mb-1" />
-            <Skeleton className="h-8 w-full mb-1" />
-          </CardContent>
-        )}
-      </LockablePanelWrapper>
-    );
+    return null;
   }
   const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES, UI_STRINGS, ABILITY_LABELS } = translations;
   

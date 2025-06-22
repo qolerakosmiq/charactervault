@@ -25,7 +25,7 @@ import type {
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { BookOpenText, Loader2 } from 'lucide-react';
+import { BookOpenText } from 'lucide-react';
 import { checkFeatPrerequisites } from '@/types/character';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/I18nProvider';
@@ -162,29 +162,7 @@ export function FeatSelectionDialog({
   }, [isOpen]);
 
   if (isLoadingEffective || !translations) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-xl md:max-w-2xl flex flex-col h-[75vh]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center font-serif">
-              <BookOpenText className="mr-2 h-6 w-6 text-primary" />
-              {translations?.UI_STRINGS.featSelectionDialogTitle}
-            </DialogTitle>
-            <DialogDescription>
-              {translations?.UI_STRINGS.featSelectionDialogLoadingDescription}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex-grow flex items-center justify-center">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-          </div>
-          <DialogFooter className="mt-4 pt-0">
-            <Button variant="outline" onClick={() => { onOpenChange(false); }}>
-              {translations?.UI_STRINGS.featSelectionDialogCancelButton}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
+    return null;
   }
   const { UI_STRINGS } = translations;
   const characterPrimaryClassId = character.classes[0]?.className;
@@ -330,5 +308,3 @@ export function FeatSelectionDialog({
     </Dialog>
   );
 }
-
-    

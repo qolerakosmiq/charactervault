@@ -6,11 +6,10 @@ import type { MouseEvent } from 'react';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Progress } from '@/components/ui/progress';
-import { Award, TrendingUp, Loader2 } from 'lucide-react';
+import { Award, TrendingUp } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getXpRequiredForLevel } from '@/lib/dnd-utils'; 
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -73,24 +72,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 
 
   if (translationsLoading || !translations) {
-    return (
-      <LockablePanelWrapper
-        title={translations?.UI_STRINGS.experiencePanelTitle || "Experience"}
-        description={translations?.UI_STRINGS.experiencePanelDescription || "Track your character's progression and current experience points."}
-        icon={Award}
-        cardContentClassName="space-y-4 pt-4"
-        initialLockedState={false}
-      >
-        {() => (
-          <>
-            <Skeleton className="h-10 w-full" />
-            <Skeleton className="h-6 w-full" />
-            <Skeleton className="h-4 w-1/2 mx-auto" />
-            <Skeleton className="h-10 w-24 mx-auto" />
-          </>
-        )}
-      </LockablePanelWrapper>
-    );
+    return null;
   }
 
   const { UI_STRINGS } = translations;

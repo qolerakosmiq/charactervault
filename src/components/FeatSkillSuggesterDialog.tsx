@@ -86,21 +86,7 @@ export function FeatSkillSuggesterDialog({
   };
   
   if (translationsLoading || !translations) {
-      return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-[625px]">
-                 <DialogHeader>
-                    <DialogTitle className="flex items-center font-serif">
-                        <Sparkles className="h-6 w-6 mr-2 text-primary" />
-                        AI {suggestionType === 'feats' ? 'Feat' : 'Skill'} Suggestions
-                    </DialogTitle>
-                 </DialogHeader>
-                 <div className="flex justify-center items-center py-10">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                 </div>
-            </DialogContent>
-        </Dialog>
-      );
+      return null;
   }
   const UI_STRINGS = translations.UI_STRINGS;
 
@@ -133,10 +119,7 @@ export function FeatSkillSuggesterDialog({
 
 
         {isLoading && (
-          <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-12 w-12 animate-spin text-primary" />
-            <p className="ml-4 text-muted-foreground">{UI_STRINGS.aiSuggestionsLoadingText}</p>
-          </div>
+          <div className="py-10 text-center text-muted-foreground">{UI_STRINGS.aiSuggestionsLoadingText}</div>
         )}
 
         {error && (

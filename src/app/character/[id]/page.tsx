@@ -6,10 +6,8 @@ import { useCharacterStore } from '@/lib/character-store';
 import { useParams, useRouter } from 'next/navigation';
 import type { Character } from '@/types/character';
 import { useEffect, useState } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button'; // Added import
+import { Button } from '@/components/ui/button';
 import { useI18n } from '@/context/I18nProvider';
-import { Loader2 } from 'lucide-react';
 
 export default function CharacterSheetPage() {
   const params = useParams();
@@ -38,24 +36,8 @@ export default function CharacterSheetPage() {
     router.push('/');
   };
 
-  const isLoading = isStoreLoading || translationsLoading || character === undefined;
-
-  if (isLoading || !translations) {
-    return (
-      <div className="container mx-auto px-4 py-8 space-y-6">
-        <div className="flex justify-between items-center">
-          <Skeleton className="h-12 w-1/2" />
-          <Skeleton className="h-10 w-32" />
-        </div>
-        <Skeleton className="h-10 w-full" /> {/* Tabs List */}
-        <div className="flex justify-center items-center py-10 min-h-[300px]">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">
-              {translations?.UI_STRINGS.characterSheetLoadingCharacter}
-            </p>
-        </div>
-      </div>
-    );
+  if (!character || !translations) {
+    return null;
   }
   const { UI_STRINGS } = translations;
 

@@ -11,7 +11,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Info, Wind, Waves, MoveVertical, Shell, Feather, Loader2, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart, ShieldQuestion, Swords, Dices, Brain, UserCircle2, Palette, ScrollText, Languages as LanguagesIcon, Award, Backpack, Sparkles as SpellsIcon, Users as UsersIcon, Shield, ListChecks } from 'lucide-react'; // Added ListChecks
+import { Info, Wind, Waves, MoveVertical, Shell, Feather, SparklesIcon, Square, CheckSquare, ShieldOff, Weight, Zap, AlertTriangle, Heart, ShieldQuestion, Swords, Dices, Brain, UserCircle2, Palette, ScrollText, Languages as LanguagesIcon, Award, Backpack, Sparkles as SpellsIcon, Users as UsersIcon, Shield, ListChecks } from 'lucide-react'; // Added ListChecks
 import { ScrollArea } from '@/components/ui/scroll-area';
 import type {
   Character, AbilityName, AbilityScoreBreakdown, RaceSpecialQualities,
@@ -980,24 +980,7 @@ export function InfoDisplayDialog({
 
 
   if (translationsLoading || !translations || !isOpen || !derivedData) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md md:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center font-serif text-left">
-              <Loader2 className="mr-2 h-5 w-5 animate-spin text-primary" />
-              {translations?.UI_STRINGS.infoDialogLoadingTitle || "Loading..."}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="py-6 text-center">
-            <p className="text-muted-foreground">{translations?.UI_STRINGS.infoDialogLoadingDescription || "Please wait while details are being loaded."}</p>
-          </div>
-          <DialogFooter className="mt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)} type="button">{(translations?.UI_STRINGS.infoDialogCloseButton || "Close")}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
+    return null;
   }
   const { UI_STRINGS } = translations;
 
@@ -1050,5 +1033,3 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
-
-

@@ -18,7 +18,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface CharacterCardProps {
   character: Character;
@@ -36,32 +35,7 @@ export function CharacterCard({ character, onDelete }: CharacterCardProps) {
   let raceLabelForDisplay: string;
 
   if (translationsLoading || !translations?.UI_STRINGS || !translations.ALIGNMENTS || !translations.SIZES || !translations.DND_CLASSES || !translations.DND_RACES) {
-    return (
-      <Card className="flex flex-col overflow-hidden shadow-lg">
-        <CardHeader className="bg-muted/30 p-4">
-          <div className="flex items-center space-x-3">
-            <Users className="h-8 w-8 text-primary" />
-            <div>
-              <Skeleton className="h-6 w-32 mb-1" />
-              <Skeleton className="h-4 w-40" />
-            </div>
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 flex-grow">
-          <div className="space-y-2 text-sm">
-            <Skeleton className="h-4 w-2/3" />
-            <Skeleton className="h-4 w-1/2" />
-            <Skeleton className="h-4 w-1/3" />
-          </div>
-        </CardContent>
-        <CardFooter className="p-4 bg-muted/30 border-t">
-          <div className="flex w-full justify-end space-x-2">
-            <Skeleton className="h-9 w-24 rounded-md" />
-            <Skeleton className="h-9 w-24 rounded-md" />
-          </div>
-        </CardFooter>
-      </Card>
-    );
+    return null;
   }
   const { UI_STRINGS } = translations;
 

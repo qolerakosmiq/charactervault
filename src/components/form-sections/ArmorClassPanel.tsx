@@ -4,11 +4,10 @@
 import *as React from 'react';
 import type { Character, InfoDialogContentType, AggregatedFeatEffects, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Shield, Info, Loader2 } from 'lucide-react';
+import { Shield, Info } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
-import { Skeleton } from '@/components/ui/skeleton';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
@@ -92,23 +91,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 
 
   if (translationsLoading || !translations || !character || !aggregatedFeatEffects) {
-    return (
-      <LockablePanelWrapper
-        title={translations?.UI_STRINGS.armorClassPanelTitle || "Armor Class"}
-        description={translations?.UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}
-        icon={Shield}
-        initialLockedState={false}
-      >
-        {() => (
-           <div className="space-y-4">
-            <div className="flex justify-center items-center py-10">
-              <Loader2 className="h-8 w-8 animate-spin text-primary" />
-              <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.armorClassPanelLoading || "Loading AC details..."}</p>
-            </div>
-          </div>
-        )}
-      </LockablePanelWrapper>
-    );
+    return null;
   }
 
   const { DEFAULT_ABILITIES, SIZES, UI_STRINGS, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ABILITY_LABELS, ITEM_DEFINITIONS_MAGIC_ITEMS } = translations;

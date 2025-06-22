@@ -6,11 +6,10 @@ import type { FeatDefinitionJsonData, Character } from '@/types/character';
 import { CharacterCard } from '@/components/CharacterCard';
 import { Button } from '@/components/ui/button';
 import { useCharacterStore } from '@/lib/character-store';
-import { PlusCircle, Users, Loader2, Settings, Calculator, BookOpenCheck, ShieldPlus, Languages, Repeat } from 'lucide-react'; // Added Repeat
+import { PlusCircle, Users, Settings, Calculator, BookOpenCheck, ShieldPlus, Languages, Repeat } from 'lucide-react'; // Added Repeat
 import Link from 'next/link';
 import Image from 'next/image';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useDefinitionsStore, type CustomSkillDefinition } from '@/lib/definitions-store';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -41,8 +40,6 @@ export default function CharacterDashboardPage() {
   const [isCustomFeatDialogOpen, setIsCustomFeatDialogOpen] = React.useState(false);
   const [editingCustomFeatDefinition, setEditingCustomFeatDefinition] = React.useState<(FeatDefinitionJsonData & { isCustom: true }) | undefined>(undefined);
 
-
-  const isLoading = isStoreLoading || translationsLoading;
 
   let numericPointBuyBudget: number;
   if (typeof rawPointBuyBudgetFromStore === 'number' && !isNaN(rawPointBuyBudgetFromStore)) {
@@ -110,24 +107,8 @@ export default function CharacterDashboardPage() {
     deleteCharacter(id);
   };
 
-  if (isLoading || !translations) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-8 pb-4 border-b border-border">
-          <div className="flex items-center space-x-3 mb-4 sm:mb-0">
-            <Users className="h-10 w-10 text-primary" />
-            <Skeleton className="h-10 w-64" />
-          </div>
-          <Skeleton className="h-12 w-56 rounded-md" />
-        </div>
-        <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">
-              {translations?.UI_STRINGS.dashboardLoadingCharacters}
-            </p>
-        </div>
-      </div>
-    );
+  if (isStoreLoading || translationsLoading || !translations) {
+    return null;
   }
 
   const { UI_STRINGS } = translations;

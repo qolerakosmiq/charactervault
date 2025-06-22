@@ -14,7 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox'; // ComboboxOption uses 'value'
-import { Loader2, CheckCircle } from 'lucide-react';
+import { CheckCircle } from 'lucide-react';
 import type { FeatDefinitionJsonData } from '@/types/character-core';
 import { useI18n } from '@/context/I18nProvider';
 import { useToast } from '@/hooks/use-toast';
@@ -63,21 +63,7 @@ export function SpecializationInputDialog({
   };
 
   if (translationsLoading || !translations || !featDefinition) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle className="flex items-center font-serif">
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              {translations?.UI_STRINGS.loadingText}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="py-4 text-center">
-            <p>{translations?.UI_STRINGS.loadingText}</p>
-          </div>
-        </DialogContent>
-      </Dialog>
-    );
+    return null;
   }
 
   const { UI_STRINGS } = translations;

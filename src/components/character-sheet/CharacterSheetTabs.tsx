@@ -12,7 +12,7 @@ import { SkillsListing } from './SkillsListing';
 import { FeatsListing } from './FeatsListing';
 import { InventoryListing } from './InventoryListing';
 import { SpellsListing } from './SpellsListing';
-import { Save, Trash2, Users, Shield, Brain, Award, Backpack, Sparkles, Dices, Swords, Loader2 } from 'lucide-react';
+import { Save, Trash2, Users, Shield, Brain, Award, Backpack, Sparkles, Dices, Swords } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import {
@@ -219,16 +219,7 @@ export function CharacterSheetTabs({ initialCharacter, onSave, onDelete }: Chara
   };
   
   if (!character || translationsLoading || !translations?.UI_STRINGS || !detailedAbilityScores || !aggregatedFeatEffects || allAvailableFeatDefinitions.length === 0) {
-    return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center py-10 min-h-[300px]">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">
-              {translations?.UI_STRINGS?.characterSheetLoadingCharacter}
-            </p>
-        </div>
-      </div>
-    );
+    return null;
   }
   const UI_STRINGS = translations.UI_STRINGS;
 

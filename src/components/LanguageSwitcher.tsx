@@ -15,7 +15,7 @@ export function LanguageSwitcher() {
   const { language, setLanguage, isLoading } = useI18n();
 
   if (isLoading) {
-    return <div className="h-10 w-28 animate-pulse rounded-md bg-muted"></div>; 
+    return null;
   }
 
   return (

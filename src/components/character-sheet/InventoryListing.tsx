@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Backpack, PlusCircle, Trash2, Edit3, Loader2 } from 'lucide-react';
+import { Backpack, PlusCircle, Trash2, Edit3 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Label } from '@/components/ui/label';
@@ -14,7 +14,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface InventoryListingProps {
   inventory: ItemType[];
@@ -98,12 +97,7 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
   };
 
   if (translationsLoading || !UI_STRINGS) {
-    return (
-      <Card>
-        <CardHeader><Skeleton className="h-8 w-32" /></CardHeader>
-        <CardContent><Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" /></CardContent>
-      </Card>
-    );
+    return null;
   }
   
   const currentFields = editingItem || newItem;
@@ -311,5 +305,3 @@ export function InventoryListing({ inventory, onItemAdd, onItemRemove, onItemUpd
     </Card>
   );
 }
-
-    

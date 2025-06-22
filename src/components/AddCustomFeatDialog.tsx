@@ -17,7 +17,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { PlusCircle, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ComboboxPrimitive, type ComboboxOption } from '@/components/ui/combobox';
 import { Separator } from '@/components/ui/separator';
@@ -270,30 +270,7 @@ const AddCustomFeatDialogComponent = ({
 
 
   if (isFormDisabled) {
-    return (
-        <Dialog open={isOpen} onOpenChange={onOpenChange}>
-            <DialogContent className="sm:max-w-2xl">
-                <DialogHeader>
-                    <DialogTitle className="flex items-center font-serif">
-                        {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-                        {translations?.UI_STRINGS.loadingFeatDefinitionTitle}
-                    </DialogTitle>
-                </DialogHeader>
-                <div className="flex justify-center items-center py-10">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle}</p>
-                </div>
-                <DialogFooter className="mt-2 pt-4 border-t">
-                    <Button variant="outline" onClick={() => onOpenChange(false)} type="button" disabled>
-                        Cancel
-                    </Button>
-                    <Button type="button" disabled>
-                        {isEditing ? 'Save Changes to Definition' : 'Save Custom Feat Definition'}
-                    </Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
-    );
+    return null;
   }
   const UI_STRINGS = translations.UI_STRINGS;
 

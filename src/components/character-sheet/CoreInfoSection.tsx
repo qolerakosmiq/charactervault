@@ -6,10 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { UserCircle2, Loader2 } from 'lucide-react';
+import { UserCircle2 } from 'lucide-react';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface CoreInfoSectionProps {
   character: Pick<Character, 'name' | 'race' | 'alignment' | 'deity' | 'size' | 'age' | 'gender' | 'classes' | 'playerName' | 'campaign' | 'homeland'>; // Added playerName, campaign, homeland
@@ -45,36 +44,7 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
   const firstClass = character.classes[0] || { id: crypto.randomUUID(), className: '', level: 1 };
 
   if (translationsLoading || !translations) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <UserCircle2 className="h-6 w-6 text-primary" />
-            <Skeleton className="h-6 w-40" />
-          </div>
-          <Skeleton className="h-4 w-64 mt-1" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><Label>{translations?.UI_STRINGS.characterNameLabel}</Label><Skeleton className="h-10 w-full" /></div>
-            <div><Label>{translations?.UI_STRINGS.raceLabel}</Label><Skeleton className="h-10 w-full" /></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><Label>{translations?.UI_STRINGS.classLabel}</Label><Skeleton className="h-10 w-full" /></div>
-            <div><Label>{translations?.UI_STRINGS.levelLabel}</Label><Skeleton className="h-10 w-24" /></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div><Label>{translations?.UI_STRINGS.alignmentLabel}</Label><Skeleton className="h-10 w-full" /></div>
-            <div><Label>{translations?.UI_STRINGS.deityLabel}</Label><Skeleton className="h-10 w-full" /></div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div><Label className="inline-block w-full text-center">{translations?.UI_STRINGS.ageLabel}</Label><Skeleton className="h-10 w-24 mx-auto" /></div>
-            <div><Label>{translations?.UI_STRINGS.genderLabel}</Label><Skeleton className="h-10 w-full" /></div>
-            <div><Label>{translations?.UI_STRINGS.sizeLabel}</Label><Skeleton className="h-10 w-full" /></div>
-          </div>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
   const { SIZES, ALIGNMENTS, UI_STRINGS, DND_RACES, DND_CLASSES, GENDERS } = translations;
 
@@ -202,5 +172,3 @@ export function CoreInfoSection({ character, onCoreValueChange, onClassChange }:
     </Card>
   );
 }
-
-    

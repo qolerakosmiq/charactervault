@@ -14,7 +14,7 @@ import {
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Calculator, Loader2 } from 'lucide-react';
+import { Calculator } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { cn } from '@/lib/utils';
@@ -121,30 +121,7 @@ export function AbilityScorePointBuyDialog({
   const isApplyDisabled = pointsRemaining !== 0 || !isValidBudgetProp || translationsLoading;
 
   if (translationsLoading || !translations) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg md:max-w-xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center font-serif">
-              <Calculator className="mr-2 h-6 w-6 text-primary" />
-              {translations?.UI_STRINGS.pointBuyDialogTitleLoading}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingAbilityNamesTitle}</p>
-          </div>
-           <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => onOpenChange(false)} type="button">
-              {translations?.UI_STRINGS.pointBuyDialogCancelButton}
-            </Button>
-            <Button disabled type="button">
-              {translations?.UI_STRINGS.pointBuyDialogApplyButton}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
+    return null;
   }
   const { ABILITY_LABELS, UI_STRINGS, DND_CLASSES } = translations;
 

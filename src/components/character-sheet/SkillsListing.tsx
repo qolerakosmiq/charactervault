@@ -1,17 +1,17 @@
+
 'use client';
 
 import type { Character, Skill as SkillType, AbilityScores, AggregatedFeatEffects, DetailedAbilityScores } from '@/types/character';
 import type { AbilityName } from '@/types/character-core';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Scroll, Loader2 } from 'lucide-react';
+import { Scroll } from 'lucide-react';
 import { getAbilityModifierByName, calculateLevelFromXp } from '@/lib/dnd-utils';
 import { calculateMaxRanks } from '@/lib/constants';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { calculateTotalSynergyBonus, calculateRacialSkillBonus, calculateSizeSpecificSkillBonus } from '@/types/character';
 import React from 'react';
 
@@ -51,25 +51,7 @@ export const SkillsListing: React.FC<SkillsListingProps> = ({
 
 
   if (translationsLoading || !translations?.UI_STRINGS || !translations.SKILL_DEFINITIONS || !detailedAbilityScores || !aggregatedFeatEffects) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Scroll className="h-6 w-6 text-primary" />
-            <CardTitle className="font-serif">{translations?.UI_STRINGS?.skillsPanelTitle}</CardTitle>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS?.skillsPanelLoadingSkills}</p>
-          </div>
-          <Skeleton className="h-8 w-full mb-2" />
-          <Skeleton className="h-8 w-full mb-2" />
-          <Skeleton className="h-8 w-full" />
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
   const { SKILL_DEFINITIONS, UI_STRINGS, ABILITY_LABELS, DND_RACES, SIZES, SKILL_SYNERGIES } = translations;
   const characterRaceId = 'human'; // Placeholder, should come from character prop if available

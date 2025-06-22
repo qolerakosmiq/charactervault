@@ -23,13 +23,8 @@ export default function NewCharacterPage() {
     router.push(`/character/${newCharacter.id}`);
   };
   
-  // Show a basic loading state if translations are not ready yet for critical UI elements (like CharacterFormCore)
-  if (translationsLoading) {
-      return (
-          <div className="container mx-auto px-4 py-8 text-center">
-              <p className="text-lg text-muted-foreground">Loading form...</p>
-          </div>
-      );
+  if (translationsLoading || !translations) {
+      return null;
   }
 
   return (

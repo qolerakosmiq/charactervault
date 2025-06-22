@@ -16,7 +16,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Dices, Loader2 } from 'lucide-react';
+import { RefreshCw, Dices } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/I18nProvider';
 import { useToast } from "@/hooks/use-toast";
@@ -200,26 +200,7 @@ export function AbilityScoreRollerDialog({
 
 
   if (translationsLoading || !translations) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-md md:sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center font-serif">
-              <Dices className="mr-2 h-6 w-6 text-primary" />
-              {translations?.UI_STRINGS.rollerDialogTitleLoading}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle}</p>
-          </div>
-          <DialogFooter className="mt-6">
-            <Button variant="outline" onClick={() => onOpenChange(false)} disabled>{translations?.UI_STRINGS.rollerDialogCancelButton}</Button>
-            <Button disabled>{translations?.UI_STRINGS.rollerDialogApplyButton}</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
+    return null;
   }
   const { UI_STRINGS, ABILITY_LABELS } = translations;
 

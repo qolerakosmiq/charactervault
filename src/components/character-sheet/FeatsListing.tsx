@@ -6,11 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Sparkles, Edit3, Loader2 } from 'lucide-react'; // Added Edit3
+import { Award, PlusCircle, Trash2, Sparkles, Edit3 } from 'lucide-react'; // Added Edit3
 import { useState, useEffect } from 'react';
 import { FeatSkillSuggesterDialog } from '@/components/FeatSkillSuggesterDialog';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import type { FeatDefinitionJsonData } from '@/types/character-core';
 
 interface FeatsListingProps {
@@ -76,24 +75,7 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
   };
   
   if (translationsLoading || !UI_STRINGS) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Award className="h-6 w-6 text-primary" />
-              <Skeleton className="h-6 w-20" />
-            </div>
-            <Skeleton className="h-8 w-32" />
-          </div>
-          <Skeleton className="h-4 w-3/4 mt-1" />
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <Skeleton className="h-12 w-full" />
-          <Skeleton className="h-12 w-full" />
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
 
@@ -230,5 +212,3 @@ export function FeatsListing({ feats, characterClasses, onFeatAdd, onFeatRemove,
     </Card>
   );
 }
-
-    

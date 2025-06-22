@@ -11,8 +11,8 @@ import {
 } from '@/types/character';
 import type { CustomSkillDefinition } from '@/lib/definitions-store';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Award, PlusCircle, Trash2, Pencil, Loader2, Info, Edit3 } from 'lucide-react';
+import { CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Award, PlusCircle, Trash2, Pencil, Info, Edit3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { FeatSelectionDialog } from '../FeatSelectionDialog';
 import { SpecializationInputDialog } from '../SpecializationInputDialog';
@@ -20,7 +20,6 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { useI18n, type I18nContextType } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 
@@ -88,7 +87,7 @@ const FeatsFormSectionComponent = ({
         classes: featSectionData.classes,
         feats: featSectionData.feats,
         experiencePoints: featSectionData.experiencePoints || 0,
-        classSpecificChoices: featSectionData.classSpecificChoices,
+        classSpecificChoices: featSectionData.classSpecificChoices, // Pass this through
         deity: featSectionData.deity,
       },
       allAvailableFeatDefinitions,
@@ -310,7 +309,7 @@ const FeatsFormSectionComponent = ({
   }, [translations, allAvailableFeatDefinitions, onEditCustomFeatDefinition, toast]);
 
   const renderFeatInstance = React.useCallback((instance: CharacterFeatInstance, isPanelLocked: boolean) => {
-    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return <Skeleton key={instance.instanceId} className="h-20 w-full mb-2" />;
+    if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.SKILL_DEFINITIONS) return null;
 
     const definition = allAvailableFeatDefinitions.find(def => def.id === instance.definitionId);
     if (!definition) {
@@ -487,25 +486,7 @@ const FeatsFormSectionComponent = ({
 
 
   if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DND_CLASSES || !translations.DND_RACES || !translations.ABILITY_LABELS || !translations.ALIGNMENT_PREREQUISITE_OPTIONS) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <Award className="h-8 w-8 text-primary" />
-              <div><Skeleton className="h-7 w-16 mb-1" /><Skeleton className="h-4 w-40" /></div>
-            </div>
-            <Skeleton className="h-8 w-8" />
-          </div>
-        </CardHeader>
-        <CardContent>
-          <Skeleton className="h-12 w-full mb-4" />
-          <Skeleton className="h-10 w-1/3 mb-4" />
-          <Skeleton className="h-16 w-full mb-2" />
-          <Skeleton className="h-16 w-full mb-2" />
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
   const { DND_CLASSES, DND_RACES, ABILITY_LABELS, ALIGNMENT_PREREQUISITE_OPTIONS, UI_STRINGS } = translations;
 
@@ -546,7 +527,7 @@ const FeatsFormSectionComponent = ({
                     ))
                 )}
                 {' = '}<span className="font-bold text-primary">{availableFeatSlots}</span>
-              </p>
+            </p>
             </div>
             
             {aggregatedFeatEffects?.favoredEnemyBonuses && (aggregatedFeatEffects.favoredEnemyBonuses.skillBonus > 0 || aggregatedFeatEffects.favoredEnemyBonuses.damageBonus > 0) && (

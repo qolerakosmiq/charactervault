@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ComboboxPrimitive } from '@/components/ui/combobox'; // ComboboxOption uses 'value'
-import { PlusCircle, Pencil, Trash2, Sparkles, Loader2 } from 'lucide-react';
+import { PlusCircle, Pencil, Trash2, Sparkles } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
@@ -137,30 +137,7 @@ const AddCustomSkillDialogComponent = ({
 
 
   if (translationsLoading || !translations) {
-    return (
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center font-serif">
-              {isEditing ? <Pencil className="mr-2 h-6 w-6 text-primary" /> : <PlusCircle className="mr-2 h-6 w-6 text-primary" />}
-               {translations?.UI_STRINGS.loadingOptionsTitle}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="flex justify-center items-center py-10">
-             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-             <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.loadingOptionsTitle}</p>
-          </div>
-          <DialogFooter className="mt-2">
-            <Button variant="outline" onClick={() => onOpenChange(false)} type="button" disabled>
-              Cancel
-            </Button>
-            <Button type="button" disabled>
-              {isEditing ? 'Save Definition Changes' : 'Save Skill Definition'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    );
+    return null;
   }
   const UI_STRINGS = translations.UI_STRINGS;
 

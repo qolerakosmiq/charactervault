@@ -5,10 +5,9 @@ import type { AbilityName, AbilityScores } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
-import { Dices, Loader2 } from 'lucide-react';
+import { Dices } from 'lucide-react';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 
 interface AbilityScoresSectionProps {
   abilityScores: AbilityScores;
@@ -21,25 +20,7 @@ export function AbilityScoresSection({ abilityScores, onAbilityScoreChange }: Ab
   const { translations, isLoading: translationsLoading } = useI18n();
 
   if (translationsLoading || !translations) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex items-center space-x-2">
-            <Dices className="h-6 w-6 text-primary" />
-            <Skeleton className="h-6 w-32" />
-          </div>
-        </CardHeader>
-        <CardContent className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-6 pt-2">
-          {abilityKeys.map(ability => (
-            <div key={`skel-${ability}`} className="space-y-1 text-center">
-              <Skeleton className="h-4 w-8 mx-auto mb-1" />
-              <Skeleton className="h-10 w-20 mx-auto" />
-              <Skeleton className="h-6 w-10 mx-auto mt-1" />
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
   const { ABILITY_LABELS, UI_STRINGS } = translations;
 
@@ -88,6 +69,3 @@ export function AbilityScoresSection({ abilityScores, onAbilityScoreChange }: Ab
     </Card>
   );
 }
-
-
-    
