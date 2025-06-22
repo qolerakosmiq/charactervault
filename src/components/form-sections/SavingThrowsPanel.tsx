@@ -17,6 +17,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
 import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelGridGap, panelBadgeGroupGap, textStyleModifier, textStyleSubtle, textStyleValueBig, panelFieldVerticalGap } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
+import { useI18n } from '@/context/I18nProvider';
 
 export interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes' | 'feats'>;
@@ -74,7 +75,7 @@ const SavingThrowCard = React.memo(({
   else if (abilityModifier < 0) badgeColor = 'destructive';
 
   return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelBadgeGroupGap)}>
+    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelGridGap)}>
       <Label className="text-md font-medium">{saveTypeLabel}</Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{renderModifierValue(totalValue)}</p>
@@ -93,24 +94,22 @@ const SavingThrowCard = React.memo(({
       </div>
 
       {!panelIsLocked && (
-        <div className={cn("w-full mt-auto pt-2", panelFieldVerticalGap)}>
-          <div className={cn("flex flex-col", panelBadgeGroupGap)}>
+        <div className={cn("w-full mt-auto pt-2 flex flex-col items-center", panelGridGap)}>
+          <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelBase}</Label>
-            <p className="font-bold text-accent">{baseValue}</p>
+            <p className={cn("font-bold text-accent", textStyleValueMedium)}>{baseValue}</p>
           </div>
-          <div className={cn("flex flex-col", panelBadgeGroupGap)}>
+          <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-            <div className="flex justify-center">
-                <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
-            </div>
+            <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
           </div>
-          <div className={cn("flex flex-col", panelBadgeGroupGap)}>
+          <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
             <Label className={cn(textStyleSubtle, "font-bold")}>
               {uiStrings.savingThrowsRowLabelMiscModifier}
             </Label>
             <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
           </div>
-          <div className={cn("flex flex-col", panelBadgeGroupGap)}>
+          <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
               <Label htmlFor={`temp-mod-${saveType}`} className={cn(textStyleSubtle, "font-bold")}>
                 {uiStrings.savingThrowsRowLabelTemporaryModifier}
               </Label>
@@ -120,7 +119,7 @@ const SavingThrowCard = React.memo(({
                   type="number"
                   value={localTemporaryMod}
                   onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                  className="text-center h-8"
+                  className="text-center"
                   disabled={panelIsLocked}
                 />
               </div>
