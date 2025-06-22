@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Info, Dices } from 'lucide-react';
+import { Zap, Info, Dices, Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -79,7 +79,7 @@ const SavingThrowCard = React.memo(({
   
   const { UI_STRINGS } = translations || { UI_STRINGS: {} };
 
-  const formattedAbilityModifier = abilityModifier >= 0 ? `+${abilityModifier}` : String(abilityModifier);
+  const formattedAbilityModifier = `${abilityModifier >= 0 ? '+' : ''}${abilityModifier}`;
 
   return (
     <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
@@ -91,7 +91,7 @@ const SavingThrowCard = React.memo(({
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
             onClick={() => onOpenInfoDialog(saveType)}
-            aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
+            aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
             >
             <Info />
             </Button>
@@ -101,12 +101,12 @@ const SavingThrowCard = React.memo(({
       <div className="flex flex-col items-center">
         <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-          <p className={cn(textStyleModifier, 'text-center')}>{renderModifierValue(totalValue)}</p>
+          <p className={cn(textStyleModifier, 'text-center', "text-xl")}>{renderModifierValue(totalValue)}</p>
            <Button
             type="button" variant="ghost" size="icon-xs"
             className="text-muted-foreground hover:text-primary self-center"
             onClick={() => onOpenRollDialog(saveType)}
-            aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel || "").replace("{saveTypeLabel}", saveTypeLabel)}
+            aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
           >
             <Dices />
           </Button>
@@ -213,12 +213,49 @@ const SavingThrowsPanelComponent = ({
     onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType });
   }, [onOpenInfoDialog]);
 
+  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations || {};
+  
+  const calculatedBaseSaves = React.useMemo(() => getBaseSaves(savingThrowsData.classes, DND_CLASSES || []), [savingThrowsData.classes, DND_CLASSES]);
+  
+  const savingThrowCardsData = React.useMemo(() => {
+    if (!translations || !abilityScores || !aggregatedFeatEffects) return [];
+    
+    return SAVE_TYPES.map(saveType => {
+        const baseSaveValue = calculatedBaseSaves[saveType];
+        const abilityKey = SAVING_THROW_ABILITIES[saveType];
+        const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
+        const calculatedTotalMiscBonusForSaveVal = calculateCalculatedTotalMiscBonusForSave(saveType);
+        const tempModValue = savingThrowsData.savingThrows[saveType].miscMod || 0;
+        const totalCalculatedValue = baseSaveValue + abilityModifier + calculatedTotalMiscBonusForSaveVal + tempModValue;
+        const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType;
+        const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
+        const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
+        
+        return {
+          saveType,
+          saveTypeLabel,
+          totalValue: totalCalculatedValue,
+          baseValue: baseSaveValue,
+          abilityModifier,
+          abilityAbbr,
+          miscBonus: calculatedTotalMiscBonusForSaveVal,
+          tempModValue,
+        };
+    });
+  }, [
+    translations, 
+    abilityScores, 
+    aggregatedFeatEffects, 
+    calculatedBaseSaves, 
+    SAVING_THROW_LABELS, 
+    ABILITY_LABELS,
+    calculateCalculatedTotalMiscBonusForSave,
+    savingThrowsData.savingThrows
+  ]);
+
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return null;
   }
-
-  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
-  const calculatedBaseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
 
   return (
     <LockablePanelWrapper
@@ -237,28 +274,10 @@ const SavingThrowsPanelComponent = ({
     >
       {({ isLocked: panelIsLocked }) => (
         <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
-          {SAVE_TYPES.map((saveType) => {
-            const baseSaveValue = calculatedBaseSaves[saveType];
-            const abilityKey = SAVING_THROW_ABILITIES[saveType];
-            const abilityModifier = getAbilityModifierByName(abilityScores, abilityKey);
-            const calculatedTotalMiscBonusForSaveVal = calculateCalculatedTotalMiscBonusForSave(saveType);
-            const tempModValue = savingThrowsData.savingThrows[saveType].miscMod || 0;
-            const totalCalculatedValue = baseSaveValue + abilityModifier + calculatedTotalMiscBonusForSaveVal + tempModValue;
-            const saveTypeLabel = SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType;
-            const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === abilityKey);
-            const abilityAbbr = abilityLabelInfo?.abbr || abilityKey.substring(0,3).toUpperCase();
-
-            return (
+          {savingThrowCardsData.map((cardData) => (
               <SavingThrowCard
-                key={saveType}
-                saveType={saveType}
-                saveTypeLabel={saveTypeLabel}
-                totalValue={totalCalculatedValue}
-                baseValue={baseSaveValue}
-                abilityModifier={abilityModifier}
-                abilityAbbr={abilityAbbr}
-                miscBonus={calculatedTotalMiscBonusForSaveVal}
-                tempModValue={tempModValue}
+                key={cardData.saveType}
+                {...cardData}
                 onTempModChange={onSavingThrowTemporaryModChange}
                 panelIsLocked={panelIsLocked}
                 onOpenInfoDialog={handleOpenInfo}
@@ -266,13 +285,12 @@ const SavingThrowsPanelComponent = ({
                 uiStrings={UI_STRINGS}
                 translations={translations}
               />
-            );
-          })}
+            )
+          )}
         </div>
       )}
     </LockablePanelWrapper>
   );
 };
-
 SavingThrowsPanelComponent.displayName = 'SavingThrowsPanelComponent';
 export const SavingThrowsPanel = React.memo(SavingThrowsPanelComponent);
