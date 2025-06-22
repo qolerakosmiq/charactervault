@@ -17,7 +17,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, textStyleValueBig, textStyleModifier, textStyleSubtle } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleValueMedium } from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
@@ -183,13 +183,17 @@ const CharacterFormAbilityScoresSectionComponent = ({
         headerClassName="bg-muted/20"
         initialLockedState={false}
         footer={
-          <p className="text-sm text-muted-foreground">
-            {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full)}
-          </p>
+          !isLocked && (
+            <p className="text-sm text-muted-foreground">
+              {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
+                badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+              })}
+            </p>
+          )
         }
       >
         {({ isLocked: panelIsLocked }) => (
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
             {abilityKeys.map(ability => {
               const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
               const modifierColorClass = finalModifier > 0 ? "text-emerald-500" : finalModifier < 0 ? "text-destructive" : "text-muted-foreground";
@@ -241,30 +245,28 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 )}
               </div>
             )})}
-            {!panelIsLocked && (
-              <>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="default"
-                  onClick={() => setIsRollerDialogOpen(true)}
-                  disabled={panelIsLocked}
-                  className="w-full sm:col-span-1 lg:col-start-5"
-                >
-                  <Dices /> {UI_STRINGS.abilityScoresRollButton}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="default"
-                  onClick={() => setIsPointBuyDialogOpen(true)}
-                  disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
-                  className="w-full sm:col-span-1 lg:col-start-6"
-                >
-                  <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
-                </Button>
-              </>
-            )}
+            
+              <Button
+                type="button"
+                variant="outline"
+                size="default"
+                onClick={() => setIsRollerDialogOpen(true)}
+                disabled={panelIsLocked}
+                className="w-full sm:col-start-2 lg:col-start-5"
+              >
+                <Dices /> {UI_STRINGS.abilityScoresRollButton}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                size="default"
+                onClick={() => setIsPointBuyDialogOpen(true)}
+                disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
+                className="w-full sm:col-start-auto lg:col-start-auto"
+              >
+                <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
+              </Button>
+            
           </div>
         )}
       </LockablePanelWrapper>
