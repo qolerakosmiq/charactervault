@@ -52,16 +52,17 @@ const AbilityScoreInputGroup = ({
   onOpenRollDialog,
 }: AbilityScoreInputGroupProps) => {
   
-  const handleDebouncedBaseScoreChange = React.useCallback((value: number) => {
-    onBaseScoreChange(abilityKey, value);
-  }, [onBaseScoreChange, abilityKey]);
+  const [localBaseScore, setLocalBaseScore] = useDebouncedFormField(
+    baseScoreValue,
+    (value) => onBaseScoreChange(abilityKey, value),
+    DEBOUNCE_DELAY_FORM_INPUT
+  );
   
-  const handleDebouncedTempModChange = React.useCallback((value: number) => {
-    onTempModChange(abilityKey, value);
-  }, [onTempModChange, abilityKey]);
-  
-  const [localBaseScore, setLocalBaseScore] = useDebouncedFormField(baseScoreValue, handleDebouncedBaseScoreChange, DEBOUNCE_DELAY_FORM_INPUT);
-  const [localTempMod, setLocalTempMod] = useDebouncedFormField(tempModValue, handleDebouncedTempModChange, DEBOUNCE_DELAY_FORM_INPUT);
+  const [localTempMod, setLocalTempMod] = useDebouncedFormField(
+    tempModValue,
+    (value) => onTempModChange(abilityKey, value),
+    DEBOUNCE_DELAY_FORM_INPUT
+  );
   
   const finalModifier = calculateAbilityModifier(finalScore);
   const modifierColorClass = finalModifier > 0 ? "text-emerald-500" : finalModifier < 0 ? "text-destructive" : "text-muted-foreground";
@@ -208,11 +209,11 @@ const CharacterFormAbilityScoresSectionComponent = ({
         headerClassName="bg-muted/20"
         initialLockedState={false}
         footer={
-          <p className="text-sm text-muted-foreground">
-            {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
-              badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
-            })}
-          </p>
+            <p className="text-sm text-muted-foreground">
+              {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full, {
+                badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+              })}
+            </p>
         }
       >
         {({ isLocked: panelIsLocked }) => (
