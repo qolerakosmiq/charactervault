@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Dices, Info, Calculator } from 'lucide-react';
+import { Dices, Info, Calculator, Lock, Unlock } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -18,7 +18,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, textStyleValueBig, textStyleValueMedium, textStyleSubtle } from '@/config/layout';
+import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, textStyleValueBig, textStyleValueMedium, textStyleSubtle, panelBadgeGroupGap } from '@/config/layout';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -76,17 +76,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
     );
   });
 
-
-  let numericPointBuyBudget: number;
-  if (typeof rawPointBuyBudgetFromStore === 'number' && !isNaN(rawPointBuyBudgetFromStore)) {
-    numericPointBuyBudget = rawPointBuyBudgetFromStore;
-  } else if (typeof rawPointBuyBudgetFromStore === 'string') {
-    const parsed = parseFloat(rawPointBuyBudgetFromStore);
-    numericPointBuyBudget = !isNaN(parsed) ? parsed : 25;
-  } else {
-    numericPointBuyBudget = 25;
-  }
-  const pointBuyBudget = numericPointBuyBudget;
+  const pointBuyBudget = rawPointBuyBudgetFromStore;
 
 
   const handleApplyRolledScores = React.useCallback((newScores: AbilityScores) => {
@@ -108,7 +98,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const handleOpenRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
     if (!detailedAbilityScores || !translations) return;
     const abilityLabelInfo = translations.ABILITY_LABELS.find(al => al.id === ability);
-    const abilityName = abilityLabelInfo?.label || ability;
+    const abilityName = abilityLabelInfo?.label;
     const finalModifier = calculateAbilityModifier(detailedAbilityScores[ability].finalScore);
 
     const breakdown: GenericBreakdownItem[] = [
@@ -130,8 +120,10 @@ const CharacterFormAbilityScoresSectionComponent = ({
   const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
   }, []);
 
-
-  const { ABILITY_LABELS, UI_STRINGS } = translations!;
+  if (translationsLoading || !translations || !detailedAbilityScores) {
+    return null;
+  }
+  const { ABILITY_LABELS, UI_STRINGS } = translations;
 
 
   return (
@@ -142,6 +134,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         icon={Dices}
         headerClassName="bg-muted/20"
         initialLockedState={false}
+        cardContentClassName="space-y-4"
         footer={
           <p className="text-sm text-muted-foreground">
             {parseAndRenderUIString(UI_STRINGS.abilityScoresNote_full)}
@@ -160,12 +153,12 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 const displayModifier = calculateAbilityModifier(displayTotalScore);
 
                 const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === ability);
-                const abilityDisplayName = abilityLabelInfo?.label || ability;
-                const abilityAbbr = abilityLabelInfo?.abbr || ability.substring(0,3).toUpperCase();
+                const abilityDisplayName = abilityLabelInfo?.label;
+                const abilityAbbr = abilityLabelInfo?.abbr;
 
 
                 return (
-                  <div key={ability} className={cn("flex flex-col border rounded-md bg-card", panelContentPadding)}>
+                  <div key={ability} className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelBadgeGroupGap)}>
                     <Label htmlFor={!panelIsLocked ? `base-score-${ability}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                       <span>{abilityAbbr}</span>
                       <span className={textStyleSubtle}>{abilityDisplayName}</span>
@@ -187,7 +180,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                       )}
                     </div>
                     
-                    <div className="mt-1 flex flex-col items-center">
+                    <div className="flex flex-col items-center">
                         <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
                         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                             <p className={textStyleValueMedium}>{displayModifier >= 0 ? '+' : ''}{displayModifier}</p>
@@ -238,7 +231,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
             </div>
 
             {!panelIsLocked && (
-              <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6 mt-4", panelGridGap)}>
+              <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
                 <div className="sm:col-start-2 lg:col-start-5">
                   <Button
                       type="button"
