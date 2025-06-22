@@ -14,7 +14,7 @@ import { getXpRequiredForLevel } from '@/lib/dnd-utils';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
-import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
+import { debounceDelayFormInput } from '@/config/layout';
 
 export interface ExperiencePanelData {
   currentXp: number;
@@ -41,7 +41,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   const [localCurrentXp, setLocalCurrentXp] = useDebouncedFormField(
     currentXp,
     debouncedXpChange,
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
 
   const xpForCurrentLevelStart = React.useMemo(() => {
