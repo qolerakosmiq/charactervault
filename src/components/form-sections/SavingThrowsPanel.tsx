@@ -16,7 +16,7 @@ import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleSubtle, textStyleValueBig } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleModifier, textStyleSubtle, textStyleValueBig } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { parseAndRenderUIString } from '@/lib/utils';
 
@@ -95,35 +95,37 @@ const SavingThrowCard = React.memo(({
       </div>
 
       {!panelIsLocked && (
-        <div className="w-full mt-auto pt-2 space-y-2 text-center">
-          <div className="space-y-1">
-            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelBase}</Label>
-            <p className="font-bold text-accent">{baseValue}</p>
+        <div className={cn("w-full mt-auto pt-2 space-y-2 text-center", panelFieldVerticalGap)}>
+           <div className="space-y-1">
+              <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelBase}</Label>
+              <p className="font-bold text-accent">{baseValue}</p>
           </div>
           <div className="space-y-1">
-            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-            <div className="flex justify-center">
-              <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
-            </div>
+              <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+              <div className="flex justify-center">
+                  <DualBadge leftLabel={abilityAbbr} rightLabel={renderModifierValue(abilityModifier)} color={badgeColor} />
+              </div>
           </div>
           <div className="space-y-1">
-            <Label className={cn(textStyleSubtle, "font-bold")}>{uiStrings.savingThrowsRowLabelMiscModifier}</Label>
-            <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
+              <Label className={cn(textStyleSubtle, "font-bold")}>
+                {uiStrings.savingThrowsRowLabelMiscModifier}
+              </Label>
+              <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
           </div>
           <div className="space-y-1">
-            <Label htmlFor={`temp-mod-${saveType}`} className={cn(textStyleSubtle, "font-bold")}>
-              {uiStrings.savingThrowsRowLabelTemporaryModifier}
-            </Label>
-            <div className="flex justify-center">
+              <Label htmlFor={`temp-mod-${saveType}`} className={cn(textStyleSubtle, "font-bold")}>
+                {uiStrings.savingThrowsRowLabelTemporaryModifier}
+              </Label>
+              <div className="flex justify-center">
                 <Input
-                id={`temp-mod-${saveType}`}
-                type="number"
-                value={localTemporaryMod}
-                onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                className="text-center"
-                disabled={panelIsLocked}
+                  id={`temp-mod-${saveType}`}
+                  type="number"
+                  value={localTemporaryMod}
+                  onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
+                  className="text-center"
+                  disabled={panelIsLocked}
                 />
-            </div>
+              </div>
           </div>
         </div>
       )}
