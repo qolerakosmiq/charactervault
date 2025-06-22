@@ -2,6 +2,7 @@
 {
   "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" },
   "rollDialogAbilityCheckAriaLabel": { "en": "Roll {abilityName} Check", "fr": "Lancer un test de {abilityName}" },
+  "infoDialogClassSpecificChoiceAriaLabel": { "en": "More information about {choiceName}", "fr": "Plus d'informations sur {choiceName}" },
   "infoDialogTitleScoreCalculation": { "en": "{abilityName} Score Calculation", "fr": "Calcul du score de {abilityName}" },
   "infoDialogTitleSavingThrowBreakdown": { "en": "Saving Throw Breakdown ({saveTypeLabel})", "fr": "Détail du Jet de Sauvegarde ({saveTypeLabel})" },
   "infoDialogSavingThrowBreakdownAriaLabel": { "en": "Detailed breakdown for {saveTypeLabel} save", "fr": "Détail du calcul pour le jet de {saveTypeLabel}" },
@@ -27,26 +28,9 @@
   "infoDialogDeityPlaceholder": { "en": "Select or type a deity to see more information.", "fr": "Sélectionnez ou tapez une divinité pour voir plus d'informations." },
   "infoDialogSkillDefaultTitle": { "en": "Skill Details", "fr": "Détails de Compétence" },
   "infoDialogSkillNotFound": { "en": "Skill details not found.", "fr": "Détails de la compétence introuvables." },
-  "infoDialogAbilityScoreAdjustments": { "en": "Ability Score Adjustments", "fr": "Ajustements des Caractéristiques" },
-  "infoDialogRacialSkillBonuses": { "en": "Racial Skill Bonuses", "fr": "Bonus Raciaux de Compétence" },
-  "infoDialogBaseSpeeds": { "en": "Base Speeds", "fr": "Vitesses de Base" },
-  "infoDialogBonusFeatSlots": { "en": "Bonus Feat Slots", "fr": "Emplacements de Don Bonus" },
-  "infoDialogGrantedFeaturesAndFeats": { "en": "Granted Features & Feats", "fr": "Capacités et Dons Accordés" },
-  "infoDialogClassSpecificsListHeading": { "en": "Class Specifics", "fr": "Spécificités de Classe" },
-  "infoDialogSynergiesSectionTitle": { "en": "Synergies", "fr": "Synergies" },
-  "infoDialogNoSkillDescription": { "en": "No details available for this skill.", "fr": "Aucun détail disponible pour cette compétence." },
-  "infoDialogKeyAbilityLabel": { "en": "Key Ability", "fr": "Caractéristique clé" },
-  "infoDialogRanksLabel": { "en": "Ranks", "fr": "Rangs" },
-  "infoDialogSynergyBonusLabel": { "en": "Synergy Bonus", "fr": "Bonus de Synergie" },
-  "infoDialogSizeModifierLabel": { "en": "Size Modifier", "fr": "Modificateur de Taille" },
-  "synergyTextPart1ThisSkill": { "en": "This skill", "fr": "Cette compétence" },
-  "synergyTextPart1Provided": { "en": ", with ", "fr": ", avec " },
-  "synergyTextPart2Ranks": { "en": " ranks, ", "fr": " rangs, " },
-  "synergyTextPart3GrantsA": { "en": "grants a ", "fr": "accorde un " },
-  "synergyTextPart4BonusToTargetSkillStart": { "en": " bonus to ", "fr": " bonus à " },
-  "synergyTextPart4BonusToTargetSkillEnd": { "en": ".", "fr": "." },
-  "synergyTextPart1Received": { "en": ", with ", "fr": ", avec " },
-  "synergyTextPart4BonusToThisSkill": { "en": " bonus to this skill.", "fr": " bonus à cette compétence." },
-  "rollDialogSavingThrowAriaLabel": { "en": "Roll {saveTypeLabel} Save", "fr": "Lancer un jet de {saveTypeLabel}" }
+  "infoDialogAbilityModLabel": { "en": "Ability Modifier", "fr": "Mod. de Carac." },
+  "acLabelGeneric": { "en": "AC", "fr": "CA" },
+  "acBreakdownMonkScalingLabel": { "en": "Monk Scaling AC", "fr": "CA Évolutive du Moine" },
+  "abilityScoreSourceMonkWisdom": { "en": "Monk Wisdom Bonus", "fr": "Bonus de Sagesse du Moine"}
 }
     
