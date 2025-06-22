@@ -15,7 +15,7 @@ import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
-import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelGridGap, panelBadgeGroupGap, textStyleModifier, textStyleSubtle, textStyleValueBig, panelFieldVerticalGap } from '@/config/layout';
+import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap, panelGridGap, panelBadgeGroupGap, textStyleModifier, textStyleSubtle, textStyleValueBig, textStyleValueMedium, panelFieldVerticalGap } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
 
