@@ -168,7 +168,7 @@ const SavingThrowsPanelComponent = ({
     
     const breakdown: GenericBreakdownItem[] = [
       { label: UI_STRINGS.savingThrowsRowLabelBase, value: baseSaves[saveType] },
-      { label: (UI_STRINGS.savingThrowsRowLabelAbilityModifier).replace('{abilityAbbr}', ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
+      { label: (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
     ];
     const miscBonus = calculateCalculatedTotalMiscBonusForSave(saveType);
     if(miscBonus !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier, value: miscBonus });
@@ -178,7 +178,7 @@ const SavingThrowsPanelComponent = ({
     const totalModifier = breakdown.reduce((sum, item) => sum + (typeof item.value === 'number' ? item.value : 0), 0);
 
     onOpenRollDialog({
-      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow).replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
+      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow || "Roll {saveTypeLabel} Save").replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
       rollType: `saving_throw_${saveType}`,
       baseModifier: totalModifier,
       calculationBreakdown: breakdown,
