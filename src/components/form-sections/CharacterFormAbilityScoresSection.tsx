@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Dices, Info, Calculator, Loader2 } from 'lucide-react';
+import { Dices, Info, Calculator } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -191,7 +191,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
       >
         {({ isLocked: panelIsLocked }) => (
           <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
-            {/* Ability Cards */}
             <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
                 <Label htmlFor={!panelIsLocked ? `base-score-strength` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                   <span>{ABILITY_LABELS.find(al => al.id === 'strength')?.abbr}</span>
@@ -369,28 +368,28 @@ const CharacterFormAbilityScoresSectionComponent = ({
             
             {/* Generator Buttons */}
             {!panelIsLocked && (
-              <div className="sm:col-start-2 sm:col-span-2 lg:col-start-5 lg:col-span-2 flex flex-col items-stretch gap-2">
-                  <Button
-                      type="button"
-                      variant="outline"
-                      size="default"
-                      onClick={() => setIsRollerDialogOpen(true)}
-                      disabled={panelIsLocked}
-                      className="w-full"
-                  >
-                      <Dices /> {UI_STRINGS.abilityScoresRollButton}
-                  </Button>
-                  <Button
-                      type="button"
-                      variant="outline"
-                      size="default"
-                      onClick={() => setIsPointBuyDialogOpen(true)}
-                      disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
-                      className="w-full"
-                  >
-                      <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
-                  </Button>
-              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="default"
+                onClick={() => setIsRollerDialogOpen(true)}
+                disabled={panelIsLocked}
+                className="w-full sm:col-start-2 lg:col-start-5"
+              >
+                <Dices /> {UI_STRINGS.abilityScoresRollButton}
+              </Button>
+            )}
+            {!panelIsLocked && (
+              <Button
+                type="button"
+                variant="outline"
+                size="default"
+                onClick={() => setIsPointBuyDialogOpen(true)}
+                disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
+                className="w-full"
+              >
+                <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
+              </Button>
             )}
           </div>
         )}
