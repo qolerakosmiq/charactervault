@@ -9,5 +9,5 @@ export const DEBOUNCE_DELAY_FORM_INPUT = 400; // milliseconds
 
 // Text Styles
 export const textStyleValueBig = "text-lg font-bold text-accent text-center";
-export const textStyleValueMedium = "text-lg text-accent font-normal";
+export const textStyleModifier = "text-xl font-bold";
 export const textStyleSubtle = "text-xs text-muted-foreground";
