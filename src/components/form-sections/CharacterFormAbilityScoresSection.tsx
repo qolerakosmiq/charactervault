@@ -59,91 +59,79 @@ const CharacterFormAbilityScoresSectionComponent = ({
   
   const [str, setStr] = useDebouncedFormField(
     abilityScoresData.abilityScores.strength,
-    React.useCallback((value: number) => onBaseAbilityScoreChange('strength', value), [onBaseAbilityScoreChange]),
+    (value: number) => onBaseAbilityScoreChange('strength', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [strMod, setStrMod] = useDebouncedFormField(
     abilityScoresData.abilityScoreTempCustomModifiers?.strength,
-    React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('strength', value), [onAbilityScoreTempCustomModifierChange]),
+    (value: number) => onAbilityScoreTempCustomModifierChange('strength', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [dex, setDex] = useDebouncedFormField(
     abilityScoresData.abilityScores.dexterity,
-    React.useCallback((value: number) => onBaseAbilityScoreChange('dexterity', value), [onBaseAbilityScoreChange]),
+    (value: number) => onBaseAbilityScoreChange('dexterity', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [dexMod, setDexMod] = useDebouncedFormField(
     abilityScoresData.abilityScoreTempCustomModifiers?.dexterity,
-    React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('dexterity', value), [onAbilityScoreTempCustomModifierChange]),
+    (value: number) => onAbilityScoreTempCustomModifierChange('dexterity', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [con, setCon] = useDebouncedFormField(
     abilityScoresData.abilityScores.constitution,
-    React.useCallback((value: number) => onBaseAbilityScoreChange('constitution', value), [onBaseAbilityScoreChange]),
+    (value: number) => onBaseAbilityScoreChange('constitution', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [conMod, setConMod] = useDebouncedFormField(
     abilityScoresData.abilityScoreTempCustomModifiers?.constitution,
-    React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('constitution', value), [onAbilityScoreTempCustomModifierChange]),
+    (value: number) => onAbilityScoreTempCustomModifierChange('constitution', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [int, setInt] = useDebouncedFormField(
     abilityScoresData.abilityScores.intelligence,
-    React.useCallback((value: number) => onBaseAbilityScoreChange('intelligence', value), [onBaseAbilityScoreChange]),
+    (value: number) => onBaseAbilityScoreChange('intelligence', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [intMod, setIntMod] = useDebouncedFormField(
     abilityScoresData.abilityScoreTempCustomModifiers?.intelligence,
-    React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('intelligence', value), [onAbilityScoreTempCustomModifierChange]),
+    (value: number) => onAbilityScoreTempCustomModifierChange('intelligence', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [wis, setWis] = useDebouncedFormField(
     abilityScoresData.abilityScores.wisdom,
-    React.useCallback((value: number) => onBaseAbilityScoreChange('wisdom', value), [onBaseAbilityScoreChange]),
+    (value: number) => onBaseAbilityScoreChange('wisdom', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [wisMod, setWisMod] = useDebouncedFormField(
     abilityScoresData.abilityScoreTempCustomModifiers?.wisdom,
-    React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('wisdom', value), [onAbilityScoreTempCustomModifierChange]),
+    (value: number) => onAbilityScoreTempCustomModifierChange('wisdom', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const [cha, setCha] = useDebouncedFormField(
     abilityScoresData.abilityScores.charisma,
-    React.useCallback((value: number) => onBaseAbilityScoreChange('charisma', value), [onBaseAbilityScoreChange]),
+    (value: number) => onBaseAbilityScoreChange('charisma', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
   const [chaMod, setChaMod] = useDebouncedFormField(
     abilityScoresData.abilityScoreTempCustomModifiers?.charisma,
-    React.useCallback((value: number) => onAbilityScoreTempCustomModifierChange('charisma', value), [onAbilityScoreTempCustomModifierChange]),
+    (value: number) => onAbilityScoreTempCustomModifierChange('charisma', value),
     DEBOUNCE_DELAY_FORM_INPUT
   );
 
   const handleApplyRolledScores = React.useCallback((newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
-    setStr(newScores.strength);
-    setDex(newScores.dexterity);
-    setCon(newScores.constitution);
-    setInt(newScores.intelligence);
-    setWis(newScores.wisdom);
-    setCha(newScores.charisma);
     setIsRollerDialogOpen(false);
-  }, [onMultipleBaseAbilityScoresChange, setStr, setDex, setCon, setInt, setWis, setCha]);
+  }, [onMultipleBaseAbilityScoresChange]);
 
   const handleApplyPointBuyScores = React.useCallback((newScores: AbilityScores) => {
     onMultipleBaseAbilityScoresChange(newScores);
-    setStr(newScores.strength);
-    setDex(newScores.dexterity);
-    setCon(newScores.constitution);
-    setInt(newScores.intelligence);
-    setWis(newScores.wisdom);
-    setCha(newScores.charisma);
     setIsPointBuyDialogOpen(false);
-  }, [onMultipleBaseAbilityScoresChange, setStr, setDex, setCon, setInt, setWis, setCha]);
+  }, [onMultipleBaseAbilityScoresChange]);
 
   const handleOpenRollDialog = React.useCallback((ability: Exclude<AbilityName, 'none'>) => {
     if (!detailedAbilityScores || !translations) return;
