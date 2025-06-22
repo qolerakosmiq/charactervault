@@ -5,7 +5,7 @@ import *as React from 'react';
 import type { AbilityName, AbilityScores, DetailedAbilityScores, Character, GenericBreakdownItem, DndClassId } from '@/types/character';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Dices, Info, Calculator } from 'lucide-react';
+import { Dices, Info, Calculator, Loader2 } from 'lucide-react';
 import { calculateAbilityModifier } from '@/lib/dnd-utils';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
@@ -376,26 +376,22 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
             {!panelIsLocked && (
               <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
-                <div className="lg:col-start-5 sm:col-span-3">
+                <div className="sm:col-span-3 lg:col-start-5 lg:col-span-2 flex flex-col items-stretch gap-2">
                   <Button
                       type="button"
                       variant="outline"
                       size="default"
                       onClick={() => setIsRollerDialogOpen(true)}
                       disabled={panelIsLocked}
-                      className="w-full"
                   >
                       <Dices /> {UI_STRINGS.abilityScoresRollButton}
                   </Button>
-                </div>
-                <div className="lg:col-start-6 sm:col-span-3">
                   <Button
                       type="button"
                       variant="outline"
                       size="default"
                       onClick={() => setIsPointBuyDialogOpen(true)}
                       disabled={panelIsLocked || typeof pointBuyBudget !== 'number'}
-                      className="w-full"
                   >
                       <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
                   </Button>
