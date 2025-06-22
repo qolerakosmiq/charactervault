@@ -11,6 +11,7 @@
   "abilityScoreRaceModBadgeFormat": { "en": "{abilityAbbr} | <b>{change}</b>", "fr": "{abilityAbbr} | <b>{change}</b>" },
   "acModSizeBadgeFormat": { "en": "AC | <b>{acModValue}</b>", "fr": "CA | <b>{acModValue}</b>" },
   "infoDialogAbilityBreakdownAriaLabel": { "en": "Detailed breakdown for {abilityName}", "fr": "Détail du calcul pour {abilityName}" },
-  "rollDialogAbilityCheckAriaLabel": { "en": "Roll {abilityName} Check", "fr": "Lancer un test de {abilityName}" }
+  "rollDialogAbilityCheckAriaLabel": { "en": "Roll {abilityName} Check", "fr": "Lancer un test de {abilityName}" },
+  "abilityScoresPanelLoading": { "en": "Loading ability scores...", "fr": "Chargement des caractéristiques..." }
 }
     

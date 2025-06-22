@@ -13,14 +13,12 @@ import { AbilityScoreRollerDialog } from '@/components/AbilityScoreRollerDialog'
 import { AbilityScorePointBuyDialog } from '@/components/AbilityScorePointBuyDialog';
 import { RollDialog, type RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
-import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { useToast } from '@/hooks/use-toast';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
-import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
+import { panelGridGap, panelFieldVerticalGap, panelFieldHorizontalGap, DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding } from '@/config/layout';
 
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
@@ -143,17 +141,9 @@ const CharacterFormAbilityScoresSectionComponent = ({
         initialLockedState={false}
        >
         {() => (
-          <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
-            {abilityKeys.map(ability => (
-              <div key={ability} className="flex flex-col p-3 border rounded-md bg-card shadow-sm gap-2">
-                <Skeleton className="h-6 w-12 mb-1" />
-                <Skeleton className="h-8 w-16 mb-1" />
-                <Skeleton className="h-4 w-16 mb-1" />
-                <Skeleton className="h-9 w-full" />
-                <Skeleton className="h-4 w-20 mt-1" />
-                <Skeleton className="h-9 w-full" />
-              </div>
-            ))}
+          <div className="flex justify-center items-center py-10">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.abilityScoresPanelLoading || "Loading ability scores..."}</p>
           </div>
         )}
       </LockablePanelWrapper>
@@ -193,7 +183,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
 
                 return (
-                  <div key={ability} className="flex flex-col p-3 border rounded-md bg-card shadow-sm">
+                  <div key={ability} className={cn("flex flex-col border rounded-md bg-card", panelContentPadding)}>
                     <Label htmlFor={!panelIsLocked ? `base-score-${ability}` : undefined} className="text-center text-md font-medium flex flex-col items-center">
                       <span>{abilityAbbr}</span>
                       <span className="text-xs text-muted-foreground">{abilityDisplayName}</span>
@@ -205,12 +195,12 @@ const CharacterFormAbilityScoresSectionComponent = ({
                         <Button
                           type="button"
                           variant="ghost"
-                          size="icon"
-                          className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
+                          size="icon-xs"
+                          className="text-muted-foreground hover:text-primary self-center"
                           onClick={() => onOpenAbilityScoreBreakdownDialog(ability)}
                           aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", abilityDisplayName)}
                         >
-                          <Info className="h-3.5 w-3.5" />
+                          <Info />
                         </Button>
                       )}
                     </div>
@@ -218,16 +208,16 @@ const CharacterFormAbilityScoresSectionComponent = ({
                     <div className="mt-1 flex flex-col items-center">
                         <Label className="text-xs text-muted-foreground">{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
                         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                            <span className="text-lg text-accent font-normal">{displayModifier >= 0 ? '+' : ''}{displayModifier}</span>
+                            <p className="text-lg text-accent font-normal">{displayModifier >= 0 ? '+' : ''}{displayModifier}</p>
                             <Button
                               type="button"
                               variant="ghost"
-                              size="icon"
-                              className="h-5 w-5 p-0 text-muted-foreground hover:text-primary self-center"
+                              size="icon-xs"
+                              className="text-muted-foreground hover:text-primary self-center"
                               onClick={() => handleOpenRollDialog(ability)}
                               aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", abilityDisplayName)}
                             >
-                              <Dices className="h-3.5 w-3.5" />
+                              <Dices />
                             </Button>
                         </div>
                     </div>
@@ -242,7 +232,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                             value={baseScoreValue}
                             onChange={(e) => setBaseScoreValue(parseInt(e.target.value, 10) || 1)}
                             min={1}
-                            className="h-9 text-base text-center"
+                            className="text-base text-center"
                             disabled={panelIsLocked}
                           />
                         </div>
@@ -254,7 +244,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                             type="number"
                             value={tempCustomModValue}
                             onChange={(e) => setTempCustomModValue(parseInt(e.target.value, 10) || 0)}
-                            className="h-9 text-base text-center"
+                            className="text-base text-center"
                             disabled={panelIsLocked}
                           />
                         </div>
@@ -271,7 +261,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   <Button
                       type="button"
                       variant="outline"
-                      size="sm"
+                      size="default"
                       onClick={() => setIsRollerDialogOpen(true)}
                       disabled={panelIsLocked}
                       className="w-full"
@@ -283,7 +273,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                   <Button
                       type="button"
                       variant="outline"
-                      size="sm"
+                      size="default"
                       onClick={() => setIsPointBuyDialogOpen(true)}
                       disabled={panelIsLocked}
                       className="w-full"
@@ -329,4 +319,3 @@ const CharacterFormAbilityScoresSectionComponent = ({
 };
 CharacterFormAbilityScoresSectionComponent.displayName = 'CharacterFormAbilityScoresSectionComponent';
 export const CharacterFormAbilityScoresSection = React.memo(CharacterFormAbilityScoresSectionComponent);
-
