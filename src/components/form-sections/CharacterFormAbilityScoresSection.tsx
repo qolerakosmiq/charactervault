@@ -20,7 +20,6 @@ import { DEBOUNCE_DELAY_FORM_INPUT, panelContentPadding, panelFieldHorizontalGap
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
 
-
 const abilityKeys: Exclude<AbilityName, 'none'>[] = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'];
 
 interface AbilityScoreInputGroupProps {
@@ -36,10 +35,10 @@ interface AbilityScoreInputGroupProps {
     UI_STRINGS: ReturnType<typeof useI18n>['translations']['UI_STRINGS']
   };
   onOpenBreakdownDialog: (ability: Exclude<AbilityName, 'none'>) => void;
-  onOpenRollDialog: (ability: Exclude<AbilityName, 'none'>) => void;
+  onTriggerRollDialog: (ability: Exclude<AbilityName, 'none'>) => void;
 }
 
-const AbilityScoreInputGroup = ({
+const AbilityScoreInputGroup = React.memo(({
   abilityKey,
   finalScore,
   baseScoreValue,
@@ -49,23 +48,34 @@ const AbilityScoreInputGroup = ({
   panelIsLocked,
   translations,
   onOpenBreakdownDialog,
-  onOpenRollDialog,
+  onTriggerRollDialog,
 }: AbilityScoreInputGroupProps) => {
-  
+
+  const handleBaseScoreDebounced = React.useCallback((value: number) => {
+    onBaseScoreChange(abilityKey, value);
+  }, [abilityKey, onBaseScoreChange]);
+
+  const handleTempModDebounced = React.useCallback((value: number) => {
+    onTempModChange(abilityKey, value);
+  }, [abilityKey, onTempModChange]);
+
   const [localBaseScore, setLocalBaseScore] = useDebouncedFormField(
     baseScoreValue,
-    (value) => onBaseScoreChange(abilityKey, value),
+    handleBaseScoreDebounced,
     DEBOUNCE_DELAY_FORM_INPUT
   );
   
   const [localTempMod, setLocalTempMod] = useDebouncedFormField(
     tempModValue,
-    (value) => onTempModChange(abilityKey, value),
+    handleTempModDebounced,
     DEBOUNCE_DELAY_FORM_INPUT
   );
   
   const finalModifier = calculateAbilityModifier(finalScore);
-  const modifierColorClass = finalModifier > 0 ? "text-emerald-500" : finalModifier < 0 ? "text-destructive" : "text-muted-foreground";
+  const modifierColorClass = cn(
+    textStyleModifier,
+    finalModifier > 0 ? "text-emerald-500" : finalModifier < 0 ? "text-destructive" : "text-muted-foreground"
+  );
 
   const { ABILITY_LABELS, UI_STRINGS } = translations;
   
@@ -73,9 +83,9 @@ const AbilityScoreInputGroup = ({
     onOpenBreakdownDialog(abilityKey);
   }, [onOpenBreakdownDialog, abilityKey]);
   
-  const handleOpenRoll = React.useCallback(() => {
-    onOpenRollDialog(abilityKey);
-  }, [onOpenRollDialog, abilityKey]);
+  const handleTriggerRoll = React.useCallback(() => {
+    onTriggerRollDialog(abilityKey);
+  }, [onTriggerRollDialog, abilityKey]);
 
 
   return (
@@ -91,8 +101,8 @@ const AbilityScoreInputGroup = ({
       <div className="flex flex-col items-center">
         <Label className={textStyleSubtle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-          <p className={cn(textStyleModifier, modifierColorClass)}>{finalModifier >= 0 ? '+' : ''}{finalModifier}</p>
-          <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleOpenRoll} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
+          <p className={cn(modifierColorClass, "self-center")}>{finalModifier >= 0 ? '+' : ''}{finalModifier}</p>
+          <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleTriggerRoll} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel || "Roll {abilityName} Check").replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
         </div>
       </div>
       {!panelIsLocked && (
@@ -109,8 +119,8 @@ const AbilityScoreInputGroup = ({
       )}
     </div>
   )
-};
-const MemoizedAbilityScoreInputGroup = React.memo(AbilityScoreInputGroup);
+}));
+AbilityScoreInputGroup.displayName = 'AbilityScoreInputGroup';
 
 
 export interface CharacterFormAbilityScoresSectionProps {
@@ -219,7 +229,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
         {({ isLocked: panelIsLocked }) => (
           <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
             {abilityKeys.map(ability => (
-              <MemoizedAbilityScoreInputGroup
+              <AbilityScoreInputGroup
                 key={ability}
                 abilityKey={ability}
                 finalScore={detailedAbilityScores[ability].finalScore}
@@ -230,7 +240,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
                 panelIsLocked={panelIsLocked}
                 translations={translationSubsetForChild}
                 onOpenBreakdownDialog={onOpenAbilityScoreBreakdownDialog}
-                onOpenRollDialog={handleTriggerRollDialog}
+                onTriggerRollDialog={handleTriggerRollDialog}
               />
             ))}
             <Button
