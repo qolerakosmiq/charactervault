@@ -14,7 +14,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
-import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
+import { debounceDelayFormInput } from '@/config/layout';
 
 export type SpeedPanelCharacterData = Pick<Character,
   'race' | 'size' | 'classes' |
@@ -78,7 +78,7 @@ const SpeedPanelComponent = ({
     debouncedSpeedMods[config.type] = useDebouncedFormField(
       speedData[config.fieldKey]?.miscModifier || 0,
       onUpdateCallback,
-      DEBOUNCE_DELAY_FORM_INPUT
+      debounceDelayFormInput
     );
   });
 
@@ -86,14 +86,14 @@ const SpeedPanelComponent = ({
   const [localArmorPenaltyMiscMod, setLocalArmorPenaltyMiscMod] = useDebouncedFormField(
     speedData.armorSpeedPenalty_miscModifier || 0,
     armorPenaltyCallback,
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
 
   const loadPenaltyCallback = React.useCallback((value: number) => onCharacterUpdate('loadSpeedPenalty_miscModifier', value), [onCharacterUpdate]);
   const [localLoadPenaltyMiscMod, setLocalLoadPenaltyMiscMod] = useDebouncedFormField(
     speedData.loadSpeedPenalty_miscModifier || 0,
     loadPenaltyCallback,
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
 
 

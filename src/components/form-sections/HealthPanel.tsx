@@ -2,6 +2,7 @@
 'use client';
 
 import *as React from 'react';
+import type { MouseEvent } from 'react';
 import type { Character, AbilityScores, InfoDialogContentType } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
@@ -15,7 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
-import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
+import { debounceDelayFormInput } from '@/config/layout';
 
 export type HealthPanelData = Pick<Character,
   'hp' | 'baseMaxHp' | 'customMaxHpModifier' |
@@ -47,32 +48,32 @@ const HealthPanelComponent = ({
   const [localHp, setLocalHp] = useDebouncedFormField(
     healthData.hp,
     React.useCallback((value) => onCharacterUpdate('hp', Math.min(value, calculatedMaxHp > 0 ? calculatedMaxHp : value)), [onCharacterUpdate, calculatedMaxHp]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localBaseMaxHp, setLocalBaseMaxHp] = useDebouncedFormField(
     healthData.baseMaxHp,
     React.useCallback((value) => onCharacterUpdate('baseMaxHp', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localCustomMaxHpModifier, setLocalCustomMaxHpModifier] = useDebouncedFormField(
     healthData.customMaxHpModifier,
     React.useCallback((value) => onCharacterUpdate('customMaxHpModifier', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localNonlethalDamage, setLocalNonlethalDamage] = useDebouncedFormField(
     healthData.nonlethalDamage,
     React.useCallback((value) => onCharacterUpdate('nonlethalDamage', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localTemporaryHp, setLocalTemporaryHp] = useDebouncedFormField(
     healthData.temporaryHp,
     React.useCallback((value) => onCharacterUpdate('temporaryHp', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localNumberOfWounds, setLocalNumberOfWounds] = useDebouncedFormField(
     healthData.numberOfWounds || 0,
     React.useCallback((value) => onCharacterUpdate('numberOfWounds', value), [onCharacterUpdate]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
 
 

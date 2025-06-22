@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data'; 
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
-import { DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
+import { debounceDelayFormInput } from '@/config/layout';
 
 export interface ResistancesPanelProps {
   characterData: Pick<Character, 
@@ -63,7 +63,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     debouncedResistanceMods[field] = useDebouncedFormField(
       characterData[field]?.customMod || 0,
       (value) => onResistanceChange(field, 'customMod', value),
-      DEBOUNCE_DELAY_FORM_INPUT
+      debounceDelayFormInput
     );
   });
 

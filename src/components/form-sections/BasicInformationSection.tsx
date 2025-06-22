@@ -38,7 +38,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, textStyleSubtle, DEBOUNCE_DELAY_FORM_INPUT } from '@/config/layout';
+import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, textStyleSubtle, debounceDelayFormInput } from '@/config/layout';
 
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
@@ -232,47 +232,47 @@ const BasicInformationSectionComponent = ({
   const [localName, setLocalName] = useDebouncedFormField(
     characterData.name,
     React.useCallback((value) => onFieldChange('name', value), [onFieldChange]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localPlayerName, setLocalPlayerName] = useDebouncedFormField(
     characterData.playerName || '',
     React.useCallback((value) => onFieldChange('playerName', value), [onFieldChange]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localRace, setLocalRace] = useDebouncedFormField(
     characterData.race,
     React.useCallback((value) => onFieldChange('race', value as DndRaceId), [onFieldChange]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localClassName, setLocalClassName] = useDebouncedFormField(
     characterData.classes[0]?.className || '',
     React.useCallback((value) => onClassChange(value as DndClassId | string), [onClassChange]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localAlignment, setLocalAlignment] = useDebouncedFormField(
     characterData.alignment,
     React.useCallback((value) => onFieldChange('alignment', value as CharacterAlignment), [onFieldChange]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localDeity, setLocalDeity] = useDebouncedFormField(
     characterData.deity || "",
     React.useCallback((value) => onFieldChange('deity', value as DndDeityId | string), [onFieldChange]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localAge, setLocalAge] = useDebouncedFormField(
     characterData.age,
     React.useCallback((value) => onFieldChange('age', Math.max(value, currentMinAgeForInput)), [onFieldChange, currentMinAgeForInput]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localGender, setLocalGender] = useDebouncedFormField(
     characterData.gender,
     React.useCallback((value) => onFieldChange('gender', value as GenderId | string), [onFieldChange]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   const [localSize, setLocalSize] = useDebouncedFormField(
     characterData.size,
     React.useCallback((value) => onFieldChange('size', value as CharacterSize), [onFieldChange]),
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
 
   const { UI_STRINGS, ALIGNMENTS, DND_RACES, DND_CLASSES, DND_DEITIES, SIZES, GENDERS, DND_DOMAINS, DND_MAGIC_SCHOOLS, DND_CREATURE_TYPES, PREFERRED_DEFAULT_ALIGNMENT_IDS } = translations || {};

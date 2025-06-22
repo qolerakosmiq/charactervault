@@ -17,7 +17,7 @@ import { useI18n } from '@/context/I18nProvider';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
 import {
-  DEBOUNCE_DELAY_FORM_INPUT,
+  debounceDelayFormInput,
   panelContentPadding,
   panelFieldHorizontalGap,
   panelGridGap,
@@ -75,13 +75,13 @@ const AbilityScoreInputGroup = React.memo((({
   const [localBaseScore, setLocalBaseScore] = useDebouncedFormField(
     baseScoreValue,
     handleBaseScoreDebounced,
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   
   const [localTempMod, setLocalTempMod] = useDebouncedFormField(
     tempModValue,
     handleTempModDebounced,
-    DEBOUNCE_DELAY_FORM_INPUT
+    debounceDelayFormInput
   );
   
   const finalModifier = calculateAbilityModifier(finalScore);

@@ -16,7 +16,7 @@ import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
 import {
-  DEBOUNCE_DELAY_FORM_INPUT,
+  debounceDelayFormInput,
   panelContentPadding,
   panelFieldHorizontalGap,
   panelGridGap,
@@ -84,7 +84,7 @@ const SavingThrowCard = React.memo(({
   }, [onTempModChange, saveType]);
 
   const [localTemporaryMod, setLocalTemporaryMod] = useDebouncedFormField(
-    tempModValue, handleDebouncedChange, DEBOUNCE_DELAY_FORM_INPUT
+    tempModValue, handleDebouncedChange, debounceDelayFormInput
   );
 
   let badgeColor: DualBadgeProps['color'] = 'default';
@@ -97,7 +97,7 @@ const SavingThrowCard = React.memo(({
 
   return (
     <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-       <Label className={cn("text-center flex flex-col items-center", panelBadgeGroupGap)}>
+       <Label className={cn("text-center flex flex-col items-center", panelFieldVerticalGap)}>
         <span className={textStyleCardTitle}>{saveTypeLabel}</span>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
             <p className={textStyleValueBig}>{baseValue}</p>
