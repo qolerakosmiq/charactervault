@@ -60,7 +60,7 @@ const LockablePanelWrapperComponent = ({
           {Icon && <Icon className="text-primary h-7 w-7 mr-3 shrink-0" />}
           <div>
             <CardTitle className="font-serif text-xl">{title}</CardTitle>
-            {description && <CardDescription>{description}</CardDescription>}
+            {description && !isLocked && <CardDescription>{description}</CardDescription>}
           </div>
         </div>
         <div className="absolute top-4 right-4 flex">
@@ -73,7 +73,7 @@ const LockablePanelWrapperComponent = ({
               aria-label={lockAriaLabel}
               aria-pressed={!isLocked}
               className={cn(
-                "h-7 w-7 shrink-0 p-1.5",
+                "h-7 w-7 shrink-0 p-1.5", 
                 isLocked
                   ? "text-muted-foreground hover:text-foreground"
                   : "bg-accent text-accent-foreground hover:bg-accent/90"
