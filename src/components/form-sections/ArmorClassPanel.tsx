@@ -18,7 +18,7 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, textStyleSubLabelTitle, textStyleValueBig, textStyleInput, textStyleCardTitle } from '@/config/layout';
+import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleSubLabelTitle, textStyleValueBig, textStyleInput, textStyleCardTitle } from '@/config/layout';
 import { Input } from '@/components/ui/input';
 
 export interface ArmorClassPanelProps {
@@ -215,3 +215,4 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
+
