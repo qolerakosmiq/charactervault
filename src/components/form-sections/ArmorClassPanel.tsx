@@ -16,7 +16,18 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelGridGap, textStyleSubLabelTitle, textStyleValueBig, textStyleCardTitle, textStyleInput, textStyleDescription, panelFieldVerticalGap } from '@/config/layout';
+import {
+  debounceDelayFormInput,
+  panelContentPadding,
+  panelFieldHorizontalGap,
+  panelGridGap,
+  textStyleSubLabelTitle,
+  textStyleValueBig,
+  textStyleCardTitle,
+  textStyleInput,
+  textStyleDescription,
+  panelFieldVerticalGap
+} from '@/config/layout';
 import { Input } from '@/components/ui/input';
 
 export interface ArmorClassPanelProps {
@@ -41,13 +52,22 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     debounceDelayFormInput
   );
 
-  const { dexModifier, sizeModAC, physicalArmorBonus, physicalShieldBonus } = React.useMemo(() => {
+  const dexModifier = React.useMemo(() => {
+    const scores = character.abilityScores || translations?.DEFAULT_ABILITIES;
+    if (!scores) return 0;
+    return getAbilityModifierByName(scores, 'dexterity');
+  }, [character.abilityScores.dexterity, translations]);
+
+  const sizeModAC = React.useMemo(() => {
+    if (!translations) return 0;
+    return getSizeModifierAC(character.size || 'medium', translations.SIZES);
+  }, [character.size, translations]);
+  
+  const { physicalArmorBonus, physicalShieldBonus } = React.useMemo(() => {
     if (!translations) {
-      return { dexModifier: 0, sizeModAC: 0, physicalArmorBonus: 0, physicalShieldBonus: 0 };
+      return { physicalArmorBonus: 0, physicalShieldBonus: 0 };
     }
-    const { DEFAULT_ABILITIES, SIZES, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_MAGIC_ITEMS } = translations;
-    const currentAbilityScores = character.abilityScores || DEFAULT_ABILITIES;
-    const currentSize = character.size || 'medium';
+    const { ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_MAGIC_ITEMS } = translations;
     const allItemDefinitions = [...(ITEM_DEFINITIONS_ARMOR || []), ...(ITEM_DEFINITIONS_SHIELDS || []), ...(ITEM_DEFINITIONS_MAGIC_ITEMS || [])];
 
     const equippedArmorInstanceId = character.equippedGear?.['armor-body'];
@@ -59,12 +79,11 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     const equippedShieldDefinition = equippedShieldInstance ? allItemDefinitions.find(def => def.definitionId === equippedShieldInstance.definitionId && def.itemType === 'shield') : undefined;
 
     return {
-      dexModifier: getAbilityModifierByName(currentAbilityScores, 'dexterity'),
-      sizeModAC: getSizeModifierAC(currentSize, SIZES),
       physicalArmorBonus: equippedArmorDefinition?.armorBonus || 0,
       physicalShieldBonus: equippedShieldDefinition?.shieldBonus || 0,
     };
-  }, [character.abilityScores, character.size, character.equippedGear, character.inventory, translations]);
+  }, [character.equippedGear, character.inventory, translations]);
+
 
   const calculateTotalAcComponent = React.useCallback((
     baseCharacterValue: number | undefined,
@@ -98,9 +117,9 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
             } else if ((effect.value === "WIS" || effect.value === "INT" || effect.value === "CHA") && character?.abilityScores) {
               const abilityKey = effect.value.toLowerCase() as 'wisdom' | 'intelligence' | 'charisma';
               const abilityMod = getAbilityModifierByName(character.abilityScores, abilityKey);
-              if ((effect as any).valueConstraint === 'positive' && abilityMod > 0) {
+              if (effect.valueConstraint === 'positive' && abilityMod > 0) {
                   valueToAdd = abilityMod;
-              } else if (!(effect as any).valueConstraint) {
+              } else if (!effect.valueConstraint) {
                  valueToAdd = abilityMod;
               }
             }
@@ -110,7 +129,12 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       });
     }
     return total;
-  }, [aggregatedFeatEffects, character.abilityScores]);
+  }, [
+    aggregatedFeatEffects, 
+    character.abilityScores.wisdom, 
+    character.abilityScores.intelligence, 
+    character.abilityScores.charisma
+  ]);
 
 
   const normalAC = React.useMemo(() => {
@@ -146,7 +170,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   }, [onOpenAcBreakdownDialog]);
 
 
-  if (translationsLoading || !translations || !aggregatedFeatEffects) {
+  if (translationsLoading || !translations) {
     return null;
   }
 
