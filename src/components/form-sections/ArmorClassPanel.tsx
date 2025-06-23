@@ -154,6 +154,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       description={UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}
       icon={Shield}
       initialLockedState={false}
+      headerClassName="bg-muted/20"
       cardContentClassName={panelGridGap}
       footer={
         <p className="text-sm text-muted-foreground">
@@ -168,34 +169,28 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <div className="flex items-center justify-center">
                 <p id="normal-ac-display" className={textStyleValueBig}>{normalAC}</p>
-                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog}>
-                  <Info className="h-4 w-4" />
-                </Button>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')}><Info className="h-4 w-4" /></Button>
               </div>
             </div>
             <div className="border rounded-md bg-muted/10 p-2">
               <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <div className="flex items-center justify-center">
                 <p id="touch-ac-display" className={textStyleValueBig}>{touchAC}</p>
-                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog}>
-                  <Info className="h-4 w-4" />
-                </Button>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')}><Info className="h-4 w-4" /></Button>
               </div>
             </div>
             <div className="border rounded-md bg-muted/10 p-2">
               <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <div className="flex items-center justify-center">
                 <p id="flat-footed-ac-display" className={textStyleValueBig}>{flatFootedAC}</p>
-                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog}>
-                  <Info className="h-4 w-4" />
-                </Button>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info className="h-4 w-4" /></Button>
               </div>
             </div>
           </div>
           
           {!panelIsLocked && (
             <div className="flex items-center justify-center gap-4">
-              <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">
+              <Label htmlFor="temporary-ac-modifier-input" className="font-medium">
                 {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
               </Label>
                <Input
@@ -206,7 +201,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
                   disabled={!onCharacterUpdate || panelIsLocked}
                   min={-20}
                   max={20}
-                  className={cn("max-w-24", textStyleInput)}
+                  className={cn("max-w-24")}
                 />
             </div>
           )}
