@@ -16,7 +16,7 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelGridGap, textStyleSubLabelTitle, textStyleValueBig, textStyleCardTitle, textStyleInput, panelFieldVerticalGap } from '@/config/layout';
+import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelGridGap, textStyleSubLabelTitle, textStyleValueBig, textStyleCardTitle, textStyleInput, textStyleDescription, panelFieldVerticalGap } from '@/config/layout';
 import { Input } from '@/components/ui/input';
 
 export interface ArmorClassPanelProps {
@@ -148,8 +148,8 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 
   return (
     <LockablePanelWrapper
-      title={UI_STRINGS.armorClassPanelTitle || "Armor Class"}
-      description={UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}
+      title={UI_STRINGS.armorClassPanelTitle}
+      description={UI_STRINGS.armorClassPanelDescription}
       icon={Shield}
       initialLockedState={false}
       headerClassName="bg-muted/20"
@@ -162,24 +162,24 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className={cn("grid grid-cols-1 md:grid-cols-3", panelFieldHorizontalGap)}>
+          <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
-              <div className="flex items-center justify-center gap-2">
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="normal-ac-display" className={textStyleValueBig}>{Math.max(0, normalAC)}</p>
                 <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
               </div>
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
-              <div className="flex items-center justify-center gap-2">
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="touch-ac-display" className={textStyleValueBig}>{Math.max(0, touchAC)}</p>
                 <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
               </div>
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
-              <div className="flex items-center justify-center gap-2">
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="flat-footed-ac-display" className={textStyleValueBig}>{Math.max(0, flatFootedAC)}</p>
                 <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
               </div>
@@ -187,7 +187,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
           </div>
           
           {!panelIsLocked && (
-            <div className="flex items-center justify-center gap-4">
+            <div className={cn("flex items-center justify-center", panelGridGap)}>
               <Label htmlFor="temporary-ac-modifier-input" className="font-medium">
                 {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
               </Label>
@@ -210,4 +210,3 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
-    

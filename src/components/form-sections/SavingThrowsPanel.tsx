@@ -21,7 +21,6 @@ import {
   panelFieldHorizontalGap,
   panelGridGap,
   panelFieldVerticalGap,
-  panelBadgeGroupGap,
   textStyleModifier,
   textStyleSubtle,
   textStyleValueBig,
@@ -111,53 +110,52 @@ const SavingThrowCard = React.memo(({
             </Button>
         </div>
       </Label>
-
-      <div className="flex flex-col items-center">
-        <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
-        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-          <p className={cn(textStyleModifier, 'text-center')}>{renderModifierValue(totalValue)}</p>
-           <Button
-            type="button" variant="ghost" size="icon-xs"
-            className="text-muted-foreground hover:text-primary self-center"
-            onClick={() => onOpenRollDialog(saveType)}
-            aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
-          >
-            <Dices />
-          </Button>
+      <div className="flex-grow" />
+      <>
+        <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
+          <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
+          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+            <p className={cn(textStyleModifier, 'text-center')}>{renderModifierValue(totalValue)}</p>
+             <Button
+              type="button" variant="ghost" size="icon-xs"
+              className="text-muted-foreground hover:text-primary self-center"
+              onClick={() => onOpenRollDialog(saveType)}
+              aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
+            >
+              <Dices />
+            </Button>
+          </div>
         </div>
-      </div>
-
-      {!panelIsLocked && (
-        <>
-          <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-            <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-            <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} />
-          </div>
-
-          <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-            <Label className={textStyleSubLabelTitle}>
-              {uiStrings.savingThrowsRowLabelMiscModifier}
-            </Label>
-            <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
-          </div>
-          
-          <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-              <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubLabelTitle}>
-                {uiStrings.savingThrowsRowLabelTemporaryModifier}
+        {!panelIsLocked && (
+          <>
+            <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
+              <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+              <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} />
+            </div>
+            <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
+              <Label className={textStyleSubLabelTitle}>
+                {uiStrings.savingThrowsRowLabelMiscModifier}
               </Label>
-              <div className="flex justify-center w-full">
-                <Input
-                  id={`temp-mod-${saveType}`}
-                  type="number"
-                  value={localTemporaryMod}
-                  onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                  className={textStyleInput}
-                  disabled={panelIsLocked}
-                />
-              </div>
-          </div>
-        </>
-      )}
+              <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
+            </div>
+            <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
+                <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubLabelTitle}>
+                  {uiStrings.savingThrowsRowLabelTemporaryModifier}
+                </Label>
+                <div className="flex justify-center w-full">
+                  <Input
+                    id={`temp-mod-${saveType}`}
+                    type="number"
+                    value={localTemporaryMod}
+                    onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
+                    className={textStyleInput}
+                    disabled={panelIsLocked}
+                  />
+                </div>
+            </div>
+          </>
+        )}
+      </>
     </div>
   )
 }));

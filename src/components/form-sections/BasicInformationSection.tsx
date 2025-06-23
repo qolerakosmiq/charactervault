@@ -38,7 +38,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, textStyleSubtle, debounceDelayFormInput, textStyleDescription, textStyleCardTitle, textStyleInput } from '@/config/layout';
+import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, debounceDelayFormInput } from '@/config/layout';
 
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
@@ -141,7 +141,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
 
   if (uiBlock.choiceType === 'select' || uiBlock.choiceType === 'combobox') {
     return (
-      <div className={panelFieldVerticalGap}>
+      <div className={cn("flex flex-col", panelFieldVerticalGap)}>
         <Label htmlFor={`cspec-${uiBlock.key}`} className="whitespace-nowrap">{blockLabel}</Label>
          <div className={cn("flex items-center", panelFieldHorizontalGap)}>
           <div className="flex-grow">
@@ -152,7 +152,7 @@ const ClassSpecificFieldComponent: React.FC<ClassSpecificFieldProps> = ({
           </div>
           {commonInfoButton}
         </div>
-        {blockNote && <p className={cn("italic", textStyleSubtle)}>{blockNote}</p>}
+        {blockNote && <p className="italic text-xs text-muted-foreground">{blockNote}</p>}
       </div>
     );
   }
@@ -482,18 +482,18 @@ const BasicInformationSectionComponent = ({
       {({ isLocked: panelIsLocked }) => (
         <div className={cn("flex flex-col", panelGridGap)}>
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-            <div className={panelFieldVerticalGap}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="name" className="whitespace-nowrap">{UI_STRINGS.characterNameLabel}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
             </div>
-            <div className={panelFieldVerticalGap}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="playerName" className="whitespace-nowrap">{UI_STRINGS.playerNameLabel}</Label>
               <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} />
             </div>
           </div>
 
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-            <div className={panelFieldVerticalGap}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="race" className="whitespace-nowrap">{UI_STRINGS.raceLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
@@ -518,7 +518,7 @@ const BasicInformationSectionComponent = ({
                 </div>
               )}
             </div>
-             <div className={panelFieldVerticalGap}>
+             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="className" className="whitespace-nowrap">{UI_STRINGS.classLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
@@ -589,7 +589,7 @@ const BasicInformationSectionComponent = ({
           )}
 
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-            <div className={panelFieldVerticalGap}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="alignment" className="whitespace-nowrap">{UI_STRINGS.alignmentLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
@@ -601,7 +601,7 @@ const BasicInformationSectionComponent = ({
                 <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment} className="shrink-0"> <Info /> </Button>
               </div>
             </div>
-            <div className={panelFieldVerticalGap}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                 <Label htmlFor="deity" className="whitespace-nowrap">{UI_STRINGS.deityLabel}</Label>
                 <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                   <div className="flex-grow">
@@ -629,7 +629,7 @@ const BasicInformationSectionComponent = ({
           </div>
 
           <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
-            <div className={panelFieldVerticalGap}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="age" className="block whitespace-nowrap">{UI_STRINGS.ageLabel}</Label>
               <Input
                 id="age"
@@ -659,14 +659,14 @@ const BasicInformationSectionComponent = ({
                 </div>
               )}
               </div>
-            <div className={panelFieldVerticalGap}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="gender" className="whitespace-nowrap">{UI_STRINGS.genderLabel}</Label>
               <Select name="gender" value={localGender} onValueChange={(value) => setLocalGender(value as GenderId)} disabled={panelIsLocked} >
                 <SelectTrigger id="gender"> <SelectValue /> </SelectTrigger>
                 <SelectContent> {genderSelectOptions.map(g => ( <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem> ))} </SelectContent>
               </Select>
             </div>
-            <div className={panelFieldVerticalGap}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="sizeCategory" className="whitespace-nowrap">{UI_STRINGS.sizeLabel}</Label>
               <div className="flex items-center">
                 <div className="flex-grow">

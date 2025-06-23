@@ -105,7 +105,7 @@ const AbilityScoreInputGroup = React.memo((({
     <div className={cn("flex flex-col border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
       <Label htmlFor={!panelIsLocked ? `base-score-${abilityKey}` : undefined} className="text-center flex flex-col items-center">
         <span className={textStyleCardTitle}>{ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr}</span>
-        <span className={cn(textStyleSubtle, "font-normal")}>{ABILITY_LABELS.find(al => al.id === abilityKey)?.label}</span>
+        <span className="text-xs text-muted-foreground font-normal">{ABILITY_LABELS.find(al => al.id === abilityKey)?.label}</span>
       </Label>
       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={textStyleValueBig}>{finalScore}</p>
@@ -120,11 +120,11 @@ const AbilityScoreInputGroup = React.memo((({
       </div>
       {!panelIsLocked && (
         <>
-          <div className={cn("w-full", panelFieldVerticalGap)}>
+          <div className={cn("w-full flex flex-col", panelFieldVerticalGap)}>
             <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
             <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={textStyleInput} disabled={panelIsLocked} />
           </div>
-          <div className={cn("w-full", panelFieldVerticalGap)}>
+          <div className={cn("w-full flex flex-col", panelFieldVerticalGap)}>
             <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
             <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={textStyleInput} disabled={panelIsLocked} />
           </div>
@@ -257,7 +257,7 @@ const CharacterFormAbilityScoresSectionComponent = ({
               />
             ))}
             {!panelIsLocked && (
-              <div className="contents">
+              <div className={cn("contents")}>
                 <Button
                   type="button"
                   variant="outline"
