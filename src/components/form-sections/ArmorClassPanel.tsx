@@ -8,8 +8,6 @@ import { Shield, Info } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { getAbilityModifierByName, getSizeModifierAC } from '@/lib/dnd-utils';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
@@ -18,7 +16,7 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, textStyleSubLabelTitle, textStyleValueBig, textStyleCardTitle, textStyleInput, panelGridGap } from '@/config/layout';
+import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelGridGap, textStyleSubLabelTitle, textStyleValueBig, textStyleCardTitle, textStyleInput, panelFieldVerticalGap } from '@/config/layout';
 import { Input } from '@/components/ui/input';
 
 export interface ArmorClassPanelProps {
@@ -164,22 +162,22 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className={cn("grid grid-cols-1 md:grid-cols-3 text-center", panelFieldHorizontalGap)}>
-            <div className="border rounded-md bg-muted/10 p-2">
+          <div className={cn("grid grid-cols-1 md:grid-cols-3", panelFieldHorizontalGap)}>
+            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <div className="flex items-center justify-center">
                 <p id="normal-ac-display" className={textStyleValueBig}>{normalAC}</p>
                 <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')}><Info className="h-4 w-4" /></Button>
               </div>
             </div>
-            <div className="border rounded-md bg-muted/10 p-2">
+            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <div className="flex items-center justify-center">
                 <p id="touch-ac-display" className={textStyleValueBig}>{touchAC}</p>
                 <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')}><Info className="h-4 w-4" /></Button>
               </div>
             </div>
-            <div className="border rounded-md bg-muted/10 p-2">
+            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <div className="flex items-center justify-center">
                 <p id="flat-footed-ac-display" className={textStyleValueBig}>{flatFootedAC}</p>
@@ -212,3 +210,4 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
+
