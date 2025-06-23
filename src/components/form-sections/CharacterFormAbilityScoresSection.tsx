@@ -119,7 +119,7 @@ const AbilityScoreInputGroup = React.memo((({
         </div>
       </div>
       {!panelIsLocked && (
-        <div className={cn("w-full mt-auto flex flex-col", panelFieldVerticalGap)}>
+        <>
           <div className={cn("w-full", panelFieldVerticalGap)}>
             <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
             <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={textStyleInput} disabled={panelIsLocked} />
@@ -128,7 +128,7 @@ const AbilityScoreInputGroup = React.memo((({
             <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
             <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={textStyleInput} disabled={panelIsLocked} />
           </div>
-        </div>
+        </>
       )}
     </div>
   )
