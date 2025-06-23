@@ -12,13 +12,14 @@ import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
 import { Separator } from '@/components/ui/separator';
 import { useI18n } from '@/context/I18nProvider';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { cn } from '@/lib/utils';
+import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
-import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
-import { debounceDelayFormInput } from '@/config/layout';
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleSubLabelTitle, textStyleValueBig } from '@/config/layout';
+import { Input } from '@/components/ui/input';
 
 export interface ArmorClassPanelProps {
   character: Character;
@@ -153,62 +154,60 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       description={UI_STRINGS.armorClassPanelDescription || "Details about your character's defenses."}
       icon={Shield}
       initialLockedState={false}
-      cardContentClassName="space-y-4"
+      cardContentClassName={panelGridGap}
+      footer={
+        <p className="text-sm text-muted-foreground">
+          {parseAndRenderUIString(UI_STRINGS.armorClassPanelTempModInfoNoteFull || "")}
+        </p>
+      }
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-center">
-            <div className="p-2 border rounded-md bg-muted/10">
-              <Label htmlFor="normal-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
+          <div className={cn("grid grid-cols-1 md:grid-cols-3 text-center", panelFieldHorizontalGap)}>
+            <div className="border rounded-md bg-muted/10 p-2">
+              <Label htmlFor="normal-ac-display" className={textStyleSubLabelTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <div className="flex items-center justify-center">
-                <p id="normal-ac-display" className="text-xl font-bold text-accent">{normalAC}</p>
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
+                <p id="normal-ac-display" className={textStyleValueBig}>{normalAC}</p>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <div className="p-2 border rounded-md bg-muted/10">
-              <Label htmlFor="touch-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
+            <div className="border rounded-md bg-muted/10 p-2">
+              <Label htmlFor="touch-ac-display" className={textStyleSubLabelTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <div className="flex items-center justify-center">
-                <p id="touch-ac-display" className="text-xl font-bold text-accent">{touchAC}</p>
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
+                <p id="touch-ac-display" className={textStyleValueBig}>{touchAC}</p>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
             </div>
-            <div className="p-2 border rounded-md bg-muted/10">
-              <Label htmlFor="flat-footed-ac-display" className="text-sm font-medium">{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
+            <div className="border rounded-md bg-muted/10 p-2">
+              <Label htmlFor="flat-footed-ac-display" className={textStyleSubLabelTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <div className="flex items-center justify-center">
-                <p id="flat-footed-ac-display" className="text-xl font-bold text-accent">{flatFootedAC}</p>
-                <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
+                <p id="flat-footed-ac-display" className={textStyleValueBig}>{flatFootedAC}</p>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </div>
-
-          <Separator className="mt-3 mb-1" />
           
           <div className="flex items-center justify-between">
-            <Label htmlFor="temporary-ac-modifier-input" className="text-sm font-medium">
+            <Label htmlFor="temporary-ac-modifier-input" className={textStyleSubLabelTitle}>
               {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
             </Label>
-            <NumberSpinnerInput
-              id="temporary-ac-modifier-input"
-              value={localTemporaryAcModifier}
-              onChange={setLocalTemporaryAcModifier}
-              disabled={!onCharacterUpdate || panelIsLocked}
-              min={-20}
-              max={20}
-              inputClassName="w-20 h-9 text-base"
-              buttonClassName="h-9 w-9"
-            />
+             <Input
+                id="temporary-ac-modifier-input"
+                type="number"
+                value={localTemporaryAcModifier}
+                onChange={(e) => setLocalTemporaryAcModifier(parseInt(e.target.value, 10) || 0)}
+                disabled={!onCharacterUpdate || panelIsLocked}
+                min={-20}
+                max={20}
+                className={cn("max-w-24", textStyleInput)}
+              />
           </div>
-          <p className="text-sm text-muted-foreground mb-4">
-            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNotePrefix }} />
-            <Badge variant="outline">{UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}</Badge>
-            <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.armorClassPanelTempModInfoNoteSuffix }} />
-          </p>
         </>
       )}
     </LockablePanelWrapper>
