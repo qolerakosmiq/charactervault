@@ -165,23 +165,23 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
           <div className={cn("grid grid-cols-1 md:grid-cols-3", panelFieldHorizontalGap)}>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center gap-2">
                 <p id="normal-ac-display" className={textStyleValueBig}>{Math.max(0, normalAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
               </div>
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center gap-2">
                 <p id="touch-ac-display" className={textStyleValueBig}>{Math.max(0, touchAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
               </div>
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center gap-2">
                 <p id="flat-footed-ac-display" className={textStyleValueBig}>{Math.max(0, flatFootedAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
               </div>
             </div>
           </div>
@@ -199,7 +199,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
                   disabled={!onCharacterUpdate || panelIsLocked}
                   min={-20}
                   max={20}
-                  className="max-w-24 text-base text-center"
+                  className={cn("max-w-24", textStyleInput)}
                 />
             </div>
           )}
