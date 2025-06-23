@@ -155,7 +155,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       cardContentClassName={panelGridGap}
       footer={
         <p className={textStyleDescription}>
-          {parseAndRenderUIString(UI_STRINGS.armorClassPanelTempModInfoNoteFull || "", {
+          {parseAndRenderUIString(UI_STRINGS.armorClassPanelTempModInfoNoteFull, {
             badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
           })}
         </p>
@@ -165,21 +165,21 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
         <>
           <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-              <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
+              <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="normal-ac-display" className={textStyleValueBig}>{Math.max(0, normalAC)}</p>
                 <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
               </div>
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-              <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
+              <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="touch-ac-display" className={textStyleValueBig}>{Math.max(0, touchAC)}</p>
                 <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
               </div>
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-              <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
+              <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="flat-footed-ac-display" className={textStyleValueBig}>{Math.max(0, flatFootedAC)}</p>
                 <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
@@ -190,7 +190,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
           {!panelIsLocked && (
             <div className={cn("flex items-center justify-center", panelGridGap)}>
               <Label htmlFor="temporary-ac-modifier-input" className="font-medium">
-                {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
+                {UI_STRINGS.armorClassMiscModifierLabel}
               </Label>
                <Input
                   id="temporary-ac-modifier-input"
