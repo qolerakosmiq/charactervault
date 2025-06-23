@@ -94,8 +94,32 @@
       "type": "special-ex", "isClassFeature": true, "permanentEffect": true,
       "effectsText": { "en": "Wisdom bonus to AC (unarmored, unencumbered). Additional +1 AC every 5 levels", "fr": "Bonus de Sagesse à la CA (sans armure, sans charge). +1 CA supplémentaire tous les 5 niveaux" },
       "effects": [
-        { "type": "armorClass", "acType": "monk_wisdom", "value": "WIS", "bonusType": "untyped", "condition": "unarmoredAndUnencumbered" },
-        { "type": "armorClass", "acType": "monkScaling", "value": 0, "bonusType": "untyped", "condition": "unarmoredAndUnencumbered", "appliesToScope": ["normal","touch","flatFooted"], "scaleWithClassLevel": { "classId": "monk", "specificLevels": [{"level":1, "value":0}, {"level":5, "value":1},{"level":10, "value":2},{"level":15, "value":3},{"level":20, "value":4}]} }
+        {
+          "type": "armorClass",
+          "acType": "untyped",
+          "value": "WIS",
+          "bonusType": "untyped",
+          "condition": "unarmoredAndUnencumbered",
+          "valueConstraint": "positive"
+        },
+        {
+          "type": "armorClass",
+          "acType": "untyped",
+          "value": 0,
+          "bonusType": "untyped",
+          "condition": "unarmoredAndUnencumbered",
+          "appliesToScope": ["normal", "touch", "flatFooted"],
+          "scaleWithClassLevel": {
+            "classId": "monk",
+            "specificLevels": [
+              { "level": 1, "value": 0 },
+              { "level": 5, "value": 1 },
+              { "level": 10, "value": 2 },
+              { "level": 15, "value": 3 },
+              { "level": 20, "value": 4 }
+            ]
+          }
+        }
       ]
     },
     {

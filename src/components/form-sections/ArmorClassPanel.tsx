@@ -43,7 +43,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 
   const calculateTotalAcComponent = React.useCallback((
     baseCharacterValue: number | undefined,
-    featAcType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "insight" | "circumstance" | "untyped" | "monk_wisdom" | "monkScaling" | "other_feat_bonus",
+    featAcType: "dodge" | "armor" | "shield" | "natural" | "deflection" | "other_feat_bonus",
     physicalItemBonus: number,
     acTypeForScope?: 'Normal' | 'Touch' | 'Flat-Footed'
   ): number => {
@@ -63,25 +63,24 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 
         if (effect.isActive && effectAppliesToCurrentAcScope) {
           let valueToAdd = 0;
-          if (effect.acType === featAcType) {
+          const mainAcTypes = ["dodge", "armor", "shield", "natural", "deflection"];
+          const isMainTypeMatch = mainAcTypes.includes(effect.acType) && effect.acType === featAcType;
+          const isOtherType = featAcType === 'other_feat_bonus' && !mainAcTypes.includes(effect.acType);
+
+          if (isMainTypeMatch || isOtherType) {
             if (typeof effect.value === 'number') {
               valueToAdd = effect.value;
             } else if ((effect.value === "WIS" || effect.value === "INT" || effect.value === "CHA") && character?.abilityScores) {
               const abilityKey = effect.value.toLowerCase() as 'wisdom' | 'intelligence' | 'charisma';
               const abilityMod = getAbilityModifierByName(character.abilityScores, abilityKey);
-              if (featAcType === "monk_wisdom" && abilityMod > 0) {
+              if ((effect as any).valueConstraint === 'positive') {
+                if (abilityMod > 0) valueToAdd = abilityMod;
+              } else {
                 valueToAdd = abilityMod;
-              } else if (featAcType !== "monk_wisdom") {
-                 valueToAdd = abilityMod;
               }
             }
-          } else if (featAcType === "other_feat_bonus" &&
-                     !["dodge", "armor", "shield", "natural", "deflection", "monk_wisdom", "monkScaling"].includes(effect.acType)) {
-            if (typeof effect.value === 'number') {
-              valueToAdd = effect.value;
-            }
+            total += valueToAdd;
           }
-          total += valueToAdd;
         }
       });
     }
@@ -123,19 +122,19 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   const totalNaturalArmorNormal = calculateTotalAcComponent(character.naturalArmor, "natural", 0, "Normal");
   const totalDeflectionBonusNormal = calculateTotalAcComponent(character.deflectionBonus, "deflection", 0, "Normal");
   const totalDodgeBonusNormal = calculateTotalAcComponent(character.dodgeBonus, "dodge", 0, "Normal");
-  const calculatedFeatMiscAcBonusNormal = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Normal") + calculateTotalAcComponent(0, "monk_wisdom", 0, "Normal") + calculateTotalAcComponent(0, "monkScaling", 0, "Normal");
+  const calculatedFeatMiscAcBonusNormal = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Normal");
   const normalAC = 10 + totalArmorBonusNormal + totalShieldBonusNormal + dexModifier + sizeModAC + totalNaturalArmorNormal + totalDeflectionBonusNormal + totalDodgeBonusNormal + calculatedFeatMiscAcBonusNormal + (character.acMiscModifier || 0);
 
   const totalDeflectionBonusTouch = calculateTotalAcComponent(character.deflectionBonus, "deflection", 0, "Touch");
   const totalDodgeBonusTouch = calculateTotalAcComponent(character.dodgeBonus, "dodge", 0, "Touch");
-  const calculatedFeatMiscAcBonusTouch = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Touch") + calculateTotalAcComponent(0, "monk_wisdom", 0, "Touch") + calculateTotalAcComponent(0, "monkScaling", 0, "Touch");
+  const calculatedFeatMiscAcBonusTouch = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Touch");
   const touchAC = 10 + dexModifier + sizeModAC + totalDeflectionBonusTouch + totalDodgeBonusTouch + calculatedFeatMiscAcBonusTouch + (character.acMiscModifier || 0);
 
   const totalArmorBonusFlat = calculateTotalAcComponent(0, "armor", physicalArmorBonus, "Flat-Footed");
   const totalShieldBonusFlat = calculateTotalAcComponent(0, "shield", physicalShieldBonus, "Flat-Footed");
   const totalNaturalArmorFlat = calculateTotalAcComponent(character.naturalArmor, "natural", 0, "Flat-Footed");
   const totalDeflectionBonusFlat = calculateTotalAcComponent(character.deflectionBonus, "deflection", 0, "Flat-Footed");
-  const calculatedFeatMiscAcBonusFlat = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Flat-Footed") + calculateTotalAcComponent(0, "monk_wisdom", 0, "Flat-Footed") + calculateTotalAcComponent(0, "monkScaling", 0, "Flat-Footed");
+  const calculatedFeatMiscAcBonusFlat = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Flat-Footed");
   const flatFootedAC = 10 + totalArmorBonusFlat + totalShieldBonusFlat + sizeModAC + totalNaturalArmorFlat + totalDeflectionBonusFlat + calculatedFeatMiscAcBonusFlat + (character.acMiscModifier || 0);
 
 
@@ -155,8 +154,10 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       headerClassName="bg-muted/20"
       cardContentClassName={panelGridGap}
       footer={
-        <p className="text-sm text-muted-foreground">
-          {parseAndRenderUIString(UI_STRINGS.armorClassPanelTempModInfoNoteFull || "")}
+        <p className={textStyleDescription}>
+          {parseAndRenderUIString(UI_STRINGS.armorClassPanelTempModInfoNoteFull || "", {
+            badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+          })}
         </p>
       }
     >
@@ -167,21 +168,21 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="normal-ac-display" className={textStyleValueBig}>{Math.max(0, normalAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
               </div>
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="touch-ac-display" className={textStyleValueBig}>{Math.max(0, touchAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
               </div>
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p id="flat-footed-ac-display" className={textStyleValueBig}>{Math.max(0, flatFootedAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
               </div>
             </div>
           </div>
