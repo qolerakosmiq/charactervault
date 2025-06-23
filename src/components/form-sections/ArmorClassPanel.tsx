@@ -18,7 +18,7 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleSubLabelTitle, textStyleValueBig, textStyleInput } from '@/config/layout';
+import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, textStyleSubLabelTitle, textStyleValueBig, textStyleInput, textStyleCardTitle } from '@/config/layout';
 import { Input } from '@/components/ui/input';
 
 export interface ArmorClassPanelProps {
@@ -165,7 +165,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
         <>
           <div className={cn("grid grid-cols-1 md:grid-cols-3 text-center", panelFieldHorizontalGap)}>
             <div className="border rounded-md bg-muted/10 p-2">
-              <Label htmlFor="normal-ac-display" className={textStyleSubLabelTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
+              <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <div className="flex items-center justify-center">
                 <p id="normal-ac-display" className={textStyleValueBig}>{normalAC}</p>
                 <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
@@ -174,7 +174,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               </div>
             </div>
             <div className="border rounded-md bg-muted/10 p-2">
-              <Label htmlFor="touch-ac-display" className={textStyleSubLabelTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
+              <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <div className="flex items-center justify-center">
                 <p id="touch-ac-display" className={textStyleValueBig}>{touchAC}</p>
                 <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
@@ -183,7 +183,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               </div>
             </div>
             <div className="border rounded-md bg-muted/10 p-2">
-              <Label htmlFor="flat-footed-ac-display" className={textStyleSubLabelTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
+              <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <div className="flex items-center justify-center">
                 <p id="flat-footed-ac-display" className={textStyleValueBig}>{flatFootedAC}</p>
                 <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
