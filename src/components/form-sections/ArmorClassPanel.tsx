@@ -194,8 +194,8 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
           </div>
           
           {!panelIsLocked && (
-            <div className="flex items-center justify-between">
-              <Label htmlFor="temporary-ac-modifier-input" className={textStyleSubLabelTitle}>
+            <div className="flex items-center justify-center gap-4 pt-4">
+              <Label htmlFor="temporary-ac-modifier-input">
                 {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
               </Label>
                <Input
@@ -217,3 +217,4 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
+
