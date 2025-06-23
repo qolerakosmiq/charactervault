@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -39,6 +40,31 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     handleUpdateCallback('acMiscModifier'),
     debounceDelayFormInput
   );
+
+  const { dexModifier, sizeModAC, physicalArmorBonus, physicalShieldBonus } = React.useMemo(() => {
+    if (!translations) {
+      return { dexModifier: 0, sizeModAC: 0, physicalArmorBonus: 0, physicalShieldBonus: 0 };
+    }
+    const { DEFAULT_ABILITIES, SIZES, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_MAGIC_ITEMS } = translations;
+    const currentAbilityScores = character.abilityScores || DEFAULT_ABILITIES;
+    const currentSize = character.size || 'medium';
+    const allItemDefinitions = [...(ITEM_DEFINITIONS_ARMOR || []), ...(ITEM_DEFINITIONS_SHIELDS || []), ...(ITEM_DEFINITIONS_MAGIC_ITEMS || [])];
+
+    const equippedArmorInstanceId = character.equippedGear?.['armor-body'];
+    const equippedArmorInstance = equippedArmorInstanceId ? character.inventory.find(i => i.instanceId === equippedArmorInstanceId) : undefined;
+    const equippedArmorDefinition = equippedArmorInstance ? allItemDefinitions.find(def => def.definitionId === equippedArmorInstance.definitionId && def.itemType === 'armor') : undefined;
+    
+    const equippedShieldInstanceId = character.equippedGear?.['shield'];
+    const equippedShieldInstance = equippedShieldInstanceId ? character.inventory.find(i => i.instanceId === equippedShieldInstanceId) : undefined;
+    const equippedShieldDefinition = equippedShieldInstance ? allItemDefinitions.find(def => def.definitionId === equippedShieldInstance.definitionId && def.itemType === 'shield') : undefined;
+
+    return {
+      dexModifier: getAbilityModifierByName(currentAbilityScores, 'dexterity'),
+      sizeModAC: getSizeModifierAC(currentSize, SIZES),
+      physicalArmorBonus: equippedArmorDefinition?.armorBonus || 0,
+      physicalShieldBonus: equippedShieldDefinition?.shieldBonus || 0,
+    };
+  }, [character.abilityScores, character.size, character.equippedGear, character.inventory, translations]);
 
   const calculateTotalAcComponent = React.useCallback((
     baseCharacterValue: number | undefined,
@@ -84,62 +110,34 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       });
     }
     return total;
-  }, [aggregatedFeatEffects, character?.abilityScores]);
-
-
-  if (translationsLoading || !translations || !character || !aggregatedFeatEffects) {
-    return null;
-  }
-
-  const { DEFAULT_ABILITIES, SIZES, UI_STRINGS, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_MAGIC_ITEMS } = translations;
-
-  const { dexModifier, sizeModAC, physicalArmorBonus, physicalShieldBonus } = React.useMemo(() => {
-    const currentAbilityScores = character.abilityScores || DEFAULT_ABILITIES;
-    const currentSize = character.size || 'medium';
-    const allItemDefinitions = [...(ITEM_DEFINITIONS_ARMOR || []), ...(ITEM_DEFINITIONS_SHIELDS || []), ...(ITEM_DEFINITIONS_MAGIC_ITEMS || [])];
-
-    const equippedArmorInstanceId = character.equippedGear?.['armor-body'];
-    const equippedArmorInstance = equippedArmorInstanceId ? character.inventory.find(i => i.instanceId === equippedArmorInstanceId) : undefined;
-    const equippedArmorDefinition = equippedArmorInstance ? allItemDefinitions.find(def => def.definitionId === equippedArmorInstance.definitionId && def.itemType === 'armor') : undefined;
-    
-    const equippedShieldInstanceId = character.equippedGear?.['shield'];
-    const equippedShieldInstance = equippedShieldInstanceId ? character.inventory.find(i => i.instanceId === equippedShieldInstanceId) : undefined;
-    const equippedShieldDefinition = equippedShieldInstance ? allItemDefinitions.find(def => def.definitionId === equippedShieldInstance.definitionId && def.itemType === 'shield') : undefined;
-
-    return {
-      dexModifier: getAbilityModifierByName(currentAbilityScores, 'dexterity'),
-      sizeModAC: getSizeModifierAC(currentSize, SIZES),
-      physicalArmorBonus: equippedArmorDefinition?.armorBonus || 0,
-      physicalShieldBonus: equippedShieldDefinition?.shieldBonus || 0,
-    };
-  }, [character, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_MAGIC_ITEMS, DEFAULT_ABILITIES, SIZES]);
+  }, [aggregatedFeatEffects, character.abilityScores]);
 
 
   const normalAC = React.useMemo(() => {
-    const totalArmorBonus = calculateTotalAcComponent(0, "armor", physicalArmorBonus, "Normal");
-    const totalShieldBonus = calculateTotalAcComponent(0, "shield", physicalShieldBonus, "Normal");
+    const totalArmorBonus = calculateTotalAcComponent(character.armorBonus, "armor", physicalArmorBonus, "Normal");
+    const totalShieldBonus = calculateTotalAcComponent(character.shieldBonus, "shield", physicalShieldBonus, "Normal");
     const totalNaturalArmor = calculateTotalAcComponent(character.naturalArmor, "natural", 0, "Normal");
     const totalDeflectionBonus = calculateTotalAcComponent(character.deflectionBonus, "deflection", 0, "Normal");
     const totalDodgeBonus = calculateTotalAcComponent(character.dodgeBonus, "dodge", 0, "Normal");
     const calculatedFeatMiscAcBonus = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Normal");
     return 10 + totalArmorBonus + totalShieldBonus + dexModifier + sizeModAC + totalNaturalArmor + totalDeflectionBonus + totalDodgeBonus + calculatedFeatMiscAcBonus + (character.acMiscModifier || 0);
-  }, [calculateTotalAcComponent, physicalArmorBonus, physicalShieldBonus, character, dexModifier, sizeModAC]);
+  }, [calculateTotalAcComponent, character.armorBonus, character.shieldBonus, character.naturalArmor, character.deflectionBonus, character.dodgeBonus, character.acMiscModifier, physicalArmorBonus, physicalShieldBonus, dexModifier, sizeModAC]);
 
   const touchAC = React.useMemo(() => {
     const totalDeflectionBonus = calculateTotalAcComponent(character.deflectionBonus, "deflection", 0, "Touch");
     const totalDodgeBonus = calculateTotalAcComponent(character.dodgeBonus, "dodge", 0, "Touch");
     const calculatedFeatMiscAcBonus = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Touch");
     return 10 + dexModifier + sizeModAC + totalDeflectionBonus + totalDodgeBonus + calculatedFeatMiscAcBonus + (character.acMiscModifier || 0);
-  }, [calculateTotalAcComponent, character, dexModifier, sizeModAC]);
+  }, [calculateTotalAcComponent, character.deflectionBonus, character.dodgeBonus, character.acMiscModifier, dexModifier, sizeModAC]);
 
   const flatFootedAC = React.useMemo(() => {
-    const totalArmorBonus = calculateTotalAcComponent(0, "armor", physicalArmorBonus, "Flat-Footed");
-    const totalShieldBonus = calculateTotalAcComponent(0, "shield", physicalShieldBonus, "Flat-Footed");
+    const totalArmorBonus = calculateTotalAcComponent(character.armorBonus, "armor", physicalArmorBonus, "Flat-Footed");
+    const totalShieldBonus = calculateTotalAcComponent(character.shieldBonus, "shield", physicalShieldBonus, "Flat-Footed");
     const totalNaturalArmor = calculateTotalAcComponent(character.naturalArmor, "natural", 0, "Flat-Footed");
     const totalDeflectionBonus = calculateTotalAcComponent(character.deflectionBonus, "deflection", 0, "Flat-Footed");
     const calculatedFeatMiscAcBonus = calculateTotalAcComponent(0, "other_feat_bonus", 0, "Flat-Footed");
     return 10 + totalArmorBonus + totalShieldBonus + sizeModAC + totalNaturalArmor + totalDeflectionBonus + calculatedFeatMiscAcBonus + (character.acMiscModifier || 0);
-  }, [calculateTotalAcComponent, physicalArmorBonus, physicalShieldBonus, character, sizeModAC]);
+  }, [calculateTotalAcComponent, character.armorBonus, character.shieldBonus, character.naturalArmor, character.deflectionBonus, character.acMiscModifier, physicalArmorBonus, physicalShieldBonus, sizeModAC]);
 
   const handleShowAcBreakdown = React.useCallback((acType: 'Normal' | 'Touch' | 'Flat-Footed') => {
     if (onOpenAcBreakdownDialog) {
@@ -147,6 +145,12 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     }
   }, [onOpenAcBreakdownDialog]);
 
+
+  if (translationsLoading || !translations || !aggregatedFeatEffects) {
+    return null;
+  }
+
+  const { UI_STRINGS } = translations;
 
   return (
     <LockablePanelWrapper
