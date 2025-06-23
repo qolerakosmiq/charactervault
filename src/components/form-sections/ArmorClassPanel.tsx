@@ -198,8 +198,6 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
                   value={localTemporaryAcModifier}
                   onChange={(e) => setLocalTemporaryAcModifier(parseInt(e.target.value, 10) || 0)}
                   disabled={!onCharacterUpdate || panelIsLocked}
-                  min={-20}
-                  max={20}
                   className={cn("max-w-24", textStyleInput)}
                 />
             </div>
