@@ -18,7 +18,7 @@ import { renderModifierValue } from '@/components/info-dialog-content/dialog-uti
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelGridGap, textStyleSubLabelTitle, textStyleValueBig, textStyleInput, textStyleCardTitle } from '@/config/layout';
+import { debounceDelayFormInput, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, textStyleSubLabelTitle, textStyleValueBig, textStyleCardTitle, textStyleInput, panelGridGap } from '@/config/layout';
 import { Input } from '@/components/ui/input';
 
 export interface ArmorClassPanelProps {
@@ -168,7 +168,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel || "Normal"}</Label>
               <div className="flex items-center justify-center">
                 <p id="normal-ac-display" className={textStyleValueBig}>{normalAC}</p>
-                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Normal')} disabled={!onOpenAcBreakdownDialog}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
@@ -177,7 +177,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel || "Touch"}</Label>
               <div className="flex items-center justify-center">
                 <p id="touch-ac-display" className={textStyleValueBig}>{touchAC}</p>
-                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Touch')} disabled={!onOpenAcBreakdownDialog}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
@@ -186,28 +186,30 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel || "Flat-Footed"}</Label>
               <div className="flex items-center justify-center">
                 <p id="flat-footed-ac-display" className={textStyleValueBig}>{flatFootedAC}</p>
-                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog || panelIsLocked}>
+                <Button type="button" variant="ghost" size="icon-sm" className="ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleShowAcBreakdown('Flat-Footed')} disabled={!onOpenAcBreakdownDialog}>
                   <Info className="h-4 w-4" />
                 </Button>
               </div>
             </div>
           </div>
           
-          <div className="flex items-center justify-between">
-            <Label htmlFor="temporary-ac-modifier-input" className={textStyleSubLabelTitle}>
-              {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
-            </Label>
-             <Input
-                id="temporary-ac-modifier-input"
-                type="number"
-                value={localTemporaryAcModifier}
-                onChange={(e) => setLocalTemporaryAcModifier(parseInt(e.target.value, 10) || 0)}
-                disabled={!onCharacterUpdate || panelIsLocked}
-                min={-20}
-                max={20}
-                className={cn("max-w-24", textStyleInput)}
-              />
-          </div>
+          {!panelIsLocked && (
+            <div className="flex items-center justify-between">
+              <Label htmlFor="temporary-ac-modifier-input" className={textStyleSubLabelTitle}>
+                {UI_STRINGS.armorClassMiscModifierLabel || "Temporary Modifier"}
+              </Label>
+               <Input
+                  id="temporary-ac-modifier-input"
+                  type="number"
+                  value={localTemporaryAcModifier}
+                  onChange={(e) => setLocalTemporaryAcModifier(parseInt(e.target.value, 10) || 0)}
+                  disabled={!onCharacterUpdate || panelIsLocked}
+                  min={-20}
+                  max={20}
+                  className={cn("max-w-24", textStyleInput)}
+                />
+            </div>
+          )}
         </>
       )}
     </LockablePanelWrapper>
@@ -215,4 +217,3 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
 };
 ArmorClassPanelComponent.displayName = 'ArmorClassPanelComponent';
 export const ArmorClassPanel = React.memo(ArmorClassPanelComponent);
-
