@@ -26,7 +26,8 @@ import {
   textStyleCardTitle,
   textStyleInput,
   textStyleDescription,
-  panelFieldVerticalGap
+  panelFieldVerticalGap,
+  inputWidthStandard,
 } from '@/config/layout';
 import { Input } from '@/components/ui/input';
 
@@ -53,14 +54,14 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
   );
 
   const dexModifier = React.useMemo(() => {
-    const scores = character.abilityScores || translations?.DEFAULT_ABILITIES;
+    const scores = character.abilityScores;
     if (!scores) return 0;
     return getAbilityModifierByName(scores, 'dexterity');
-  }, [character.abilityScores.dexterity, translations]);
+  }, [character.abilityScores.dexterity]);
 
   const sizeModAC = React.useMemo(() => {
     if (!translations) return 0;
-    return getSizeModifierAC(character.size || 'medium', translations.SIZES);
+    return getSizeModifierAC(character.size, translations.SIZES);
   }, [character.size, translations]);
   
   const { physicalArmorBonus, physicalShieldBonus } = React.useMemo(() => {
@@ -181,8 +182,8 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       title={UI_STRINGS.armorClassPanelTitle}
       description={UI_STRINGS.armorClassPanelDescription}
       icon={Shield}
-      initialLockedState={false}
       headerClassName="bg-muted/20"
+      initialLockedState={false}
       cardContentClassName={panelGridGap}
       footer={
         <p className={textStyleDescription}>
@@ -229,7 +230,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
                   value={localTemporaryAcModifier}
                   onChange={(e) => setLocalTemporaryAcModifier(parseInt(e.target.value, 10) || 0)}
                   disabled={!onCharacterUpdate || panelIsLocked}
-                  className={cn("max-w-24", textStyleInput)}
+                  className={cn(inputWidthStandard, textStyleInput)}
                 />
             </div>
           )}

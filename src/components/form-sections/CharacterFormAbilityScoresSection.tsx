@@ -28,7 +28,8 @@ import {
   textStyleSubLabelTitle,
   textStyleCardTitle,
   textStyleInput,
-  textStyleDescription
+  textStyleDescription,
+  inputWidthStandard,
 } from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
@@ -122,11 +123,11 @@ const AbilityScoreInputGroup = React.memo((({
         <>
           <div className={cn("w-full flex flex-col", panelFieldVerticalGap)}>
             <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-            <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={textStyleInput} disabled={panelIsLocked} />
+            <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={cn(textStyleInput, inputWidthStandard, 'mx-auto')} disabled={panelIsLocked} />
           </div>
           <div className={cn("w-full flex flex-col", panelFieldVerticalGap)}>
             <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-            <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={textStyleInput} disabled={panelIsLocked} />
+            <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, inputWidthStandard, 'mx-auto')} disabled={panelIsLocked} />
           </div>
         </>
       )}

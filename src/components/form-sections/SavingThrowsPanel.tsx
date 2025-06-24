@@ -27,7 +27,8 @@ import {
   textStyleSubLabelTitle,
   textStyleCardTitle,
   textStyleInput,
-  textStyleDescription
+  textStyleDescription,
+  inputWidthStandard,
 } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
@@ -148,7 +149,7 @@ const SavingThrowCard = React.memo(({
                     type="number"
                     value={localTemporaryMod}
                     onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                    className={textStyleInput}
+                    className={cn(textStyleInput, inputWidthStandard)}
                     disabled={panelIsLocked}
                   />
                 </div>
