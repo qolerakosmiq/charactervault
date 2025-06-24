@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type { MouseEvent } from 'react';
 import { Label } from '@/components/ui/label';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
 import { Award, TrendingUp } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
@@ -13,8 +13,8 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { getXpRequiredForLevel } from '@/lib/dnd-utils'; 
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
-import { debounceDelayFormInput } from '@/config/layout';
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { debounceDelayFormInput, panelGridGap, panelFieldHorizontalGap, panelFieldVerticalGap } from '@/config/layout';
 
 export interface ExperiencePanelData {
   currentXp: number;
@@ -83,26 +83,27 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
       title={UI_STRINGS.experiencePanelTitle}
       description={UI_STRINGS.experiencePanelDescription}
       icon={Award}
-      cardContentClassName="space-y-4 pt-4"
+      headerClassName="bg-muted/20"
+      cardContentClassName={cn("flex flex-col", panelGridGap)}
       initialLockedState={false}
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className="flex items-center gap-x-2">
-            <div className="w-1/2 flex flex-col gap-1.5">
+          <div className={cn("flex items-center", panelFieldHorizontalGap)}>
+            <div className={cn("w-1/2 flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
                 <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
                 <span className="block text-xs text-muted-foreground">
                   {UI_STRINGS.experiencePanelCurrentXpSubLabel}
                 </span>
               </Label>
-              <NumberSpinnerInput
+              <Input
                 id="current-xp"
+                type="number"
                 value={localCurrentXp}
-                onChange={setLocalCurrentXp}
+                onChange={(e) => setLocalCurrentXp(parseInt(e.target.value, 10) || 0)}
                 min={0}
-                inputClassName="w-full h-10 text-lg text-center" 
-                buttonClassName="h-10 w-10"
+                className="w-full h-10 text-lg text-center"
                 disabled={panelIsLocked}
               />
             </div>
