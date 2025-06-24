@@ -10,7 +10,7 @@ import { Award, TrendingUp } from 'lucide-react';
 import { useI18n } from '@/context/I18nProvider';
 import type { XpDataEntry } from '@/i18n/i18n-data';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { getXpRequiredForLevel } from '@/lib/dnd-utils'; 
+import { getXpRequiredForLevel, calculateLevelFromXp } from '@/lib/dnd-utils'; 
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
@@ -51,24 +51,24 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
   const xpForNextLevel = React.useMemo(() => {
     return getXpRequiredForLevel(currentLevel + 1, xpTable, epicLevelXpIncrease);
   }, [currentLevel, xpTable, epicLevelXpIncrease]);
+    
+  const isMaxLevel = React.useMemo(() => xpForNextLevel === Infinity, [xpForNextLevel]);
 
   const progressPercentage = React.useMemo(() => {
-    if (xpForNextLevel === Infinity || xpForNextLevel === xpForCurrentLevelStart) return 0;
+    if (isMaxLevel || xpForNextLevel === xpForCurrentLevelStart) return 100;
     const progressInCurrentLevel = Math.max(0, localCurrentXp - xpForCurrentLevelStart);
     const xpNeededForThisLevel = xpForNextLevel - xpForCurrentLevelStart;
     if (xpNeededForThisLevel <= 0) return 100;
     return Math.min(100, (progressInCurrentLevel / xpNeededForThisLevel) * 100);
-  }, [localCurrentXp, xpForCurrentLevelStart, xpForNextLevel]);
+  }, [localCurrentXp, xpForCurrentLevelStart, xpForNextLevel, isMaxLevel]);
 
   const handleLevelUpClick = React.useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (xpForNextLevel !== Infinity && localCurrentXp < xpForNextLevel) {
+    if (!isMaxLevel && localCurrentXp < xpForNextLevel) {
       const newXpToReachNextLevel = xpForNextLevel;
       setLocalCurrentXp(newXpToReachNextLevel);
     }
-  }, [xpForNextLevel, localCurrentXp, setLocalCurrentXp]);
-
-  const isMaxLevel = React.useMemo(() => xpForNextLevel === Infinity, [xpForNextLevel]);
+  }, [xpForNextLevel, localCurrentXp, setLocalCurrentXp, isMaxLevel]);
 
 
   if (translationsLoading || !translations) {
@@ -89,36 +89,38 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className={cn("flex items-stretch", panelFieldHorizontalGap)}>
-            <div className={cn("w-1/2 flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
-                <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
-                <span className="block text-xs text-muted-foreground">
-                  {UI_STRINGS.experiencePanelCurrentXpSubLabel}
-                </span>
-              </Label>
-              <Input
-                id="current-xp"
-                type="number"
-                value={localCurrentXp}
-                onChange={(e) => setLocalCurrentXp(parseInt(e.target.value, 10) || 0)}
-                min={0}
-                className={cn("h-10 text-center", textStyleInput)}
-                disabled={panelIsLocked}
-              />
+          {!panelIsLocked && (
+            <div className={cn("flex items-stretch", panelFieldHorizontalGap)}>
+              <div className={cn("w-1/2 flex flex-col", panelFieldVerticalGap)}>
+                <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
+                  <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
+                  <span className="block text-xs text-muted-foreground">
+                    {UI_STRINGS.experiencePanelCurrentXpSubLabel}
+                  </span>
+                </Label>
+                <Input
+                  id="current-xp"
+                  type="number"
+                  value={localCurrentXp}
+                  onChange={(e) => setLocalCurrentXp(parseInt(e.target.value, 10) || 0)}
+                  min={0}
+                  className={cn("h-10 text-center", textStyleInput)}
+                  disabled={panelIsLocked}
+                />
+              </div>
+              <div className="w-1/2 flex flex-col justify-end">
+                {!isMaxLevel && (
+                  <Button type="button" onClick={handleLevelUpClick} disabled={isMaxLevel || panelIsLocked} className="w-full h-10">
+                    <TrendingUp className="mr-2 h-4 w-4" />
+                    {UI_STRINGS.experiencePanelLevelUpButton}
+                  </Button>
+                )}
+              </div>
             </div>
-            <div className="w-1/2 flex flex-col justify-end">
-              {!isMaxLevel && (
-              <Button type="button" onClick={handleLevelUpClick} disabled={isMaxLevel || panelIsLocked} className="w-full h-10">
-                  <TrendingUp className="mr-2 h-4 w-4" />
-                  {UI_STRINGS.experiencePanelLevelUpButton}
-              </Button>
-              )}
-            </div>
-          </div>
+          )}
 
           <div>
-            <Progress value={progressPercentage} className="h-3" indicatorClassName="bg-primary" />
+            <Progress value={progressPercentage} indicatorClassName="bg-primary transition-all duration-300 ease-out" />
             <div className="flex justify-between items-center text-muted-foreground px-1">
               <span className={cn(
                   textStyleModifier, "text-accent",
