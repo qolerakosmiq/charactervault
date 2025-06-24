@@ -90,8 +90,8 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
       {({ isLocked: panelIsLocked }) => (
         <>
           {!panelIsLocked && (
-            <div className={cn("flex items-stretch", panelFieldHorizontalGap)}>
-              <div className={cn("w-1/2 flex flex-col", panelFieldVerticalGap)}>
+            <div className={cn("grid grid-cols-2 items-stretch", panelFieldHorizontalGap)}>
+              <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                 <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
                   <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
                   <span className="block text-xs text-muted-foreground">
@@ -108,7 +108,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
                   disabled={panelIsLocked}
                 />
               </div>
-              <div className="w-1/2 flex flex-col justify-end">
+              <div className="flex flex-col justify-end">
                 {!isMaxLevel && (
                   <Button type="button" onClick={handleLevelUpClick} disabled={isMaxLevel || panelIsLocked} className="w-full h-10">
                     <TrendingUp className="mr-2 h-4 w-4" />
@@ -120,7 +120,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           )}
 
           <div>
-            <Progress value={progressPercentage} indicatorClassName="bg-primary transition-all duration-300 ease-out" />
+            <Progress value={progressPercentage} indicatorClassName="bg-primary" />
             <div className="flex justify-between items-center text-muted-foreground px-1">
               <span className={cn(
                   textStyleModifier, "text-accent",
