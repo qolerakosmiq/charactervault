@@ -14,7 +14,7 @@ import { getXpRequiredForLevel } from '@/lib/dnd-utils';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { debounceDelayFormInput, panelGridGap, panelFieldHorizontalGap, panelFieldVerticalGap } from '@/config/layout';
+import { debounceDelayFormInput, panelGridGap, panelFieldHorizontalGap, panelFieldVerticalGap, inputWidthStandard, textStyleInput, textStyleModifier } from '@/config/layout';
 
 export interface ExperiencePanelData {
   currentXp: number;
@@ -89,7 +89,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className={cn("flex items-center", panelFieldHorizontalGap)}>
+          <div className={cn("flex items-stretch", panelFieldHorizontalGap)}>
             <div className={cn("w-1/2 flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
                 <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
@@ -103,11 +103,11 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
                 value={localCurrentXp}
                 onChange={(e) => setLocalCurrentXp(parseInt(e.target.value, 10) || 0)}
                 min={0}
-                className="w-full h-10 text-lg text-center"
+                className={cn("h-10 text-center", textStyleInput)}
                 disabled={panelIsLocked}
               />
             </div>
-            <div className="w-1/2">
+            <div className="w-1/2 flex flex-col justify-end">
               {!isMaxLevel && (
               <Button type="button" onClick={handleLevelUpClick} disabled={isMaxLevel || panelIsLocked} className="w-full h-10">
                   <TrendingUp className="mr-2 h-4 w-4" />
@@ -121,7 +121,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
             <Progress value={progressPercentage} className="h-3" indicatorClassName="bg-primary" />
             <div className="flex justify-between items-center text-muted-foreground px-1">
               <span className={cn(
-                  "font-semibold text-xl text-accent",
+                  textStyleModifier, "text-accent",
                   currentLevel === 0 && "text-muted-foreground"
               )}>
                 {parseAndRenderUIString(levelLabelFormat, {levelNumber: String(currentLevel)})}
