@@ -60,15 +60,15 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
     return Math.min(100, (progressInCurrentLevel / xpNeededForThisLevel) * 100);
   }, [localCurrentXp, xpForCurrentLevelStart, xpForNextLevel]);
 
-  const handleLevelUpClick = (e: MouseEvent<HTMLButtonElement>) => {
+  const handleLevelUpClick = React.useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     if (xpForNextLevel !== Infinity && localCurrentXp < xpForNextLevel) {
       const newXpToReachNextLevel = xpForNextLevel;
       setLocalCurrentXp(newXpToReachNextLevel);
     }
-  };
+  }, [xpForNextLevel, localCurrentXp, setLocalCurrentXp]);
 
-  const isMaxLevel = xpForNextLevel === Infinity;
+  const isMaxLevel = React.useMemo(() => xpForNextLevel === Infinity, [xpForNextLevel]);
 
 
   if (translationsLoading || !translations) {
@@ -139,8 +139,8 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
               {xpForNextLevel !== Infinity && <span className="text-xs">{parseAndRenderUIString(levelLabelFormat, {levelNumber: String(currentLevel + 1)})}</span>}
             </div>
           </div>
-          
-          {isMaxLevel && ( 
+
+          {isMaxLevel && (
              <p className="text-sm text-center text-muted-foreground pt-2">
               {UI_STRINGS.experiencePanelMaxLevel}
              </p>
