@@ -129,7 +129,6 @@ const SavingThrowCard = React.memo(({
         </div>
         {!panelIsLocked && (
           <>
-            <div className="flex-grow"></div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
               <Label className={textStyleLabel}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
               <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} className={textStyleBadgeMedium} />
