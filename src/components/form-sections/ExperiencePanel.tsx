@@ -14,7 +14,17 @@ import { getXpRequiredForLevel, calculateLevelFromXp } from '@/lib/dnd-utils';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { debounceDelayFormInput, panelGridGap, panelFieldHorizontalGap, panelFieldVerticalGap, inputWidthStandard, textStyleInput, textStyleModifier, textStyleLabel } from '@/config/layout';
+import {
+  debounceDelayFormInput,
+  panelGridGap,
+  panelFieldHorizontalGap,
+  panelFieldVerticalGap,
+  inputWidthFull,
+  textStyleInput,
+  textStyleDescription,
+  textStyleLabel,
+  textStyleModifier,
+} from '@/config/layout';
 
 export interface ExperiencePanelData {
   currentXp: number;
@@ -90,7 +100,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
       {({ isLocked: panelIsLocked }) => (
         <>
           {!panelIsLocked && (
-            <div className={cn("grid grid-cols-2 items-stretch", panelFieldHorizontalGap)}>
+            <div className={cn("grid grid-cols-2 items-stretch", panelGridGap)}>
               <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                 <Label htmlFor="current-xp" className={cn(textStyleLabel, "block w-full text-center mb-0")}>
                   <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
@@ -154,3 +164,4 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 };
 ExperiencePanelComponent.displayName = "ExperiencePanelComponent";
 export const ExperiencePanel = React.memo(ExperiencePanelComponent);
+
