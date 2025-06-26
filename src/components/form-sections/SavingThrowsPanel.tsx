@@ -29,6 +29,7 @@ import {
   inputWidthFull,
   textStyleLabel,
   textStyleSubLabel,
+  textStyleBadgeMedium,
 } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
@@ -131,13 +132,13 @@ const SavingThrowCard = React.memo(({
             <div className="flex-grow"></div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
               <Label className={textStyleLabel}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-              <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} />
+              <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} className={textStyleBadgeMedium} />
             </div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
               <Label className={textStyleLabel}>
                 {uiStrings.savingThrowsRowLabelMiscModifier}
               </Label>
-              <p>{renderModifierValue(miscBonus)}</p>
+              <p className={textStyleSubLabel}>{renderModifierValue(miscBonus)}</p>
             </div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
                 <Label htmlFor={`temp-mod-${saveType}`} className={textStyleLabel}>
