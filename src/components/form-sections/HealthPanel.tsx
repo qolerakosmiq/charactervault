@@ -225,7 +225,7 @@ const HealthPanelComponent = ({
               <Separator />
               <div className={cn("grid grid-cols-2", panelGridGap)}>
                 {/* Row 1 */}
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
                   <Label htmlFor="current-hp-input" className="block w-full text-center">
                     {UI_STRINGS.healthPanelCurrentHpLabel}
                   </Label>
@@ -243,7 +243,7 @@ const HealthPanelComponent = ({
                       disabled={panelIsLocked}
                   />
                 </div>
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
                   <Label htmlFor="nonlethal-damage-input" className="block w-full text-center">
                       {UI_STRINGS.healthPanelNonlethalDamageLabel}
                   </Label>
@@ -262,7 +262,7 @@ const HealthPanelComponent = ({
                 </div>
 
                 {/* Row 2 */}
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
                   <Label htmlFor="temporary-hp-input" className="block w-full text-center">
                       {UI_STRINGS.healthPanelTemporaryHitPointsLabel}
                   </Label>
@@ -279,7 +279,7 @@ const HealthPanelComponent = ({
                       disabled={panelIsLocked}
                   />
                 </div>
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
                   <Label htmlFor="number-of-wounds-input" className="block w-full text-center">
                       {UI_STRINGS.healthPanelNumberOfWoundsLabel}
                   </Label>
@@ -314,18 +314,18 @@ const HealthPanelComponent = ({
                 </div>
 
                 {/* Row 4 - Ability Modifier */}
-                <div className="flex items-center justify-start items-center h-10">
+                <div className="flex items-center justify-start">
                   <Label>{UI_STRINGS.healthPanelAbilityModLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center items-center h-10">
+                <div className="flex items-center justify-center">
                   <DualBadge leftLabel={conAbbr} rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`} color={conModBadgeColor} />
                 </div>
                 
                 {/* Row 5 - Misc Modifier */}
-                <div className="flex items-center justify-start items-center h-10">
+                <div className="flex items-center justify-start">
                   <Label>{UI_STRINGS.healthPanelMiscMaxHpLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center items-center h-10">
+                <div className="flex items-center justify-center">
                   <span className={cn(
                       "font-semibold",
                       calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
