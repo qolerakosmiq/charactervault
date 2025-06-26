@@ -314,7 +314,7 @@ const HealthPanelComponent = ({
                 </div>
 
                 {/* Row 4 - Ability Modifier */}
-                <div className="flex items-center justify-start">
+                <div className="flex items-center justify-start h-10">
                   <Label>{UI_STRINGS.healthPanelAbilityModLabel}</Label>
                 </div>
                 <div className="flex justify-center items-center h-10">
@@ -322,7 +322,7 @@ const HealthPanelComponent = ({
                 </div>
                 
                 {/* Row 5 - Misc Modifier */}
-                <div className="flex items-center justify-start">
+                <div className="flex items-center justify-start h-10">
                   <Label>{UI_STRINGS.healthPanelMiscMaxHpLabel}</Label>
                 </div>
                 <div className="flex items-center justify-center h-10">
@@ -340,7 +340,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start">
                   <Label htmlFor="custom-max-hp-mod">{UI_STRINGS.healthPanelCustomModLabel}</Label>
                 </div>
-                <div className="flex justify-center items-center">
+                <div className="flex items-center justify-center">
                   <Input
                     id="custom-max-hp-mod"
                     type="number"
@@ -356,7 +356,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start">
                   <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center h-10">
+                <div className="flex items-center justify-center">
                     <span className={textStyleValueBig}>
                         {calculatedMaxHp}
                     </span>
@@ -374,7 +374,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start">
                   <Label>{UI_STRINGS.healthPanelMissingHpLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center h-10">
+                <div className="flex items-center justify-center">
                   <span className="font-bold text-lg text-muted-foreground">
                     {missingHp}
                   </span>
