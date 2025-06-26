@@ -19,6 +19,7 @@ export const textStyleLabel = "text-sm font-medium";
 export const textStyleSubLabel = "text-sm text-muted-foreground";
 export const textStyleBadgeSmall = 'text-xs';
 export const textStyleBadgeMedium = 'text-sm';
+export const textStyleSectionSubheading = 'text-lg font-semibold text-primary';
 
 
 // Sizing
