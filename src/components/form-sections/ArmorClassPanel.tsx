@@ -224,14 +224,16 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
               <Label htmlFor="temporary-ac-modifier-input" className="font-medium">
                 {UI_STRINGS.armorClassMiscModifierLabel}
               </Label>
+              <div className={cn("flex justify-center", inputWidthStandard)}>
                <Input
                   id="temporary-ac-modifier-input"
                   type="number"
                   value={localTemporaryAcModifier}
                   onChange={(e) => setLocalTemporaryAcModifier(parseInt(e.target.value, 10) || 0)}
                   disabled={!onCharacterUpdate || panelIsLocked}
-                  className={cn(inputWidthStandard, textStyleInput)}
+                  className={cn(textStyleInput)}
                 />
+              </div>
             </div>
           )}
         </>
