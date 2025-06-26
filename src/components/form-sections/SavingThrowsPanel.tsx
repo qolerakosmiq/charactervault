@@ -27,7 +27,7 @@ import {
   textStyleCardTitle,
   textStyleInput,
   textStyleDescription,
-  inputWidthStandard,
+  inputWidthFull,
   textStyleLabel,
 } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
@@ -128,6 +128,7 @@ const SavingThrowCard = React.memo(({
         </div>
         {!panelIsLocked && (
           <>
+            <div className="flex-grow"></div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
               <Label className={textStyleLabel}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
               <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} />
@@ -136,7 +137,7 @@ const SavingThrowCard = React.memo(({
               <Label className={textStyleLabel}>
                 {uiStrings.savingThrowsRowLabelMiscModifier}
               </Label>
-              <p className={textStyleSubLabel}>{renderModifierValue(miscBonus)}</p>
+              <p>{renderModifierValue(miscBonus)}</p>
             </div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
                 <Label htmlFor={`temp-mod-${saveType}`} className={textStyleLabel}>
@@ -148,7 +149,7 @@ const SavingThrowCard = React.memo(({
                     type="number"
                     value={localTemporaryMod}
                     onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                    className={cn(textStyleInput, inputWidthStandard)}
+                    className={cn(textStyleInput, inputWidthFull)}
                     disabled={panelIsLocked}
                   />
                 </div>
@@ -160,7 +161,6 @@ const SavingThrowCard = React.memo(({
   )
 }));
 SavingThrowCard.displayName = 'SavingThrowCard';
-
 
 const SavingThrowsPanelComponent = ({
   savingThrowsData,
@@ -225,7 +225,10 @@ const SavingThrowsPanelComponent = ({
     onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType });
   }, [onOpenInfoDialog]);
 
-  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations || {};
+  if (translationsLoading || !translations || !aggregatedFeatEffects) {
+    return null;
+  }
+  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
   
   const calculatedBaseSaves = React.useMemo(() => getBaseSaves(savingThrowsData.classes, DND_CLASSES || []), [savingThrowsData.classes, DND_CLASSES]);
   
@@ -264,10 +267,6 @@ const SavingThrowsPanelComponent = ({
     calculateCalculatedTotalMiscBonusForSave,
     savingThrowsData.savingThrows
   ]);
-
-  if (translationsLoading || !translations || !aggregatedFeatEffects) {
-    return null;
-  }
 
   return (
     <LockablePanelWrapper
