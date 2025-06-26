@@ -23,8 +23,8 @@ import {
   panelGridGap,
   textStyleValueBig,
   textStyleCardTitle,
-  textStyleInput,
   textStyleDescription,
+  textStyleInput,
   panelFieldVerticalGap,
   inputWidthStandard,
   textStyleLabel,
@@ -38,8 +38,14 @@ export interface ArmorClassPanelProps {
   onOpenAcBreakdownDialog?: (contentType: InfoDialogContentType) => void;
 }
 
-const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
-  const { translations, isLoading: translationsLoading } = useI18n();
+const ArmorClassPanelContent = React.memo(({
+  panelIsLocked,
+  character,
+  aggregatedFeatEffects,
+  onCharacterUpdate,
+  onOpenAcBreakdownDialog,
+  translations,
+}: ArmorClassPanelProps & { panelIsLocked: boolean, translations: ReturnType<typeof useI18n>['translations']}) => {
 
   const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier'>) => (value: number) => {
     if (onCharacterUpdate) {
@@ -170,6 +176,70 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
     }
   }, [onOpenAcBreakdownDialog]);
 
+  if (!translations) return null;
+  const { UI_STRINGS } = translations;
+
+  return (
+    <>
+      <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
+        <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+          <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel}</Label>
+          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+            <p id="normal-ac-display" className={textStyleValueBig}>{Math.max(0, normalAC)}</p>
+            <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
+          </div>
+        </div>
+        <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+          <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel}</Label>
+          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+            <p id="touch-ac-display" className={textStyleValueBig}>{Math.max(0, touchAC)}</p>
+            <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
+          </div>
+        </div>
+        <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+          <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel}</Label>
+          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+            <p id="flat-footed-ac-display" className={textStyleValueBig}>{Math.max(0, flatFootedAC)}</p>
+            <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
+          </div>
+        </div>
+      </div>
+      
+      {!panelIsLocked && (
+        <div className={cn("flex items-center justify-center", panelGridGap)}>
+          <Label htmlFor="temporary-ac-modifier-input" className={textStyleLabel}>
+            {UI_STRINGS.armorClassMiscModifierLabel}
+          </Label>
+          <div className={cn("flex justify-center", inputWidthStandard)}>
+           <Input
+              id="temporary-ac-modifier-input"
+              type="number"
+              value={localTemporaryAcModifier}
+              onChange={(e) => setLocalTemporaryAcModifier(parseInt(e.target.value, 10) || 0)}
+              disabled={!onCharacterUpdate || panelIsLocked}
+              className={cn(textStyleInput)}
+            />
+          </div>
+        </div>
+      )}
+    </>
+  );
+});
+ArmorClassPanelContent.displayName = 'ArmorClassPanelContent';
+
+const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacterUpdate, onOpenAcBreakdownDialog }: ArmorClassPanelProps) => {
+  const { translations, isLoading: translationsLoading } = useI18n();
+
+  const footerContent = React.useMemo(() => {
+    if (!translations) return null;
+    return (
+      <p className={textStyleDescription}>
+        {parseAndRenderUIString(translations.UI_STRINGS.armorClassPanelTempModInfoNoteFull, {
+          badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+        })}
+      </p>
+    );
+  }, [translations]);
 
   if (translationsLoading || !translations) {
     return null;
@@ -185,58 +255,17 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       headerClassName="bg-muted/20"
       initialLockedState={false}
       cardContentClassName={panelGridGap}
-      footer={
-        <p className={textStyleDescription}>
-          {parseAndRenderUIString(UI_STRINGS.armorClassPanelTempModInfoNoteFull, {
-            badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
-          })}
-        </p>
-      }
+      footer={footerContent}
     >
       {({ isLocked: panelIsLocked }) => (
-        <>
-          <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
-            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-              <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel}</Label>
-              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                <p id="normal-ac-display" className={textStyleValueBig}>{Math.max(0, normalAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
-              </div>
-            </div>
-            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-              <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel}</Label>
-              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                <p id="touch-ac-display" className={textStyleValueBig}>{Math.max(0, touchAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
-              </div>
-            </div>
-            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-              <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel}</Label>
-              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                <p id="flat-footed-ac-display" className={textStyleValueBig}>{Math.max(0, flatFootedAC)}</p>
-                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
-              </div>
-            </div>
-          </div>
-          
-          {!panelIsLocked && (
-            <div className={cn("flex items-center justify-center", panelGridGap)}>
-              <Label htmlFor="temporary-ac-modifier-input" className={textStyleLabel}>
-                {UI_STRINGS.armorClassMiscModifierLabel}
-              </Label>
-              <div className={cn("flex justify-center", inputWidthStandard)}>
-               <Input
-                  id="temporary-ac-modifier-input"
-                  type="number"
-                  value={localTemporaryAcModifier}
-                  onChange={(e) => setLocalTemporaryAcModifier(parseInt(e.target.value, 10) || 0)}
-                  disabled={!onCharacterUpdate || panelIsLocked}
-                  className={cn(textStyleInput)}
-                />
-              </div>
-            </div>
-          )}
-        </>
+        <ArmorClassPanelContent 
+          panelIsLocked={panelIsLocked}
+          character={character}
+          aggregatedFeatEffects={aggregatedFeatEffects}
+          onCharacterUpdate={onCharacterUpdate}
+          onOpenAcBreakdownDialog={onOpenAcBreakdownDialog}
+          translations={translations}
+        />
       )}
     </LockablePanelWrapper>
   );

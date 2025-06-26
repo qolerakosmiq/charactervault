@@ -28,7 +28,6 @@ import {
   textStyleDescription,
   inputWidthFull,
   textStyleLabel,
-  textStyleSubLabel,
   textStyleBadgeMedium,
 } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
@@ -160,21 +159,20 @@ const SavingThrowCard = React.memo(({
       </>
     </div>
   )
-}));
+});
 SavingThrowCard.displayName = 'SavingThrowCard';
 
-const SavingThrowsPanelComponent = ({
+const SavingThrowsPanelContent = React.memo(({
   savingThrowsData,
   abilityScores,
   aggregatedFeatEffects,
   onSavingThrowTemporaryModChange,
   onOpenInfoDialog,
   onOpenRollDialog,
-}: SavingThrowsPanelProps) => {
-  const { translations, isLoading: translationsLoading } = useI18n();
-  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
-    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
-  }));
+  panelIsLocked,
+  translations,
+}: SavingThrowsPanelProps & { panelIsLocked: boolean; translations: ReturnType<typeof useI18n>['translations']}) => {
+  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations!;
 
   const calculateCalculatedTotalMiscBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
     if (!aggregatedFeatEffects) return 0;
@@ -194,43 +192,6 @@ const SavingThrowsPanelComponent = ({
     return totalMiscBonus;
   }, [aggregatedFeatEffects, savingThrowsData.savingThrows, abilityScores]);
 
-  const handleOpenSavingThrowRollDialog = React.useCallback((saveType: SavingThrowType) => {
-    if (!translations || !abilityScores || !aggregatedFeatEffects) return;
-    const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
-    const baseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
-    const abilityKey = SAVING_THROW_ABILITIES[saveType];
-    
-    const breakdown: GenericBreakdownItem[] = [
-      { label: UI_STRINGS.savingThrowsRowLabelBase, value: baseSaves[saveType] },
-      { label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
-    ];
-    const miscBonus = calculateCalculatedTotalMiscBonusForSave(saveType);
-    if(miscBonus !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier, value: miscBonus });
-    const tempMod = savingThrowsData.savingThrows[saveType].miscMod || 0;
-    if(tempMod !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier, value: tempMod });
-    
-    const totalModifier = breakdown.reduce((sum, item) => sum + (typeof item.value === 'number' ? item.value : 0), 0);
-
-    onOpenRollDialog({
-      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow).replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
-      rollType: `saving_throw_${saveType}`,
-      baseModifier: totalModifier,
-      calculationBreakdown: breakdown,
-      rerollTwentiesForChecks: rerollTwentiesForChecks,
-      weaponDamageDiceString: "",
-      weaponCriticalMultiplier: 1,
-    });
-  }, [translations, savingThrowsData, abilityScores, aggregatedFeatEffects, calculateCalculatedTotalMiscBonusForSave, rerollTwentiesForChecks, onOpenRollDialog]);
-
-  const handleOpenInfo = React.useCallback((saveType: SavingThrowType) => {
-    onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType });
-  }, [onOpenInfoDialog]);
-
-  if (translationsLoading || !translations || !aggregatedFeatEffects) {
-    return null;
-  }
-  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
-  
   const calculatedBaseSaves = React.useMemo(() => getBaseSaves(savingThrowsData.classes, DND_CLASSES || []), [savingThrowsData.classes, DND_CLASSES]);
   
   const savingThrowCardsData = React.useMemo(() => {
@@ -270,36 +231,113 @@ const SavingThrowsPanelComponent = ({
   ]);
 
   return (
+    <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
+      {savingThrowCardsData.map((cardData) => (
+          <SavingThrowCard
+            key={cardData.saveType}
+            {...cardData}
+            onTempModChange={onSavingThrowTemporaryModChange}
+            panelIsLocked={panelIsLocked}
+            onOpenInfoDialog={onOpenInfoDialog}
+            onOpenRollDialog={onOpenRollDialog}
+            uiStrings={UI_STRINGS}
+            translations={translations}
+          />
+        )
+      )}
+    </div>
+  );
+});
+SavingThrowsPanelContent.displayName = 'SavingThrowsPanelContent';
+
+const SavingThrowsPanelComponent = ({
+  savingThrowsData,
+  abilityScores,
+  aggregatedFeatEffects,
+  onSavingThrowTemporaryModChange,
+  onOpenInfoDialog,
+  onOpenRollDialog,
+}: SavingThrowsPanelProps) => {
+  const { translations, isLoading: translationsLoading } = useI18n();
+
+  const handleOpenSavingThrowRollDialog = React.useCallback((saveType: SavingThrowType) => {
+    if (!translations || !abilityScores || !aggregatedFeatEffects) return;
+    const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
+    const baseSaves = getBaseSaves(savingThrowsData.classes, DND_CLASSES);
+    const abilityKey = SAVING_THROW_ABILITIES[saveType];
+    
+    const breakdown: GenericBreakdownItem[] = [
+      { label: UI_STRINGS.savingThrowsRowLabelBase, value: baseSaves[saveType] },
+      { label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === abilityKey)?.abbr || ''), value: getAbilityModifierByName(abilityScores, abilityKey) },
+    ];
+    // This is re-calculating logic from the content component, which is not ideal but necessary to pass to the dialog
+    let miscBonus = savingThrowsData.savingThrows[saveType].magicMod || 0;
+    if (aggregatedFeatEffects.savingThrowBonuses) {
+      aggregatedFeatEffects.savingThrowBonuses.forEach(effect => {
+        if (effect.isActive && (effect.save === saveType || effect.save === 'all')) {
+          if (typeof effect.value === 'number') miscBonus += effect.value;
+          else if (effect.value === 'CHA') miscBonus += getAbilityModifierByName(abilityScores, 'charisma');
+        }
+      });
+    }
+
+    if(miscBonus !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelMiscModifier, value: miscBonus });
+    const tempMod = savingThrowsData.savingThrows[saveType].miscMod || 0;
+    if(tempMod !== 0) breakdown.push({ label: UI_STRINGS.savingThrowsRowLabelTemporaryModifier, value: tempMod });
+    
+    const totalModifier = breakdown.reduce((sum, item) => sum + (typeof item.value === 'number' ? item.value : 0), 0);
+
+    onOpenRollDialog({
+      dialogTitle: (UI_STRINGS.rollDialogTitleSavingThrow).replace("{saveTypeLabel}", SAVING_THROW_LABELS.find(stl => stl.id === saveType)?.label || saveType),
+      rollType: `saving_throw_${saveType}`,
+      baseModifier: totalModifier,
+      calculationBreakdown: breakdown,
+      rerollTwentiesForChecks: useDefinitionsStore.getState().rerollTwentiesForChecks,
+      weaponDamageDiceString: "",
+      weaponCriticalMultiplier: 1,
+    });
+  }, [translations, savingThrowsData, abilityScores, aggregatedFeatEffects, onOpenRollDialog]);
+
+  const handleOpenInfo = React.useCallback((saveType: SavingThrowType) => {
+    onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType });
+  }, [onOpenInfoDialog]);
+
+  const footerContent = React.useMemo(() => {
+    if (!translations) return null;
+    return (
+      <p className={textStyleDescription}>
+        {parseAndRenderUIString(translations.UI_STRINGS.savingThrowsPanelMiscModInfoNoteFull, {
+          badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+        })}
+      </p>
+    )
+  }, [translations]);
+
+  if (translationsLoading || !translations || !aggregatedFeatEffects) {
+    return null;
+  }
+  const { UI_STRINGS } = translations;
+
+  return (
     <LockablePanelWrapper
       title={UI_STRINGS.savingThrowsPanelTitle}
       description={UI_STRINGS.savingThrowsPanelDescription}
       icon={Zap}
       headerClassName="bg-muted/20"
       initialLockedState={false}
-      footer={
-        <p className={textStyleDescription}>
-          {parseAndRenderUIString(UI_STRINGS.savingThrowsPanelMiscModInfoNoteFull, {
-            badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
-          })}
-        </p>
-      }
+      footer={footerContent}
     >
       {({ isLocked: panelIsLocked }) => (
-        <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
-          {savingThrowCardsData.map((cardData) => (
-              <SavingThrowCard
-                key={cardData.saveType}
-                {...cardData}
-                onTempModChange={onSavingThrowTemporaryModChange}
-                panelIsLocked={panelIsLocked}
-                onOpenInfoDialog={handleOpenInfo}
-                onOpenRollDialog={handleOpenSavingThrowRollDialog}
-                uiStrings={UI_STRINGS}
-                translations={translations}
-              />
-            )
-          )}
-        </div>
+        <SavingThrowsPanelContent 
+          panelIsLocked={panelIsLocked}
+          savingThrowsData={savingThrowsData}
+          abilityScores={abilityScores}
+          aggregatedFeatEffects={aggregatedFeatEffects}
+          onSavingThrowTemporaryModChange={onSavingThrowTemporaryModChange}
+          onOpenInfoDialog={handleOpenInfo}
+          onOpenRollDialog={handleOpenSavingThrowRollDialog}
+          translations={translations}
+        />
       )}
     </LockablePanelWrapper>
   );
