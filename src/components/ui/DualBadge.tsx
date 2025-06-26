@@ -44,7 +44,7 @@ export function DualBadge({
   return (
     <div
       className={cn(
-        "inline-flex items-stretch rounded-full overflow-hidden shadow-sm text-xs font-medium whitespace-nowrap shrink-0",
+        "inline-flex items-stretch rounded-full overflow-hidden shadow-sm text-sm font-medium whitespace-nowrap shrink-0",
         className
       )}
       {...props}
