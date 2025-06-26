@@ -17,6 +17,8 @@ export const textStyleCardTitle = "text-lg text-primary font-bold";
 export const textStyleDescription = "text-sm text-muted-foreground";
 export const textStyleInput = "text-base text-center";
 export const textStyleSectionSubheading = "text-lg font-bold text-accent";
+export const textStyleLabel = "font-medium"; // For standard form labels.
 
 // Sizing
-export const inputWidthStandard = 'max-w-24';
+export const inputWidthStandard = 'max-w-24'; // For spinners
+export const inputWidthMedium = 'w-full'; // For standard inputs that should fill their container.

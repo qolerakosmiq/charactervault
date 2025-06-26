@@ -6,10 +6,9 @@ import type { MouseEvent } from 'react';
 import type { Character, AbilityScores, InfoDialogContentType } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Heart, Activity, Loader2, Info, Swords } from 'lucide-react';
+import { Heart, Activity, Info, Swords } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
@@ -21,13 +20,11 @@ import {
   debounceDelayFormInput,
   panelGridGap,
   panelContentPadding,
-  panelFieldHorizontalGap,
   panelFieldVerticalGap,
   textStyleValueBig,
-  textStyleSubLabelTitle,
   textStyleInput,
   textStyleDescription,
-  inputWidthStandard,
+  inputWidthMedium,
 } from '@/config/layout';
 
 export type HealthPanelData = Pick<Character,
@@ -55,16 +52,13 @@ const HealthPanelComponent = ({
   onCharacterUpdate,
   onOpenHealthInfoDialog
 }: HealthPanelProps) => {
-  const { translations, isLoading: translationsLoading } = useI18n();
+  const { translations } = useI18n();
 
-  // --- Ref for stable callback ---
   const calculatedMaxHpRef = React.useRef(calculatedMaxHp);
   React.useEffect(() => {
     calculatedMaxHpRef.current = calculatedMaxHp;
   }, [calculatedMaxHp]);
 
-
-  // --- Debounced Field Handlers ---
   const handleHpUpdate = React.useCallback((value: number) => {
     const maxHp = calculatedMaxHpRef.current;
     onCharacterUpdate('hp', Math.min(value, maxHp > 0 ? maxHp : value));
@@ -83,38 +77,33 @@ const HealthPanelComponent = ({
   const [localTemporaryHp, setLocalTemporaryHp] = useDebouncedFormField(healthData.temporaryHp, handleTemporaryHpUpdate, debounceDelayFormInput);
   const [localNumberOfWounds, setLocalNumberOfWounds] = useDebouncedFormField(healthData.numberOfWounds || 0, handleNumberOfWoundsUpdate, debounceDelayFormInput);
 
-  // Clamp HP if max HP changes from other effects
   React.useEffect(() => {
     if (calculatedMaxHp > 0 && localHp > calculatedMaxHp) {
         setLocalHp(calculatedMaxHp);
     }
   }, [calculatedMaxHp, localHp, setLocalHp]);
 
-  // --- Memoized Derived Values ---
   const missingHp = React.useMemo(() => Math.max(0, calculatedMaxHp - localHp), [calculatedMaxHp, localHp]);
   
-  const { UI_STRINGS, ABILITY_LABELS } = translations || {};
+  const { UI_STRINGS, ABILITY_LABELS } = translations!;
 
   const { statusText, statusColorClass } = React.useMemo(() => {
-    if (!UI_STRINGS) return { statusText: "Loading...", statusColorClass: "" };
-    
-    let text = UI_STRINGS.healthStatusNormal || "Normal";
+    let text = UI_STRINGS.healthStatusNormal;
     let color = "text-emerald-600";
-
-    if (localHp <= -10) { text = UI_STRINGS.healthStatusDead || "Dead"; color = "text-destructive"; }
-    else if (localHp < 0) { text = UI_STRINGS.healthStatusDying || "Dying"; color = "text-destructive"; }
-    else if (localHp === 0) { text = UI_STRINGS.healthStatusDisabled || "Disabled"; color = "text-amber-600"; }
+    if (localHp <= -10) { text = UI_STRINGS.healthStatusDead; color = "text-destructive"; }
+    else if (localHp < 0) { text = UI_STRINGS.healthStatusDying; color = "text-destructive"; }
+    else if (localHp === 0) { text = UI_STRINGS.healthStatusDisabled; color = "text-amber-600"; }
     
     if (localHp > -10 && localNonlethalDamage > 0 && localNonlethalDamage >= localHp) {
       if (localHp > 0) {
-        text = UI_STRINGS.healthStatusStaggered || "Staggered";
+        text = UI_STRINGS.healthStatusStaggered;
         color = "text-amber-600";
         if (localNonlethalDamage > localHp) {
-          text = UI_STRINGS.healthStatusUnconscious || "Unconscious";
+          text = UI_STRINGS.healthStatusUnconscious;
           color = "text-destructive";
         }
       } else {
-        text = UI_STRINGS.healthStatusUnconscious || "Unconscious";
+        text = UI_STRINGS.healthStatusUnconscious;
         color = "text-destructive";
       }
     }
@@ -124,7 +113,6 @@ const HealthPanelComponent = ({
   const { tempHpBarWidthPercentage, currentHpBarWidthPercentage, nonlethalDamageBarWidthPercentage } = React.useMemo(() => {
     const actualCurrentHpForBar = Math.max(0, localHp);
     const effectiveTotalHpForBar = Math.max(1, calculatedMaxHp);
-    
     return {
       tempHpBarWidthPercentage: ((actualCurrentHpForBar + localTemporaryHp) / effectiveTotalHpForBar) * 100,
       currentHpBarWidthPercentage: (actualCurrentHpForBar / effectiveTotalHpForBar) * 100,
@@ -132,7 +120,7 @@ const HealthPanelComponent = ({
     };
   }, [localHp, localTemporaryHp, localNonlethalDamage, calculatedMaxHp]);
   
-  const conAbbr = React.useMemo(() => ABILITY_LABELS?.find(al => al.id === 'constitution')?.abbr || 'CON', [ABILITY_LABELS]);
+  const conAbbr = ABILITY_LABELS.find(al => al.id === 'constitution')?.abbr;
   
   const conModBadgeColor = React.useMemo((): DualBadgeProps['color'] => {
     if (finalConstitutionModifier > 0) return 'emerald';
@@ -140,27 +128,17 @@ const HealthPanelComponent = ({
     return 'default';
   }, [finalConstitutionModifier]);
 
-  // --- Memoized Event Handlers ---
-  const handleHealClick = React.useCallback((e: MouseEvent<HTMLButtonElement>) => { e.preventDefault(); /* Logic to be implemented */ }, []);
-  const handleDamageClick = React.useCallback((e: MouseEvent<HTMLButtonElement>) => { e.preventDefault(); /* Logic to be implemented */ }, []);
+  const handleHealClick = React.useCallback((e: MouseEvent<HTMLButtonElement>) => { e.preventDefault(); }, []);
+  const handleDamageClick = React.useCallback((e: MouseEvent<HTMLButtonElement>) => { e.preventDefault(); }, []);
   const handleOpenInfoDialog = React.useCallback(() => onOpenHealthInfoDialog({ type: 'maxHpBreakdown' }), [onOpenHealthInfoDialog]);
   
-  const footerContent = React.useMemo(() => {
-    if (!UI_STRINGS) return null;
-    return (
-        <p className={textStyleDescription}>
-          {parseAndRenderUIString(UI_STRINGS.healthPanelMaxHpMiscModInfoNoteFull, {
-            badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
-          })}
-        </p>
-    );
-  }, [UI_STRINGS]);
-
-  if (translationsLoading || !UI_STRINGS || !ABILITY_LABELS) {
-    return null;
-  }
-  
-  const healthBarIndicatorColor = "bg-emerald-600";
+  const footerContent = React.useMemo(() => (
+      <p className={textStyleDescription}>
+        {parseAndRenderUIString(UI_STRINGS.healthPanelMaxHpMiscModInfoNoteFull, {
+          badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+        })}
+      </p>
+  ), [UI_STRINGS]);
 
   return (
     <LockablePanelWrapper
@@ -187,10 +165,7 @@ const HealthPanelComponent = ({
                 />
               )}
               <div
-                className={cn(
-                  "absolute top-0 left-0 h-full rounded-full z-20",
-                  healthBarIndicatorColor
-                )}
+                className="absolute top-0 left-0 h-full rounded-full z-20 bg-emerald-600"
                 style={{ width: `${Math.min(currentHpBarWidthPercentage, 100)}%` }}
               />
               {localNonlethalDamage > 0 && (
@@ -224,7 +199,6 @@ const HealthPanelComponent = ({
             <>
               <Separator />
               <div className={cn("grid grid-cols-2", panelGridGap)}>
-                {/* Row 1 */}
                 <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
                   <Label htmlFor="current-hp-input" className="block w-full text-center">
                     {UI_STRINGS.healthPanelCurrentHpLabel}
@@ -235,7 +209,7 @@ const HealthPanelComponent = ({
                       value={localHp}
                       onChange={(e) => setLocalHp(parseInt(e.target.value, 10) || 0)}
                       className={cn(
-                        "h-10 text-lg font-bold", textStyleInput,
+                        "h-10", textStyleInput,
                         localHp <= 0 && localHp > -10 && "text-amber-600",
                         localHp <= -10 && "text-destructive",
                         localHp > 0 && "text-emerald-600"
@@ -254,14 +228,13 @@ const HealthPanelComponent = ({
                       onChange={(e) => setLocalNonlethalDamage(parseInt(e.target.value, 10) || 0)}
                       min={0}
                       className={cn(
-                        "h-10 text-lg font-bold", textStyleInput,
+                        "h-10", textStyleInput,
                         localNonlethalDamage > 0 ? "text-destructive" : "text-muted-foreground"
                       )}
                       disabled={panelIsLocked}
                   />
                 </div>
 
-                {/* Row 2 */}
                 <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
                   <Label htmlFor="temporary-hp-input" className="block w-full text-center">
                       {UI_STRINGS.healthPanelTemporaryHitPointsLabel}
@@ -273,7 +246,7 @@ const HealthPanelComponent = ({
                       onChange={(e) => setLocalTemporaryHp(parseInt(e.target.value, 10) || 0)}
                       min={0}
                       className={cn(
-                        "h-10 text-lg font-bold", textStyleInput,
+                        "h-10", textStyleInput,
                         localTemporaryHp > 0 ? "text-sky-500" : "text-muted-foreground"
                       )}
                       disabled={panelIsLocked}
@@ -290,16 +263,15 @@ const HealthPanelComponent = ({
                       onChange={(e) => setLocalNumberOfWounds(parseInt(e.target.value, 10) || 0)}
                       min={0}
                       className={cn(
-                        "h-10 text-lg font-bold", textStyleInput,
+                        "h-10", textStyleInput,
                         localNumberOfWounds > 0 ? "text-destructive" : "text-muted-foreground"
                       )}
                       disabled={panelIsLocked}
                   />
                 </div>
                 
-                {/* Row 3 - Base Hit Points */}
                 <div className="flex items-center justify-start">
-                  <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel}</Label>
+                  <Label>{UI_STRINGS.healthPanelBaseMaxHpLabel}</Label>
                 </div>
                 <div className="flex items-center justify-center">
                   <Input
@@ -308,12 +280,11 @@ const HealthPanelComponent = ({
                     value={localBaseMaxHp}
                     onChange={(e) => setLocalBaseMaxHp(parseInt(e.target.value, 10) || 0)}
                     min={0}
-                    className={cn("h-10 w-full", textStyleInput)}
+                    className={cn("h-10", inputWidthMedium, textStyleInput)}
                     disabled={panelIsLocked}
                   />
                 </div>
 
-                {/* Row 4 - Ability Modifier */}
                 <div className="flex items-center justify-start">
                   <Label>{UI_STRINGS.healthPanelAbilityModLabel}</Label>
                 </div>
@@ -321,7 +292,6 @@ const HealthPanelComponent = ({
                   <DualBadge leftLabel={conAbbr} rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`} color={conModBadgeColor} />
                 </div>
                 
-                {/* Row 5 - Misc Modifier */}
                 <div className="flex items-center justify-start">
                   <Label>{UI_STRINGS.healthPanelMiscMaxHpLabel}</Label>
                 </div>
@@ -336,7 +306,6 @@ const HealthPanelComponent = ({
                   </span>
                 </div>
 
-                {/* Row 6 - Custom Modifier */}
                 <div className="flex items-center justify-start">
                   <Label htmlFor="custom-max-hp-mod">{UI_STRINGS.healthPanelCustomModLabel}</Label>
                 </div>
@@ -346,15 +315,15 @@ const HealthPanelComponent = ({
                     type="number"
                     value={localCustomMaxHpModifier}
                     onChange={(e) => setLocalCustomMaxHpModifier(parseInt(e.target.value, 10) || 0)}
-                    className={cn("h-10 w-full", textStyleInput)}
+                    className={cn("h-10", inputWidthMedium, textStyleInput)}
                     disabled={panelIsLocked}
                   />
                 </div>
                 
                 <div className="col-span-2"><Separator className="my-2" /></div>
-                {/* Row 7 - Total */}
+
                 <div className="flex items-center justify-start">
-                  <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
+                  <Label>{UI_STRINGS.healthPanelMaxHpLabel}</Label>
                 </div>
                 <div className="flex items-center justify-center">
                     <span className={textStyleValueBig}>
