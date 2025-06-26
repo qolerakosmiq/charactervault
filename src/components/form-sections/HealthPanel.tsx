@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { MouseEvent } from 'react';
 import type { Character, AbilityScores, InfoDialogContentType } from '@/types/character';
 import { Label } from '@/components/ui/label';
@@ -57,10 +57,18 @@ const HealthPanelComponent = ({
 }: HealthPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
 
+  // --- Ref for stable callback ---
+  const calculatedMaxHpRef = React.useRef(calculatedMaxHp);
+  React.useEffect(() => {
+    calculatedMaxHpRef.current = calculatedMaxHp;
+  }, [calculatedMaxHp]);
+
+
   // --- Debounced Field Handlers ---
   const handleHpUpdate = React.useCallback((value: number) => {
-    onCharacterUpdate('hp', Math.min(value, calculatedMaxHp > 0 ? calculatedMaxHp : value));
-  }, [onCharacterUpdate, calculatedMaxHp]);
+    const maxHp = calculatedMaxHpRef.current;
+    onCharacterUpdate('hp', Math.min(value, maxHp > 0 ? maxHp : value));
+  }, [onCharacterUpdate]);
 
   const handleBaseMaxHpUpdate = React.useCallback((value: number) => onCharacterUpdate('baseMaxHp', value), [onCharacterUpdate]);
   const handleCustomMaxHpModifierUpdate = React.useCallback((value: number) => onCharacterUpdate('customMaxHpModifier', value), [onCharacterUpdate]);
@@ -166,7 +174,6 @@ const HealthPanelComponent = ({
             <span className="text-sm font-medium">{UI_STRINGS.healthPanelStatusLabel} </span>
             <span className={cn("font-semibold", statusColorClass)}>{statusText}</span>
           </div>
-
           <div className={cn("flex flex-col", panelFieldVerticalGap)}>
             <div className="relative w-full h-6 bg-muted rounded-full overflow-hidden border border-border">
               {localTemporaryHp > 0 && (
@@ -209,9 +216,9 @@ const HealthPanelComponent = ({
             </Button>
           </div>
           
-          <Separator />
-          
           {!panelIsLocked && (
+            <>
+              <Separator />
               <div className={cn("grid grid-cols-2", panelGridGap)}>
                 {/* Row 1 */}
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
@@ -297,7 +304,7 @@ const HealthPanelComponent = ({
                     value={localBaseMaxHp}
                     onChange={(e) => setLocalBaseMaxHp(parseInt(e.target.value, 10) || 0)}
                     min={0}
-                    className={cn("h-10", textStyleInput)}
+                    className={cn("h-10 w-full", textStyleInput)}
                     disabled={panelIsLocked}
                   />
                 </div>
@@ -314,7 +321,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start">
                   <Label>{UI_STRINGS.healthPanelMiscMaxHpLabel}</Label>
                 </div>
-                <div className="flex justify-end">
+                <div className="flex items-center justify-end">
                   <span className={cn(
                       "font-semibold",
                       calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
@@ -335,7 +342,7 @@ const HealthPanelComponent = ({
                     type="number"
                     value={localCustomMaxHpModifier}
                     onChange={(e) => setLocalCustomMaxHpModifier(parseInt(e.target.value, 10) || 0)}
-                    className={cn("h-10", textStyleInput)}
+                    className={cn("h-10 w-full", textStyleInput)}
                     disabled={panelIsLocked}
                   />
                 </div>
@@ -369,6 +376,7 @@ const HealthPanelComponent = ({
                   </span>
                 </div>
               </div>
+            </>
           )}
         </>
       )}
