@@ -18,16 +18,17 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { parseAndRenderUIString } from '@/lib/utils';
 import {
   debounceDelayFormInput,
+  inputWidthFull,
   panelContentPadding,
   panelFieldHorizontalGap,
-  panelGridGap,
   panelFieldVerticalGap,
+  panelGridGap,
+  textStyleCardTitle,
+  textStyleDescription,
+  textStyleInput,
+  textStyleLabel,
   textStyleModifier,
   textStyleValueBig,
-  textStyleInput,
-  textStyleDescription,
-  inputWidthStandard,
-  textStyleLabel,
 } from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
@@ -121,13 +122,13 @@ const AbilityScoreInputGroup = React.memo((({
         <>
           <div className={cn("w-full flex flex-col items-center", panelFieldVerticalGap)}>
             <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleLabel, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-            <div className={cn("flex justify-center", inputWidthStandard)}>
+            <div className={cn("flex justify-center", inputWidthFull)}>
               <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={cn(textStyleInput)} disabled={panelIsLocked} />
             </div>
           </div>
           <div className={cn("w-full flex flex-col items-center", panelFieldVerticalGap)}>
             <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleLabel, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-            <div className={cn("flex justify-center", inputWidthStandard)}>
+            <div className={cn("flex justify-center", inputWidthFull)}>
               <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput)} disabled={panelIsLocked} />
             </div>
           </div>
