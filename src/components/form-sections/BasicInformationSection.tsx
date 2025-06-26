@@ -38,7 +38,7 @@ import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DEFAULT_LANGUAGE } from '@/i18n/config';
 import { DualBadge } from '@/components/ui/DualBadge';
-import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, debounceDelayFormInput } from '@/config/layout';
+import { panelGridGap, panelContentPadding, panelFieldHorizontalGap, panelFieldVerticalGap, panelBadgeGroupGap, textStyleSectionSubheading, debounceDelayFormInput, textStyleBadgeSmall } from '@/config/layout';
 
 const UI_EMPTY_SELECTION_VALUE = generateRandomAlphanumericString(50);
 
@@ -505,7 +505,7 @@ const BasicInformationSectionComponent = ({
                 <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenRaceInfoDialog} disabled={panelIsLocked && !localRace} className="shrink-0"> <Info /> </Button>
               </div>
               {!panelIsLocked && selectedRaceInfo && raceSpecialQualities?.abilityEffects && raceSpecialQualities.abilityEffects.length > 0 && (
-                 <div className={cn("flex flex-wrap", panelBadgeGroupGap)}>
+                 <div className={cn("flex flex-wrap", panelBadgeGroupGap, textStyleBadgeSmall)}>
                   {raceSpecialQualities.abilityEffects.map((effect) => (
                        <DualBadge
                         key={effect.ability}
@@ -529,7 +529,7 @@ const BasicInformationSectionComponent = ({
                 </div>
                 <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenClassInfoDialog} disabled={panelIsLocked && !localClassName} className="shrink-0"> <Info /> </Button>
               </div>
-              <div className={cn("flex flex-wrap", panelBadgeGroupGap)}>
+              <div className={cn("flex flex-wrap", panelBadgeGroupGap, textStyleBadgeSmall)}>
                 {!panelIsLocked && selectedClassInfo?.hitDice && (
                   <DualBadge
                     leftLabel={UI_STRINGS.hitDiceBadgeLabel}
@@ -641,7 +641,7 @@ const BasicInformationSectionComponent = ({
                 disabled={panelIsLocked}
               />
               {!panelIsLocked && ageEffectsDetails && (ageEffectsDetails.categoryName !== (UI_STRINGS.ageCategoryAdult) || ageEffectsDetails.effects.length > 0) && (
-                 <div className={cn("flex flex-wrap", panelBadgeGroupGap)}>
+                 <div className={cn("flex flex-wrap", panelBadgeGroupGap, textStyleBadgeSmall)}>
                   <DualBadge
                     leftLabel={UI_STRINGS.ageCategoryBadgeLabel}
                     rightLabel={ageEffectsDetails.categoryName}
@@ -681,7 +681,7 @@ const BasicInformationSectionComponent = ({
                   if (selectedSizeObject && typeof selectedSizeObject.acModifier === 'number' && selectedSizeObject.acModifier !== 0) {
                     const acMod = selectedSizeObject.acModifier;
                     return (
-                      <div className={cn("flex flex-wrap", panelBadgeGroupGap)}>
+                      <div className={cn("flex flex-wrap", panelBadgeGroupGap, textStyleBadgeSmall)}>
                         <DualBadge
                           leftLabel={UI_STRINGS.sizeAcModLeftBadgeLabel}
                           rightLabel={acMod > 0 ? `+${acMod}` : String(acMod)}
