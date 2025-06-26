@@ -22,13 +22,13 @@ import {
   panelGridGap,
   panelFieldVerticalGap,
   textStyleModifier,
-  textStyleSubLabel,
   textStyleValueBig,
   textStyleCardTitle,
   textStyleInput,
   textStyleDescription,
   inputWidthFull,
   textStyleLabel,
+  textStyleSubLabel,
 } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';

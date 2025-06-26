@@ -24,7 +24,6 @@ import {
   panelFieldVerticalGap,
   textStyleModifier,
   textStyleValueBig,
-  textStyleCardTitle,
   textStyleInput,
   textStyleDescription,
   inputWidthStandard,
