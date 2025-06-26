@@ -23,13 +23,12 @@ import {
   panelGridGap,
   panelFieldVerticalGap,
   textStyleModifier,
-  textStyleSubtle,
   textStyleValueBig,
-  textStyleSubLabelTitle,
   textStyleCardTitle,
   textStyleInput,
   textStyleDescription,
   inputWidthStandard,
+  textStyleLabel,
 } from '@/config/layout';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { Badge } from '@/components/ui/badge';
@@ -113,7 +112,7 @@ const AbilityScoreInputGroup = React.memo((({
         <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleOpenBreakdown} aria-label={(UI_STRINGS.infoDialogAbilityBreakdownAriaLabel).replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Info /></Button>
       </div>
       <div className="flex flex-col items-center">
-        <Label className={textStyleSubLabelTitle}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
+        <Label className={textStyleLabel}>{UI_STRINGS.abilityScoresFinalModifierLabel}</Label>
         <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
           <p className={cn(modifierColorClass, "self-center")}>{finalModifier >= 0 ? '+' : ''}{finalModifier}</p>
           <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-primary self-center" onClick={handleTriggerRoll} aria-label={(UI_STRINGS.rollDialogAbilityCheckAriaLabel).replace("{abilityName}", ABILITY_LABELS.find(al => al.id === abilityKey)?.label || abilityKey)}><Dices /></Button>
@@ -122,13 +121,13 @@ const AbilityScoreInputGroup = React.memo((({
       {!panelIsLocked && (
         <>
           <div className={cn("w-full flex flex-col items-center", panelFieldVerticalGap)}>
-            <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
+            <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleLabel, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
             <div className={cn("flex justify-center", inputWidthStandard)}>
               <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={cn(textStyleInput)} disabled={panelIsLocked} />
             </div>
           </div>
           <div className={cn("w-full flex flex-col items-center", panelFieldVerticalGap)}>
-            <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
+            <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleLabel, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
             <div className={cn("flex justify-center", inputWidthStandard)}>
               <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput)} disabled={panelIsLocked} />
             </div>

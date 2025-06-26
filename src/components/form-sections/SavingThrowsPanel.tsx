@@ -22,13 +22,13 @@ import {
   panelGridGap,
   panelFieldVerticalGap,
   textStyleModifier,
-  textStyleSubtle,
+  textStyleSubLabel,
   textStyleValueBig,
-  textStyleSubLabelTitle,
   textStyleCardTitle,
   textStyleInput,
   textStyleDescription,
   inputWidthStandard,
+  textStyleLabel,
 } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
@@ -113,7 +113,7 @@ const SavingThrowCard = React.memo(({
       </Label>
       <>
         <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-          <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
+          <Label className={textStyleLabel}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
           <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
             <p className={cn(textStyleModifier, 'text-center')}>{renderModifierValue(totalValue)}</p>
              <Button
@@ -129,17 +129,17 @@ const SavingThrowCard = React.memo(({
         {!panelIsLocked && (
           <>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-              <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
+              <Label className={textStyleLabel}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
               <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} />
             </div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-              <Label className={textStyleSubLabelTitle}>
+              <Label className={textStyleLabel}>
                 {uiStrings.savingThrowsRowLabelMiscModifier}
               </Label>
-              <p>{renderModifierValue(miscBonus)}</p>
+              <p className={textStyleSubLabel}>{renderModifierValue(miscBonus)}</p>
             </div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-                <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubLabelTitle}>
+                <Label htmlFor={`temp-mod-${saveType}`} className={textStyleLabel}>
                   {uiStrings.savingThrowsRowLabelTemporaryModifier}
                 </Label>
                 <div className="flex justify-center w-full">

@@ -24,8 +24,7 @@ import {
   textStyleValueBig,
   textStyleInput,
   textStyleDescription,
-  inputWidthMedium,
-  textStyleLabel,
+  inputWidthFull,
   panelFieldRowHeight
 } from '@/config/layout';
 
@@ -155,7 +154,7 @@ const HealthPanelComponent = ({
       {({ isLocked: panelIsLocked }) => (
         <>
           <div className="text-center">
-            <span className={textStyleLabel}>{UI_STRINGS.healthPanelStatusLabel} </span>
+            <span className="font-medium">{UI_STRINGS.healthPanelStatusLabel} </span>
             <span className={cn("font-semibold", statusColorClass)}>{statusText}</span>
           </div>
           <div className={cn("flex flex-col", panelFieldVerticalGap)}>
@@ -202,7 +201,7 @@ const HealthPanelComponent = ({
               <Separator />
               <div className={cn("grid grid-cols-2", panelGridGap)}>
                  <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
-                  <Label className="text-center">{UI_STRINGS.healthPanelCurrentHpLabel}</Label>
+                  <Label htmlFor="current-hp-input" className="text-center">{UI_STRINGS.healthPanelCurrentHpLabel}</Label>
                   <Input
                       id="current-hp-input"
                       type="number"
@@ -218,7 +217,7 @@ const HealthPanelComponent = ({
                   />
                 </div>
                  <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
-                  <Label className="text-center">{UI_STRINGS.healthPanelNonlethalDamageLabel}</Label>
+                  <Label htmlFor="nonlethal-damage-input" className="text-center">{UI_STRINGS.healthPanelNonlethalDamageLabel}</Label>
                   <Input
                       id="nonlethal-damage-input"
                       type="number"
@@ -234,7 +233,7 @@ const HealthPanelComponent = ({
                 </div>
 
                  <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
-                  <Label className="text-center">{UI_STRINGS.healthPanelTemporaryHitPointsLabel}</Label>
+                  <Label htmlFor="temporary-hp-input" className="text-center">{UI_STRINGS.healthPanelTemporaryHitPointsLabel}</Label>
                   <Input
                       id="temporary-hp-input"
                       type="number"
@@ -249,7 +248,7 @@ const HealthPanelComponent = ({
                   />
                 </div>
                  <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
-                  <Label className="text-center">{UI_STRINGS.healthPanelNumberOfWoundsLabel}</Label>
+                  <Label htmlFor="number-of-wounds-input" className="text-center">{UI_STRINGS.healthPanelNumberOfWoundsLabel}</Label>
                   <Input
                       id="number-of-wounds-input"
                       type="number"
@@ -276,7 +275,7 @@ const HealthPanelComponent = ({
                     value={localBaseMaxHp}
                     onChange={(e) => setLocalBaseMaxHp(parseInt(e.target.value, 10) || 0)}
                     min={0}
-                    className={cn(inputWidthMedium, textStyleInput)}
+                    className={cn(inputWidthFull, textStyleInput)}
                     disabled={panelIsLocked}
                   />
                 </div>
@@ -311,7 +310,7 @@ const HealthPanelComponent = ({
                     type="number"
                     value={localCustomMaxHpModifier}
                     onChange={(e) => setLocalCustomMaxHpModifier(parseInt(e.target.value, 10) || 0)}
-                    className={cn(inputWidthMedium, textStyleInput)}
+                    className={cn(inputWidthFull, textStyleInput)}
                     disabled={panelIsLocked}
                   />
                 </div>
