@@ -226,7 +226,7 @@ const HealthPanelComponent = ({
               <div className={cn("grid grid-cols-2", panelGridGap)}>
                 {/* Row 1 */}
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="current-hp-input" className="block w-full text-center">
+                  <Label htmlFor="current-hp-input" className="text-sm font-medium block w-full text-center">
                     {UI_STRINGS.healthPanelCurrentHpLabel}
                   </Label>
                   <Input
@@ -244,7 +244,7 @@ const HealthPanelComponent = ({
                   />
                 </div>
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="nonlethal-damage-input" className="block w-full text-center">
+                  <Label htmlFor="nonlethal-damage-input" className="text-sm font-medium block w-full text-center">
                       {UI_STRINGS.healthPanelNonlethalDamageLabel}
                   </Label>
                   <Input
@@ -263,7 +263,7 @@ const HealthPanelComponent = ({
 
                 {/* Row 2 */}
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="temporary-hp-input" className="block w-full text-center">
+                  <Label htmlFor="temporary-hp-input" className="text-sm font-medium block w-full text-center">
                       {UI_STRINGS.healthPanelTemporaryHitPointsLabel}
                   </Label>
                   <Input
@@ -280,7 +280,7 @@ const HealthPanelComponent = ({
                   />
                 </div>
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="number-of-wounds-input" className="block w-full text-center">
+                  <Label htmlFor="number-of-wounds-input" className="text-sm font-medium block w-full text-center">
                       {UI_STRINGS.healthPanelNumberOfWoundsLabel}
                   </Label>
                   <Input
@@ -353,10 +353,10 @@ const HealthPanelComponent = ({
                 
                 <div className="col-span-2"><Separator className="my-2" /></div>
                 {/* Row 7 - Total */}
-                <div className="flex items-center justify-start">
-                  <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
+                <div className="flex items-center justify-start h-10">
+                  <Label className="font-semibold text-lg">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-center h-10">
                     <span className={textStyleValueBig}>
                         {calculatedMaxHp}
                     </span>
@@ -372,10 +372,10 @@ const HealthPanelComponent = ({
                     </Button>
                 </div>
                 <div className="flex items-center justify-start">
-                  <Label>{UI_STRINGS.healthPanelMissingHpLabel}</Label>
+                  <Label className="text-sm font-medium">{UI_STRINGS.healthPanelMissingHpLabel}</Label>
                 </div>
                 <div className="flex items-center justify-center">
-                  <span className="font-bold text-lg text-muted-foreground">
+                  <span className={cn("text-muted-foreground", missingHp > 0 && "text-destructive")}>
                     {missingHp}
                   </span>
                 </div>
