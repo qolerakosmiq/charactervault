@@ -121,13 +121,17 @@ const AbilityScoreInputGroup = React.memo((({
       </div>
       {!panelIsLocked && (
         <>
-          <div className={cn("w-full flex flex-col", panelFieldVerticalGap)}>
+          <div className={cn("w-full flex flex-col items-center", panelFieldVerticalGap)}>
             <Label htmlFor={`base-score-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresBaseScoreLabel}</Label>
-            <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={cn(textStyleInput, inputWidthStandard, 'mx-auto')} disabled={panelIsLocked} />
+            <div className={cn("flex justify-center", inputWidthStandard)}>
+              <Input id={`base-score-${abilityKey}`} type="number" value={localBaseScore} onChange={(e) => setLocalBaseScore(parseInt(e.target.value, 10) || 1)} min={1} className={cn(textStyleInput)} disabled={panelIsLocked} />
+            </div>
           </div>
-          <div className={cn("w-full flex flex-col", panelFieldVerticalGap)}>
+          <div className={cn("w-full flex flex-col items-center", panelFieldVerticalGap)}>
             <Label htmlFor={`temp-mod-${abilityKey}`} className={cn(textStyleSubLabelTitle, "text-center block")}>{UI_STRINGS.abilityScoresTempModLabel}</Label>
-            <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, inputWidthStandard, 'mx-auto')} disabled={panelIsLocked} />
+            <div className={cn("flex justify-center", inputWidthStandard)}>
+              <Input id={`temp-mod-${abilityKey}`} type="number" value={localTempMod} onChange={(e) => setLocalTempMod(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput)} disabled={panelIsLocked} />
+            </div>
           </div>
         </>
       )}
