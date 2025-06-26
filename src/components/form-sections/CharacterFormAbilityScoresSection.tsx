@@ -150,6 +150,74 @@ export interface CharacterFormAbilityScoresSectionProps {
   characterClassId: DndClassId | '';
 }
 
+const CharacterFormAbilityScoresSectionContent = React.memo(({
+  panelIsLocked,
+  abilityScoresData,
+  detailedAbilityScores,
+  onBaseAbilityScoreChange,
+  onAbilityScoreTempCustomModifierChange,
+  onOpenAbilityScoreBreakdownDialog,
+  translations,
+  handleTriggerRollDialog,
+  setIsRollerDialogOpen,
+  setIsPointBuyDialogOpen,
+  pointBuyBudget
+}: Omit<CharacterFormAbilityScoresSectionProps, 'onMultipleBaseAbilityScoresChange'> & { 
+  panelIsLocked: boolean,
+  translations: NonNullable<ReturnType<typeof useI18n>['translations']>,
+  handleTriggerRollDialog: (ability: Exclude<AbilityName, 'none'>) => void,
+  setIsRollerDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setIsPointBuyDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  pointBuyBudget: number,
+}) => {
+  if (!detailedAbilityScores || !translations) return null;
+  const translationSubsetForChild = { ABILITY_LABELS: translations.ABILITY_LABELS, UI_STRINGS: translations.UI_STRINGS };
+
+  return (
+    <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
+      {abilityKeys.map(ability => (
+        <AbilityScoreInputGroup
+          key={ability}
+          abilityKey={ability}
+          finalScore={detailedAbilityScores[ability].finalScore}
+          baseScoreValue={abilityScoresData.abilityScores[ability]}
+          onBaseScoreChange={onBaseAbilityScoreChange}
+          tempModValue={abilityScoresData.abilityScoreTempCustomModifiers[ability]}
+          onTempModChange={onAbilityScoreTempCustomModifierChange}
+          panelIsLocked={panelIsLocked}
+          translations={translationSubsetForChild}
+          onOpenBreakdownDialog={onOpenAbilityScoreBreakdownDialog}
+          onTriggerRollDialog={handleTriggerRollDialog}
+        />
+      ))}
+      {!panelIsLocked && (
+        <div className={cn("contents")}>
+          <Button
+            type="button"
+            variant="outline"
+            size="default"
+            onClick={() => setIsRollerDialogOpen(true)}
+            className="w-full sm:col-start-2 lg:col-start-5"
+          >
+            <Dices /> {translationSubsetForChild.UI_STRINGS.abilityScoresRollButton}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="default"
+            onClick={() => setIsPointBuyDialogOpen(true)}
+            disabled={typeof pointBuyBudget !== 'number'}
+            className="w-full sm:col-start-auto lg:col-start-auto"
+          >
+            <Calculator /> {translationSubsetForChild.UI_STRINGS.abilityScoresPointBuyButton}
+          </Button>
+        </div>
+      )}
+    </div>
+  );
+});
+CharacterFormAbilityScoresSectionContent.displayName = 'CharacterFormAbilityScoresSectionContent';
+
 const CharacterFormAbilityScoresSectionComponent = ({
   abilityScoresData,
   detailedAbilityScores,
@@ -215,74 +283,40 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
   const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
   }, []);
-
-  const translationSubsetForChild = React.useMemo(() => {
-    if (!translations) return null;
-    return { ABILITY_LABELS: translations.ABILITY_LABELS, UI_STRINGS: translations.UI_STRINGS };
-  }, [translations]);
-
-  if (!detailedAbilityScores || !translationSubsetForChild) {
-    return null;
-  }
-  const { UI_STRINGS } = translationSubsetForChild;
+  
+  if (translationsLoading || !translations || !detailedAbilityScores) return null;
 
   return (
     <>
       <LockablePanelWrapper
-        title={UI_STRINGS.abilityScoresPanelTitle}
-        description={UI_STRINGS.abilityScoresPanelDescription}
+        title={translations.UI_STRINGS.abilityScoresPanelTitle}
+        description={translations.UI_STRINGS.abilityScoresPanelDescription}
         icon={Dices}
         headerClassName="bg-muted/20"
         initialLockedState={false}
         footer={
           <p className={textStyleDescription}>
-            {parseAndRenderUIString(UI_STRINGS.abilityScoresNoteFull, {
+            {parseAndRenderUIString(translations.UI_STRINGS.abilityScoresNoteFull, {
               badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
             })}
           </p>
         }
       >
         {({ isLocked: panelIsLocked }) => (
-          <div className={cn("grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-6", panelGridGap)}>
-            {abilityKeys.map(ability => (
-              <AbilityScoreInputGroup
-                key={ability}
-                abilityKey={ability}
-                finalScore={detailedAbilityScores[ability].finalScore}
-                baseScoreValue={abilityScoresData.abilityScores[ability]}
-                onBaseScoreChange={onBaseAbilityScoreChange}
-                tempModValue={abilityScoresData.abilityScoreTempCustomModifiers[ability]}
-                onTempModChange={onAbilityScoreTempCustomModifierChange}
-                panelIsLocked={panelIsLocked}
-                translations={translationSubsetForChild}
-                onOpenBreakdownDialog={onOpenAbilityScoreBreakdownDialog}
-                onTriggerRollDialog={handleTriggerRollDialog}
-              />
-            ))}
-            {!panelIsLocked && (
-              <div className={cn("contents")}>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="default"
-                  onClick={() => setIsRollerDialogOpen(true)}
-                  className="w-full sm:col-start-2 lg:col-start-5"
-                >
-                  <Dices /> {UI_STRINGS.abilityScoresRollButton}
-                </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="default"
-                  onClick={() => setIsPointBuyDialogOpen(true)}
-                  disabled={typeof pointBuyBudget !== 'number'}
-                  className="w-full sm:col-start-auto lg:col-start-auto"
-                >
-                  <Calculator /> {UI_STRINGS.abilityScoresPointBuyButton}
-                </Button>
-              </div>
-            )}
-          </div>
+          <CharacterFormAbilityScoresSectionContent
+            panelIsLocked={panelIsLocked}
+            abilityScoresData={abilityScoresData}
+            detailedAbilityScores={detailedAbilityScores}
+            onBaseAbilityScoreChange={onBaseAbilityScoreChange}
+            onAbilityScoreTempCustomModifierChange={onAbilityScoreTempCustomModifierChange}
+            onOpenAbilityScoreBreakdownDialog={onOpenAbilityScoreBreakdownDialog}
+            characterClassId={characterClassId}
+            translations={translations}
+            handleTriggerRollDialog={handleTriggerRollDialog}
+            setIsRollerDialogOpen={setIsRollerDialogOpen}
+            setIsPointBuyDialogOpen={setIsPointBuyDialogOpen}
+            pointBuyBudget={pointBuyBudget}
+          />
         )}
       </LockablePanelWrapper>
       <AbilityScoreRollerDialog

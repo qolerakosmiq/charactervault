@@ -29,6 +29,7 @@ import {
   textStyleLabel,
   textStyleModifier,
   textStyleBadgeMedium,
+  textStyleSubLabel,
 } from '@/config/layout';
 
 export type HealthPanelData = Pick<Character,
@@ -57,7 +58,7 @@ const HealthPanelContent = React.memo(({
   onCharacterUpdate,
   onOpenHealthInfoDialog,
   translations
-}: HealthPanelProps & { panelIsLocked: boolean; translations: ReturnType<typeof useI18n>['translations'] }) => {
+}: HealthPanelProps & { panelIsLocked: boolean; translations: NonNullable<ReturnType<typeof useI18n>['translations']> }) => {
   const calculatedMaxHpRef = React.useRef(calculatedMaxHp);
   React.useEffect(() => {
     calculatedMaxHpRef.current = calculatedMaxHp;
@@ -85,11 +86,11 @@ const HealthPanelContent = React.memo(({
     if (calculatedMaxHp > 0 && localHp > calculatedMaxHp) {
         setLocalHp(calculatedMaxHp);
     }
-  }, [calculatedMaxHp, localHp, setLocalHp]);
+  }, [calculatedMaxHp, localHp]);
 
   const missingHp = React.useMemo(() => Math.max(0, calculatedMaxHp - localHp), [calculatedMaxHp, localHp]);
 
-  const { UI_STRINGS, ABILITY_LABELS } = translations!;
+  const { UI_STRINGS, ABILITY_LABELS } = translations;
 
   const { statusText, statusColorClass } = React.useMemo(() => {
     let text = UI_STRINGS.healthStatusNormal;

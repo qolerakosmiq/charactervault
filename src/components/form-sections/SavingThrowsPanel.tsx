@@ -172,8 +172,8 @@ const SavingThrowsPanelContent = React.memo(({
   onOpenRollDialog,
   panelIsLocked,
   translations,
-}: SavingThrowsPanelProps & { panelIsLocked: boolean; translations: ReturnType<typeof useI18n>['translations']}) => {
-  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations!;
+}: SavingThrowsPanelProps & { panelIsLocked: boolean; translations: NonNullable<ReturnType<typeof useI18n>['translations']>}) => {
+  const { DND_CLASSES, SAVING_THROW_LABELS, ABILITY_LABELS, UI_STRINGS } = translations;
 
   const calculateCalculatedTotalMiscBonusForSave = React.useCallback((saveType: SavingThrowType): number => {
     if (!aggregatedFeatEffects) return 0;
