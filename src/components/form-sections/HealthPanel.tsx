@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { MouseEvent } from 'react';
 import type { Character, AbilityScores, InfoDialogContentType } from '@/types/character';
 import { Label } from '@/components/ui/label';
@@ -176,7 +176,7 @@ const HealthPanelComponent = ({
       icon={Heart}
       headerClassName="bg-muted/20"
       initialLockedState={false}
-      cardContentClassName={panelGridGap}
+      cardContentClassName={cn("flex flex-col", panelGridGap)}
       footer={
         <p className={textStyleDescription}>
           {parseAndRenderUIString(UI_STRINGS.healthPanelMaxHpMiscModInfoNoteFull, {
@@ -237,8 +237,9 @@ const HealthPanelComponent = ({
           )}
 
           <Separator />
-
-          <div className={cn("grid grid-cols-1 sm:grid-cols-2", panelGridGap)}>
+          
+          <div className={cn("grid grid-cols-2", panelGridGap)}>
+            {/* Row 1 */}
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="current-hp-input" className="text-sm font-medium block w-full text-center">
                 {UI_STRINGS.healthPanelCurrentHpLabel}
@@ -274,6 +275,8 @@ const HealthPanelComponent = ({
                   disabled={panelIsLocked}
               />
             </div>
+
+            {/* Row 2 */}
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="temporary-hp-input" className="text-sm font-medium block w-full text-center">
                   {UI_STRINGS.healthPanelTemporaryHitPointsLabel}
@@ -308,82 +311,88 @@ const HealthPanelComponent = ({
                   disabled={panelIsLocked}
               />
             </div>
+
+            {/* Row 3 */}
+            <div className="flex items-center justify-start">
+              <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel}</Label>
+            </div>
+            <div className="flex justify-end">
+              <Input
+                id="base-max-hp"
+                type="number"
+                value={localBaseMaxHp}
+                onChange={(e) => setLocalBaseMaxHp(parseInt(e.target.value, 10) || 0)}
+                min={0}
+                className={cn(textStyleInput, "h-10")}
+                disabled={panelIsLocked}
+              />
+            </div>
+
+            {/* Row 4 */}
+            <div className="flex items-center justify-start">
+              <Label>{UI_STRINGS.healthPanelAbilityModLabel}</Label>
+            </div>
+            <div className="flex justify-end">
+              <DualBadge leftLabel={conAbbr} rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`} color={conModBadgeColor} />
+            </div>
+
+            {/* Row 5 */}
+            <div className="flex items-center justify-start">
+              <Label>{UI_STRINGS.healthPanelMiscMaxHpLabel}</Label>
+            </div>
+            <div className="flex justify-end">
+              <span className={cn(
+                  "font-semibold font-bold",
+                  calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
+                  calculatedMiscMaxHpBonus > 0 && "text-emerald-600",
+                  calculatedMiscMaxHpBonus < 0 && "text-destructive"
+              )}>
+                  {calculatedMiscMaxHpBonus >= 0 ? `+${calculatedMiscMaxHpBonus}` : calculatedMiscMaxHpBonus}
+              </span>
+            </div>
+
+            {/* Row 6 */}
+            <div className="flex items-center justify-start">
+              <Label htmlFor="custom-max-hp-mod">{UI_STRINGS.healthPanelCustomModLabel}</Label>
+            </div>
+            <div className="flex justify-end">
+              <Input
+                id="custom-max-hp-mod"
+                type="number"
+                value={localCustomMaxHpModifier}
+                onChange={(e) => setLocalCustomMaxHpModifier(parseInt(e.target.value, 10) || 0)}
+                className={cn(textStyleInput, "h-10")}
+                disabled={panelIsLocked}
+              />
+            </div>
           </div>
 
-          <div className={cn("flex flex-col text-sm", panelFieldVerticalGap)}>
-              <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
-                  <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel}</Label>
-                  <div className={cn("flex justify-center", inputWidthStandard)}>
-                      <Input
-                          id="base-max-hp"
-                          type="number"
-                          value={localBaseMaxHp}
-                          onChange={(e) => setLocalBaseMaxHp(parseInt(e.target.value, 10) || 0)}
-                          min={0}
-                          className={cn(textStyleInput, "h-10")}
-                          disabled={panelIsLocked}
-                      />
-                  </div>
-              </div>
-              <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
-                  <Label className="inline-flex items-baseline">
-                      {UI_STRINGS.healthPanelAbilityModLabel}
-                  </Label>
-                  <DualBadge leftLabel={conAbbr} rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`} color={conModBadgeColor} />
-              </div>
-               <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
-                  <Label>
-                      {UI_STRINGS.healthPanelMiscMaxHpLabel}
-                  </Label>
-                  <span className={cn(
-                      "font-semibold font-bold",
-                      calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
-                      calculatedMiscMaxHpBonus > 0 && "text-emerald-600",
-                      calculatedMiscMaxHpBonus < 0 && "text-destructive"
-                  )}>
-                      {calculatedMiscMaxHpBonus >= 0 ? `+${calculatedMiscMaxHpBonus}` : calculatedMiscMaxHpBonus}
+          <Separator className="my-2" />
+          <div className={cn("flex items-center justify-between pt-1", panelFieldHorizontalGap)}>
+              <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
+               <div className="flex items-center justify-center">
+                  <span className={textStyleValueBig}>
+                      {displayMaxHp}
                   </span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                    onClick={() => onOpenHealthInfoDialog({ type: 'maxHpBreakdown' })}
+                    disabled={panelIsLocked}
+                  >
+                    <Info className="h-4 w-4" />
+                  </Button>
               </div>
-              <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
-                  <Label htmlFor="custom-max-hp-mod">{UI_STRINGS.healthPanelCustomModLabel}</Label>
-                  <div className={cn("flex justify-center", inputWidthStandard)}>
-                      <Input
-                          id="custom-max-hp-mod"
-                          type="number"
-                          value={localCustomMaxHpModifier}
-                          onChange={(e) => setLocalCustomMaxHpModifier(parseInt(e.target.value, 10) || 0)}
-                          className={cn(textStyleInput, "h-10")}
-                          disabled={panelIsLocked}
-                      />
-                  </div>
-              </div>
-              <Separator className="my-2" />
-              <div className={cn("flex items-center justify-between pt-1", panelFieldHorizontalGap)}>
-                  <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
-                   <div className="flex items-center justify-center">
-                      <span className={textStyleValueBig}>
-                          {displayMaxHp}
-                      </span>
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
-                        onClick={() => onOpenHealthInfoDialog({ type: 'maxHpBreakdown' })}
-                        disabled={panelIsLocked}
-                      >
-                        <Info className="h-4 w-4" />
-                      </Button>
-                  </div>
-              </div>
-              <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
-                <Label className="text-sm font-medium">
-                  {UI_STRINGS.healthPanelMissingHpLabel}
-                </Label>
-                <span className="text-lg font-bold text-muted-foreground">
-                    {missingHp}
-                </span>
-              </div>
+          </div>
+          <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
+            <Label className="text-sm font-medium">
+              {UI_STRINGS.healthPanelMissingHpLabel}
+            </Label>
+            <span className="text-lg font-bold text-muted-foreground">
+                {missingHp}
+            </span>
           </div>
         </>
       )}
@@ -392,3 +401,5 @@ const HealthPanelComponent = ({
 };
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
+
+    
