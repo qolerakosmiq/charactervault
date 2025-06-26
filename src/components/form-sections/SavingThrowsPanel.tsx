@@ -111,7 +111,6 @@ const SavingThrowCard = React.memo(({
             </Button>
         </div>
       </Label>
-      <div className="flex-grow" />
       <>
         <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
           <Label className={textStyleSubLabelTitle}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
