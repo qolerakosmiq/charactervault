@@ -191,6 +191,7 @@ const HealthPanelComponent = ({
             <span className="text-sm font-medium">{UI_STRINGS.healthPanelStatusLabel} </span>
             <span className={cn("font-semibold", statusColorClass)}>{statusText}</span>
           </div>
+
           <div className={cn("flex flex-col", panelFieldVerticalGap)}>
             <div className="relative w-full h-6 bg-muted rounded-full overflow-hidden border border-border">
               {localTemporaryHp > 0 && (
@@ -234,6 +235,8 @@ const HealthPanelComponent = ({
               </Button>
             </div>
           )}
+          
+          <Separator />
           
           <div className="grid grid-cols-2 gap-4">
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
@@ -360,29 +363,29 @@ const HealthPanelComponent = ({
           
           <Separator className="my-2" />
           
-          <div className="flex items-center justify-between col-span-2">
+          <div className="grid grid-cols-2 col-span-2">
+            <div className="flex items-center justify-start col-span-1">
               <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
-              <div className="flex items-center justify-center">
-                  <span className={textStyleValueBig}>
-                      {displayMaxHp}
-                  </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
-                    onClick={() => onOpenHealthInfoDialog({ type: 'maxHpBreakdown' })}
-                    disabled={panelIsLocked}
-                  >
-                    <Info className="h-4 w-4" />
-                  </Button>
-              </div>
+            </div>
+            <div className="flex items-center justify-end col-span-1">
+                <span className={textStyleValueBig}>
+                    {displayMaxHp}
+                </span>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground"
+                  onClick={() => onOpenHealthInfoDialog({ type: 'maxHpBreakdown' })}
+                  disabled={panelIsLocked}
+                >
+                  <Info className="h-4 w-4" />
+                </Button>
+            </div>
           </div>
-          <div className={cn("flex items-center justify-between col-span-2", panelFieldHorizontalGap)}>
-            <Label className="font-medium">
-              {UI_STRINGS.healthPanelMissingHpLabel}
-            </Label>
-            <span className="text-lg font-bold text-muted-foreground">
+          <div className="flex items-center justify-between col-span-2">
+            <Label className="font-medium">{UI_STRINGS.healthPanelMissingHpLabel}</Label>
+            <span className="font-bold text-lg text-muted-foreground">
               {missingHp}
             </span>
           </div>
