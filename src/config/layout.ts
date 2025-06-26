@@ -6,6 +6,7 @@ export const panelFieldHorizontalGap = 'gap-2'; // 0.5rem
 export const panelFieldVerticalGap = 'gap-2'; // 0.5rem
 export const panelBadgeGroupGap = 'gap-1'; // 0.25rem
 export const debounceDelayFormInput = 400; // milliseconds
+export const panelFieldRowHeight = 'h-10'; // Added for consistent row height
 
 // Text Styles
 export const textStyleValueBig = "text-lg font-bold text-accent text-center";
@@ -16,8 +17,9 @@ export const textStyleSubLabelTitle = "text-xs font-bold";
 export const textStyleCardTitle = "text-lg text-primary font-bold";
 export const textStyleDescription = "text-sm text-muted-foreground";
 export const textStyleInput = "text-base text-center";
+export const textStyleLabel = "font-medium";
 export const textStyleSectionSubheading = "text-lg font-bold text-accent";
-export const textStyleLabel = "font-medium"; // For standard form labels.
+
 
 // Sizing
 export const inputWidthStandard = 'max-w-24'; // For spinners
