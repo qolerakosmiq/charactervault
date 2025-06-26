@@ -137,7 +137,7 @@ const SavingThrowCard = React.memo(({
               <Label className={textStyleSubLabelTitle}>
                 {uiStrings.savingThrowsRowLabelMiscModifier}
               </Label>
-              <p className={cn(textStyleSubtle)}>{renderModifierValue(miscBonus)}</p>
+              <p>{renderModifierValue(miscBonus)}</p>
             </div>
             <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
                 <Label htmlFor={`temp-mod-${saveType}`} className={textStyleSubLabelTitle}>
