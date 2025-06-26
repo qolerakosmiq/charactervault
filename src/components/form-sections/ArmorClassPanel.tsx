@@ -21,13 +21,13 @@ import {
   panelContentPadding,
   panelFieldHorizontalGap,
   panelGridGap,
-  textStyleSubLabelTitle,
   textStyleValueBig,
   textStyleCardTitle,
   textStyleInput,
   textStyleDescription,
   panelFieldVerticalGap,
   inputWidthStandard,
+  textStyleLabel,
 } from '@/config/layout';
 import { Input } from '@/components/ui/input';
 
@@ -221,7 +221,7 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
           
           {!panelIsLocked && (
             <div className={cn("flex items-center justify-center", panelGridGap)}>
-              <Label htmlFor="temporary-ac-modifier-input" className="font-medium">
+              <Label htmlFor="temporary-ac-modifier-input" className={textStyleLabel}>
                 {UI_STRINGS.armorClassMiscModifierLabel}
               </Label>
               <div className={cn("flex justify-center", inputWidthStandard)}>

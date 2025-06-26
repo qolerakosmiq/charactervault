@@ -16,7 +16,7 @@ export const textStyleSubLabel = "text-sm text-muted-foreground";
 export const textStyleCardTitle = "text-lg text-primary font-bold";
 export const textStyleDescription = "text-sm text-muted-foreground";
 export const textStyleInput = "text-base text-center";
-export const textStyleLabel = "font-medium";
+export const textStyleLabel = "text-sm font-medium";
 export const textStyleSectionSubheading = "text-lg font-bold text-accent";
 export const textStyleBadgeSmall = 'text-xs';
 
