@@ -92,7 +92,7 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
           {!panelIsLocked && (
             <div className={cn("grid grid-cols-2 items-stretch", panelFieldHorizontalGap)}>
               <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                <Label htmlFor="current-xp" className="text-sm font-medium block w-full text-center mb-0">
+                <Label htmlFor="current-xp" className="font-medium block w-full text-center mb-0">
                   <span>{UI_STRINGS.experiencePanelCurrentXpMainLabel}</span>
                   <span className="block text-xs text-muted-foreground">
                     {UI_STRINGS.experiencePanelCurrentXpSubLabel}
