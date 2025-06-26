@@ -1,22 +1,34 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { MouseEvent } from 'react';
 import type { Character, AbilityScores, InfoDialogContentType } from '@/types/character';
 import { Label } from '@/components/ui/label';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Input } from '@/components/ui/input';
 import { Heart, Activity, Loader2, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { cn } from '@/lib/utils';
+import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { Separator } from '@/components/ui/separator';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { LockablePanelWrapper } from '@/components/LockablePanelWrapper'; // Added
-import { debounceDelayFormInput } from '@/config/layout';
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { DualBadge, type DualBadgeProps } from '@/components/ui/DualBadge';
+import {
+  debounceDelayFormInput,
+  panelGridGap,
+  panelContentPadding,
+  panelFieldHorizontalGap,
+  panelFieldVerticalGap,
+  textStyleValueBig,
+  textStyleSubLabelTitle,
+  textStyleInput,
+  textStyleDescription,
+  inputWidthStandard,
+} from '@/config/layout';
 
 export type HealthPanelData = Pick<Character,
   'hp' | 'baseMaxHp' | 'customMaxHpModifier' |
@@ -76,13 +88,11 @@ const HealthPanelComponent = ({
     debounceDelayFormInput
   );
 
-
   React.useEffect(() => {
     if (calculatedMaxHp > 0 && localHp > calculatedMaxHp) {
         setLocalHp(calculatedMaxHp);
     }
   }, [calculatedMaxHp, localHp, setLocalHp]);
-
 
   if (translationsLoading || !translations) {
     return (
@@ -90,8 +100,9 @@ const HealthPanelComponent = ({
         title={translations?.UI_STRINGS.healthPanelTitle || "Health & Vitality"}
         description={translations?.UI_STRINGS.healthPanelDescription || "Manage hit points, damage, and related attributes."}
         icon={Heart}
+        headerClassName="bg-muted/20"
         initialLockedState={false}
-        cardContentClassName="space-y-3"
+        cardContentClassName={panelGridGap}
       >
         {() => (
           <>
@@ -121,7 +132,6 @@ const HealthPanelComponent = ({
   const nonlethalDamageBarWidthPercentage = (localNonlethalDamage / effectiveTotalHpForBar) * 100;
 
   const healthBarIndicatorColor = "bg-emerald-600";
-
 
   let statusText = UI_STRINGS.healthStatusNormal || "Normal";
   let statusColorClass = "text-emerald-600";
@@ -154,194 +164,191 @@ const HealthPanelComponent = ({
   }
 
   const displayMaxHp = localBaseMaxHp + finalConstitutionModifier + calculatedMiscMaxHpBonus + localCustomMaxHpModifier;
-
+  
+  let conModBadgeColor: DualBadgeProps['color'] = 'default';
+  if (finalConstitutionModifier > 0) conModBadgeColor = 'emerald';
+  if (finalConstitutionModifier < 0) conModBadgeColor = 'destructive';
 
   return (
     <LockablePanelWrapper
-      title={UI_STRINGS.healthPanelTitle || "Health & Vitality"}
-      description={UI_STRINGS.healthPanelDescription || "Manage hit points, damage, and related attributes."}
+      title={UI_STRINGS.healthPanelTitle}
+      description={UI_STRINGS.healthPanelDescription}
       icon={Heart}
+      headerClassName="bg-muted/20"
       initialLockedState={false}
-      cardContentClassName="space-y-4"
+      cardContentClassName={panelGridGap}
+      footer={
+        <p className={textStyleDescription}>
+          {parseAndRenderUIString(UI_STRINGS.healthPanelMaxHpMiscModInfoNoteFull, {
+            badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+          })}
+        </p>
+      }
     >
       {({ isLocked: panelIsLocked }) => (
         <>
-          <div className="my-4 space-y-1">
+          <div className={cn("flex flex-col", panelFieldVerticalGap)}>
             <div className="relative w-full h-6 bg-muted rounded-full overflow-hidden border border-border">
               {localTemporaryHp > 0 && (
                 <div
-                  className="absolute top-0 left-0 h-full bg-sky-500 rounded-full z-10 transition-all duration-300 ease-out"
+                  className="absolute top-0 left-0 h-full bg-sky-500 rounded-full z-10"
                   style={{ width: `${Math.min(tempHpBarWidthPercentage, 100)}%` }}
                 />
               )}
               <div
                 className={cn(
-                  "absolute top-0 left-0 h-full rounded-full z-20 transition-all duration-300 ease-out",
+                  "absolute top-0 left-0 h-full rounded-full z-20",
                   healthBarIndicatorColor
                 )}
                 style={{ width: `${Math.min(currentHpBarWidthPercentage, 100)}%` }}
               />
               {localNonlethalDamage > 0 && (
                 <div
-                  className="absolute top-0 right-0 h-full bg-destructive/70 rounded-full z-30 transition-all duration-300 ease-out"
+                  className="absolute top-0 right-0 h-full bg-destructive/70 rounded-full z-30"
                   style={{ width: `${Math.min(nonlethalDamageBarWidthPercentage, 100)}%` }}
                 />
               )}
             </div>
             <div className="flex justify-between text-xs text-muted-foreground px-1">
               <span>
-                {localHp} / {calculatedMaxHp} {UI_STRINGS.healthBarLabelHitPoints || "Hit Points"}
-                {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.healthBarLabelTemporary || "Temporary"})`}
+                {localHp} / {calculatedMaxHp} {UI_STRINGS.healthBarLabelHitPoints}
+                {localTemporaryHp > 0 && ` (+${localTemporaryHp} ${UI_STRINGS.healthBarLabelTemporary})`}
               </span>
-              {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.healthBarLabelNonlethal || "Nonlethal"}</span>}
+              {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.healthBarLabelNonlethal}</span>}
             </div>
           </div>
 
           <div className="text-center">
-            <span className="text-sm font-medium">{UI_STRINGS.healthPanelStatusLabel || "Status:"} </span>
+            <span className="text-sm font-medium">{UI_STRINGS.healthPanelStatusLabel} </span>
             <span className={cn("font-semibold", statusColorClass)}>{statusText}</span>
           </div>
 
-          <Separator className="my-6" />
+          <Separator />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-4">
-            <div className="space-y-1">
+          <div className={cn("grid grid-cols-1 sm:grid-cols-2", panelGridGap)}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="current-hp-input" className="text-sm font-medium block w-full text-center">
-                {UI_STRINGS.healthPanelCurrentHpLabel || "Current Hit Points"}
+                {UI_STRINGS.healthPanelCurrentHpLabel}
               </Label>
-              <NumberSpinnerInput
+              <Input
                 id="current-hp-input"
+                type="number"
                 value={localHp}
-                onChange={setLocalHp}
-                min={-999}
-                max={calculatedMaxHp > 0 ? calculatedMaxHp : 999}
-                inputClassName={cn(
-                  "w-full h-10 text-lg text-center font-bold",
+                onChange={(e) => setLocalHp(parseInt(e.target.value, 10) || 0)}
+                className={cn(
+                  textStyleInput, "h-10 text-lg font-bold",
                   localHp <= 0 && localHp > -10 && "text-amber-600",
                   localHp <= -10 && "text-destructive",
                   localHp > 0 && "text-emerald-600"
                 )}
-                buttonClassName="h-10 w-10"
                 disabled={panelIsLocked}
               />
             </div>
-            <div className="space-y-1">
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="nonlethal-damage-input" className="text-sm font-medium block w-full text-center">
-                  {UI_STRINGS.healthPanelNonlethalDamageLabel || "Nonlethal Damage"}
+                  {UI_STRINGS.healthPanelNonlethalDamageLabel}
               </Label>
-              <NumberSpinnerInput
+              <Input
                   id="nonlethal-damage-input"
+                  type="number"
                   value={localNonlethalDamage}
-                  onChange={setLocalNonlethalDamage}
+                  onChange={(e) => setLocalNonlethalDamage(parseInt(e.target.value, 10) || 0)}
                   min={0}
-                  inputClassName={cn(
-                    "w-full h-10 text-lg text-center font-bold",
+                  className={cn(
+                    textStyleInput, "h-10 text-lg font-bold",
                     localNonlethalDamage > 0 ? "text-destructive" : "text-muted-foreground"
                   )}
-                  buttonClassName="h-10 w-10"
                   disabled={panelIsLocked}
               />
             </div>
-            <div className="space-y-1">
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="temporary-hp-input" className="text-sm font-medium block w-full text-center">
-                  {UI_STRINGS.healthPanelTemporaryHitPointsLabel || "Temporary Hit Points"}
+                  {UI_STRINGS.healthPanelTemporaryHitPointsLabel}
               </Label>
-              <NumberSpinnerInput
+              <Input
                   id="temporary-hp-input"
+                  type="number"
                   value={localTemporaryHp}
-                  onChange={setLocalTemporaryHp}
+                  onChange={(e) => setLocalTemporaryHp(parseInt(e.target.value, 10) || 0)}
                   min={0}
-                  inputClassName={cn(
-                    "w-full h-10 text-lg text-center font-bold",
+                  className={cn(
+                    textStyleInput, "h-10 text-lg font-bold",
                     localTemporaryHp > 0 ? "text-sky-500" : "text-muted-foreground"
                   )}
-                  buttonClassName="h-10 w-10"
                   disabled={panelIsLocked}
               />
             </div>
-            <div className="space-y-1">
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="number-of-wounds-input" className="text-sm font-medium block w-full text-center">
-                  {UI_STRINGS.healthPanelNumberOfWoundsLabel || "Number of Wounds"}
+                  {UI_STRINGS.healthPanelNumberOfWoundsLabel}
               </Label>
-              <NumberSpinnerInput
+              <Input
                   id="number-of-wounds-input"
+                  type="number"
                   value={localNumberOfWounds}
-                  onChange={setLocalNumberOfWounds}
+                  onChange={(e) => setLocalNumberOfWounds(parseInt(e.target.value, 10) || 0)}
                   min={0}
-                  inputClassName={cn(
-                    "w-full h-10 text-lg text-center font-bold",
+                  className={cn(
+                    textStyleInput, "h-10 text-lg font-bold",
                     localNumberOfWounds > 0 ? "text-destructive" : "text-muted-foreground"
                   )}
-                  buttonClassName="h-10 w-10"
                   disabled={panelIsLocked}
               />
             </div>
           </div>
 
-          <div className="space-y-2 text-sm mt-4">
-              <div className="flex items-center justify-between">
-                  <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel || "Base Hit Points"}</Label>
-                  <div className="w-36 flex justify-center">
-                      <NumberSpinnerInput
+          <div className={cn("flex flex-col text-sm", panelFieldVerticalGap)}>
+              <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
+                  <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel}</Label>
+                  <div className={cn("flex justify-center", inputWidthStandard)}>
+                      <Input
                           id="base-max-hp"
+                          type="number"
                           value={localBaseMaxHp}
-                          onChange={setLocalBaseMaxHp}
+                          onChange={(e) => setLocalBaseMaxHp(parseInt(e.target.value, 10) || 0)}
                           min={0}
-                          inputClassName="w-20 h-8"
-                          buttonClassName="h-8 w-8"
+                          className={cn(textStyleInput, "h-8")}
                           disabled={panelIsLocked}
                       />
                   </div>
               </div>
-              <div className="flex items-center justify-between">
+              <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
                   <Label className="inline-flex items-baseline">
-                      {UI_STRINGS.healthPanelAbilityModLabel || "Ability Modifier"}
-                      <Badge variant="outline" className="ml-1.5 font-normal px-1.5 py-0.5 whitespace-nowrap">{conAbbr}</Badge>
+                      {UI_STRINGS.healthPanelAbilityModLabel}
                   </Label>
-                   <div className="w-36 text-center">
-                      <span className={cn(
-                          "font-semibold font-bold",
-                          finalConstitutionModifier === 0 && "text-muted-foreground",
-                          finalConstitutionModifier > 0 && "text-emerald-600",
-                          finalConstitutionModifier < 0 && "text-destructive"
-                      )}>
-                          {finalConstitutionModifier >= 0 ? `+${finalConstitutionModifier}` : finalConstitutionModifier}
-                      </span>
-                  </div>
+                  <DualBadge leftLabel={conAbbr} rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`} color={conModBadgeColor} />
               </div>
-               <div className="flex items-center justify-between">
+               <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
                   <Label>
-                      {UI_STRINGS.healthPanelMiscMaxHpLabel || "Misc Modifier"}
+                      {UI_STRINGS.healthPanelMiscMaxHpLabel}
                   </Label>
-                   <div className="w-36 text-center">
-                      <span className={cn(
-                          "font-semibold font-bold",
-                          calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
-                          calculatedMiscMaxHpBonus > 0 && "text-emerald-600",
-                          calculatedMiscMaxHpBonus < 0 && "text-destructive"
-                      )}>
-                          {calculatedMiscMaxHpBonus >= 0 ? `+${calculatedMiscMaxHpBonus}` : calculatedMiscMaxHpBonus}
-                      </span>
-                  </div>
+                  <span className={cn(
+                      "font-semibold font-bold",
+                      calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
+                      calculatedMiscMaxHpBonus > 0 && "text-emerald-600",
+                      calculatedMiscMaxHpBonus < 0 && "text-destructive"
+                  )}>
+                      {calculatedMiscMaxHpBonus >= 0 ? `+${calculatedMiscMaxHpBonus}` : calculatedMiscMaxHpBonus}
+                  </span>
               </div>
-              <div className="flex items-center justify-between">
-                  <Label htmlFor="custom-max-hp-mod">{UI_STRINGS.healthPanelCustomModLabel || "Custom Modifier"}</Label>
-                  <div className="w-36 flex justify-center">
-                      <NumberSpinnerInput
+              <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
+                  <Label htmlFor="custom-max-hp-mod">{UI_STRINGS.healthPanelCustomModLabel}</Label>
+                  <div className={cn("flex justify-center", inputWidthStandard)}>
+                      <Input
                           id="custom-max-hp-mod"
+                          type="number"
                           value={localCustomMaxHpModifier}
-                          onChange={setLocalCustomMaxHpModifier}
-                          inputClassName="w-20 h-8"
-                          buttonClassName="h-8 w-8"
+                          onChange={(e) => setLocalCustomMaxHpModifier(parseInt(e.target.value, 10) || 0)}
+                          className={cn(textStyleInput, "h-8")}
                           disabled={panelIsLocked}
                       />
                   </div>
               </div>
               <Separator className="my-2" />
-              <div className="flex items-center justify-between pt-1">
-                  <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel || "Maximum Hit Points"}</Label>
-                   <div className="w-36 text-center flex items-center justify-center">
-                      <span className="text-xl font-bold text-accent">
+              <div className={cn("flex items-center justify-between pt-1", panelFieldHorizontalGap)}>
+                  <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
+                   <div className="flex items-center justify-center">
+                      <span className={textStyleValueBig}>
                           {displayMaxHp}
                       </span>
                       <Button
@@ -356,21 +363,14 @@ const HealthPanelComponent = ({
                       </Button>
                   </div>
               </div>
-              <div className="flex items-center justify-between">
+              <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
                 <Label className="text-sm font-medium">
-                  {UI_STRINGS.healthPanelMissingHpLabel || "Missing Hit Points"}
+                  {UI_STRINGS.healthPanelMissingHpLabel}
                 </Label>
-                <div className="w-36 text-center">
-                  <span className="text-lg font-bold text-muted-foreground">
-                      {missingHp}
-                  </span>
-                </div>
+                <span className="text-lg font-bold text-muted-foreground">
+                    {missingHp}
+                </span>
               </div>
-              <p className="text-sm text-muted-foreground pt-2">
-                <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.healthPanelMaxHpMiscModInfoNotePrefix }} />
-                <Badge variant="outline">{UI_STRINGS.healthPanelMiscMaxHpLabel || "Misc Modifier"}</Badge>
-                <span dangerouslySetInnerHTML={{ __html: UI_STRINGS.healthPanelMaxHpMiscModInfoNoteSuffix }}/>
-              </p>
           </div>
         </>
       )}
