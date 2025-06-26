@@ -6,7 +6,7 @@ import type { MouseEvent } from 'react';
 import type { Character, AbilityScores, InfoDialogContentType } from '@/types/character';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Heart, Activity, Loader2, Info } from 'lucide-react';
+import { Heart, Activity, Loader2, Info, Swords } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -187,6 +187,11 @@ const HealthPanelComponent = ({
     >
       {({ isLocked: panelIsLocked }) => (
         <>
+          <div className="text-center">
+            <span className="text-sm font-medium">{UI_STRINGS.healthPanelStatusLabel} </span>
+            <span className={cn("font-semibold", statusColorClass)}>{statusText}</span>
+          </div>
+
           <div className={cn("flex flex-col", panelFieldVerticalGap)}>
             <div className="relative w-full h-6 bg-muted rounded-full overflow-hidden border border-border">
               {localTemporaryHp > 0 && (
@@ -217,11 +222,19 @@ const HealthPanelComponent = ({
               {localNonlethalDamage > 0 && <span>{localNonlethalDamage} {UI_STRINGS.healthBarLabelNonlethal}</span>}
             </div>
           </div>
-
-          <div className="text-center">
-            <span className="text-sm font-medium">{UI_STRINGS.healthPanelStatusLabel} </span>
-            <span className={cn("font-semibold", statusColorClass)}>{statusText}</span>
-          </div>
+          
+          {!panelIsLocked && (
+            <div className={cn("flex w-full", panelGridGap)}>
+              <Button variant="secondary" className="w-1/2">
+                <Heart className="mr-2 h-4 w-4" />
+                {UI_STRINGS.healthPanelHealButton || "Heal"}
+              </Button>
+              <Button variant="default" className="w-1/2">
+                <Swords className="mr-2 h-4 w-4" />
+                {UI_STRINGS.healthPanelDamageButton || "Damage"}
+              </Button>
+            </div>
+          )}
 
           <Separator />
 
@@ -307,7 +320,7 @@ const HealthPanelComponent = ({
                           value={localBaseMaxHp}
                           onChange={(e) => setLocalBaseMaxHp(parseInt(e.target.value, 10) || 0)}
                           min={0}
-                          className={cn(textStyleInput, "h-8")}
+                          className={cn(textStyleInput, "h-10")}
                           disabled={panelIsLocked}
                       />
                   </div>
@@ -339,7 +352,7 @@ const HealthPanelComponent = ({
                           type="number"
                           value={localCustomMaxHpModifier}
                           onChange={(e) => setLocalCustomMaxHpModifier(parseInt(e.target.value, 10) || 0)}
-                          className={cn(textStyleInput, "h-8")}
+                          className={cn(textStyleInput, "h-10")}
                           disabled={panelIsLocked}
                       />
                   </div>
