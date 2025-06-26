@@ -270,7 +270,6 @@ const BasicInformationSectionComponent = ({
       updatedChoices.push({ featureKey, value: newValue });
     }
     
-    // Reset dependent choices
     const allUiSections = selectedClassInfo?.uiSections || [];
     const resetChildrenOf = (parentKey: string, choices: CharacterClassSpecificChoice[]) => {
       let newChoices = [...choices];
@@ -483,18 +482,18 @@ const BasicInformationSectionComponent = ({
         <div className={cn("flex flex-col", panelGridGap)}>
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="name" className={cn("whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.characterNameLabel}</Label>
+              <Label htmlFor="name" className={textStyleLabel}>{UI_STRINGS.characterNameLabel}</Label>
               <Input id="name" name="name" value={localName} onChange={(e) => setLocalName(e.target.value)} disabled={panelIsLocked} />
             </div>
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="playerName" className={cn("whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.playerNameLabel}</Label>
+              <Label htmlFor="playerName" className={textStyleLabel}>{UI_STRINGS.playerNameLabel}</Label>
               <Input id="playerName" name="playerName" value={localPlayerName} onChange={(e) => setLocalPlayerName(e.target.value)} disabled={panelIsLocked} />
             </div>
           </div>
 
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="race" className={cn("whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.raceLabel}</Label>
+              <Label htmlFor="race" className={textStyleLabel}>{UI_STRINGS.raceLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
                   <Select value={localRace} onValueChange={(value) => setLocalRace(value as DndRaceId)} disabled={panelIsLocked} >
@@ -519,7 +518,7 @@ const BasicInformationSectionComponent = ({
               )}
             </div>
              <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="className" className={cn("whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.classLabel}</Label>
+              <Label htmlFor="className" className={textStyleLabel}>{UI_STRINGS.classLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
                   <Select value={localClassName} onValueChange={(value) => setLocalClassName(value as DndClassId)} disabled={panelIsLocked} >
@@ -590,7 +589,7 @@ const BasicInformationSectionComponent = ({
 
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="alignment" className={cn("whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.alignmentLabel}</Label>
+              <Label htmlFor="alignment" className={textStyleLabel}>{UI_STRINGS.alignmentLabel}</Label>
               <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                 <div className="flex-grow">
                   <Select name="alignment" value={localAlignment === "" ? UI_EMPTY_SELECTION_VALUE : localAlignment} onValueChange={(value) => setLocalAlignment(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterAlignment)} disabled={panelIsLocked} >
@@ -602,7 +601,7 @@ const BasicInformationSectionComponent = ({
               </div>
             </div>
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                <Label htmlFor="deity" className={cn("whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.deityLabel}</Label>
+                <Label htmlFor="deity" className={textStyleLabel}>{UI_STRINGS.deityLabel}</Label>
                 <div className={cn("flex items-center", panelFieldHorizontalGap)}>
                   <div className="flex-grow">
                       <Select
@@ -630,7 +629,7 @@ const BasicInformationSectionComponent = ({
 
           <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="age" className={cn("block whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.ageLabel}</Label>
+              <Label htmlFor="age" className={textStyleLabel}>{UI_STRINGS.ageLabel}</Label>
               <Input
                 id="age"
                 type="number"
@@ -660,14 +659,14 @@ const BasicInformationSectionComponent = ({
               )}
               </div>
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="gender" className={cn("whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.genderLabel}</Label>
+              <Label htmlFor="gender" className={textStyleLabel}>{UI_STRINGS.genderLabel}</Label>
               <Select name="gender" value={localGender} onValueChange={(value) => setLocalGender(value as GenderId)} disabled={panelIsLocked} >
                 <SelectTrigger id="gender"> <SelectValue /> </SelectTrigger>
                 <SelectContent> {genderSelectOptions.map(g => ( <SelectItem key={g.value} value={g.value}>{g.label}</SelectItem> ))} </SelectContent>
               </Select>
             </div>
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-              <Label htmlFor="sizeCategory" className={cn("whitespace-nowrap", textStyleLabel)}>{UI_STRINGS.sizeLabel}</Label>
+              <Label htmlFor="sizeCategory" className={textStyleLabel}>{UI_STRINGS.sizeLabel}</Label>
               <div className="flex items-center">
                 <div className="flex-grow">
                   <Select name="sizeCategory" value={localSize === "" ? UI_EMPTY_SELECTION_VALUE : localSize} onValueChange={(value) => setLocalSize(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterSize)} disabled={panelIsLocked} >

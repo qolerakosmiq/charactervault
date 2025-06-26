@@ -214,7 +214,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
 
 
   const handleAbilityRollResult = React.useCallback((diceResult: number, totalBonus: number, finalResult: number) => {
-    // This is a no-op currently, but could be used to show a toast or log the result.
   }, []);
 
   const translationSubsetForChild = React.useMemo(() => {

@@ -9,10 +9,9 @@ export const debounceDelayFormInput = 400; // milliseconds
 export const panelFieldRowHeight = 'h-10'; // Added for consistent row height
 
 // Text Styles
-export const textStyleValueBig = "text-lg font-bold text-accent text-center";
-export const textStyleValueMedium = "text-base font-bold";
+export const textStyleValueBig = "text-3xl font-bold text-accent";
 export const textStyleModifier = "text-lg font-bold";
-export const textStyleCardTitle = "text-lg text-primary font-bold";
+export const textStyleCardTitle = "text-xl font-serif";
 export const textStyleDescription = "text-sm text-muted-foreground";
 export const textStyleInput = "text-base text-center";
 export const textStyleLabel = "text-sm font-medium";
@@ -23,5 +22,5 @@ export const textStyleSectionSubheading = 'text-lg font-semibold text-primary';
 
 
 // Sizing
-export const inputWidthStandard = 'max-w-24'; // For spinners
+export const inputWidthStandard = 'w-24'; // For spinners
 export const inputWidthFull = 'w-full'; // For standard inputs that should fill their container.
