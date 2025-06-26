@@ -202,7 +202,7 @@ const HealthPanelComponent = ({
               <Separator />
               <div className={cn("grid grid-cols-2", panelGridGap)}>
                  <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
-                  <Label>{UI_STRINGS.healthPanelCurrentHpLabel}</Label>
+                  <Label className="text-center">{UI_STRINGS.healthPanelCurrentHpLabel}</Label>
                   <Input
                       id="current-hp-input"
                       type="number"
@@ -218,7 +218,7 @@ const HealthPanelComponent = ({
                   />
                 </div>
                  <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
-                  <Label>{UI_STRINGS.healthPanelNonlethalDamageLabel}</Label>
+                  <Label className="text-center">{UI_STRINGS.healthPanelNonlethalDamageLabel}</Label>
                   <Input
                       id="nonlethal-damage-input"
                       type="number"
@@ -234,7 +234,7 @@ const HealthPanelComponent = ({
                 </div>
 
                  <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
-                  <Label>{UI_STRINGS.healthPanelTemporaryHitPointsLabel}</Label>
+                  <Label className="text-center">{UI_STRINGS.healthPanelTemporaryHitPointsLabel}</Label>
                   <Input
                       id="temporary-hp-input"
                       type="number"
@@ -249,7 +249,7 @@ const HealthPanelComponent = ({
                   />
                 </div>
                  <div className={cn("flex flex-col justify-end", panelFieldVerticalGap)}>
-                  <Label>{UI_STRINGS.healthPanelNumberOfWoundsLabel}</Label>
+                  <Label className="text-center">{UI_STRINGS.healthPanelNumberOfWoundsLabel}</Label>
                   <Input
                       id="number-of-wounds-input"
                       type="number"
