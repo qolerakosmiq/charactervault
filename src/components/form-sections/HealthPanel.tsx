@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { MouseEvent } from 'react';
 import type { Character, AbilityScores, InfoDialogContentType } from '@/types/character';
 import { Label } from '@/components/ui/label';
@@ -227,18 +227,16 @@ const HealthPanelComponent = ({
             <div className={cn("flex w-full", panelGridGap)}>
               <Button variant="secondary" className="w-1/2">
                 <Heart className="mr-2 h-4 w-4" />
-                {UI_STRINGS.healthPanelHealButton || "Heal"}
+                {UI_STRINGS.healthPanelHealButton}
               </Button>
               <Button variant="default" className="w-1/2">
                 <Swords className="mr-2 h-4 w-4" />
-                {UI_STRINGS.healthPanelDamageButton || "Damage"}
+                {UI_STRINGS.healthPanelDamageButton}
               </Button>
             </div>
           )}
-
-          <Separator />
           
-          <div className={cn("grid grid-cols-2", panelGridGap)}>
+          <div className="grid grid-cols-2 gap-4">
             {/* Row 1 */}
             <div className={cn("flex flex-col", panelFieldVerticalGap)}>
               <Label htmlFor="current-hp-input" className="text-sm font-medium block w-full text-center">
@@ -365,12 +363,14 @@ const HealthPanelComponent = ({
                 disabled={panelIsLocked}
               />
             </div>
+            {/* End of Grid */}
           </div>
-
+          
           <Separator className="my-2" />
-          <div className={cn("flex items-center justify-between pt-1", panelFieldHorizontalGap)}>
+          
+          <div className="flex items-center justify-between col-span-2">
               <Label className="font-semibold">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
-               <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center">
                   <span className={textStyleValueBig}>
                       {displayMaxHp}
                   </span>
@@ -386,7 +386,7 @@ const HealthPanelComponent = ({
                   </Button>
               </div>
           </div>
-          <div className={cn("flex items-center justify-between", panelFieldHorizontalGap)}>
+          <div className={cn("flex items-center justify-between col-span-2", panelFieldHorizontalGap)}>
             <Label className="text-sm font-medium">
               {UI_STRINGS.healthPanelMissingHpLabel}
             </Label>
@@ -401,5 +401,3 @@ const HealthPanelComponent = ({
 };
 HealthPanelComponent.displayName = 'HealthPanelComponent';
 export const HealthPanel = React.memo(HealthPanelComponent);
-
-    
