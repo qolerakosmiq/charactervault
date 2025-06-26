@@ -1,6 +1,6 @@
 
 {
-  "healthPanelTitle": { "en": "Health & Vitality", "fr": "Santé et Vitalité" },
+  "healthPanelTitle": { "en": "Health", "fr": "Santé" },
   "healthPanelDescription": { "en": "Manage hit points, damage, and related attributes.", "fr": "Gérez les points de vie, les dégâts et les attributs associés." },
   "healthPanelStatusLabel": { "en": "Status:", "fr": "État :" },
   "healthStatusNormal": { "en": "Normal", "fr": "Normal" },
