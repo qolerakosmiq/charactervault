@@ -28,6 +28,7 @@ import {
   panelFieldRowHeight,
   textStyleLabel,
   textStyleModifier,
+  textStyleBadgeMedium,
 } from '@/config/layout';
 
 export type HealthPanelData = Pick<Character,
@@ -286,13 +287,18 @@ const HealthPanelComponent = ({
                   <Label className={textStyleLabel}>{UI_STRINGS.healthPanelAbilityModLabel}</Label>
                 </div>
                 <div className={cn("flex items-center justify-center", panelFieldRowHeight)}>
-                  <DualBadge leftLabel={conAbbr} rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`} color={conModBadgeColor} />
+                  <DualBadge
+                    leftLabel={conAbbr}
+                    rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`}
+                    color={conModBadgeColor}
+                    className={textStyleBadgeMedium}
+                  />
                 </div>
                 
                 <div className={cn("flex items-center justify-start", panelFieldRowHeight)}>
                   <Label className={textStyleLabel}>{UI_STRINGS.healthPanelMiscMaxHpLabel}</Label>
                 </div>
-                <div className={cn("flex items-center justify-center", panelFieldRowHeight)}>
+                <div className="flex items-center justify-center">
                   <span className={cn(
                       "font-semibold",
                       calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
