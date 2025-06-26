@@ -301,7 +301,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start">
                   <Label htmlFor="base-max-hp">{UI_STRINGS.healthPanelBaseMaxHpLabel}</Label>
                 </div>
-                <div className="flex justify-center items-center">
+                <div className="flex justify-end items-center">
                   <Input
                     id="base-max-hp"
                     type="number"
@@ -317,7 +317,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start h-10">
                   <Label>{UI_STRINGS.healthPanelAbilityModLabel}</Label>
                 </div>
-                <div className="flex justify-center items-center h-10">
+                <div className="flex items-baseline justify-end h-10">
                   <DualBadge leftLabel={conAbbr} rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`} color={conModBadgeColor} />
                 </div>
                 
@@ -325,7 +325,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start h-10">
                   <Label>{UI_STRINGS.healthPanelMiscMaxHpLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center h-10">
+                <div className="flex items-baseline justify-end h-10">
                   <span className={cn(
                       "font-semibold",
                       calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
@@ -340,7 +340,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start">
                   <Label htmlFor="custom-max-hp-mod">{UI_STRINGS.healthPanelCustomModLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center">
+                <div className="flex items-center justify-end">
                   <Input
                     id="custom-max-hp-mod"
                     type="number"
@@ -356,7 +356,7 @@ const HealthPanelComponent = ({
                 <div className="flex items-center justify-start h-10">
                   <Label className="font-semibold text-lg">{UI_STRINGS.healthPanelMaxHpLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center h-10">
+                <div className="flex items-center justify-end h-10">
                     <span className={textStyleValueBig}>
                         {calculatedMaxHp}
                     </span>
@@ -372,10 +372,10 @@ const HealthPanelComponent = ({
                     </Button>
                 </div>
                 <div className="flex items-center justify-start">
-                  <Label className="text-sm font-medium">{UI_STRINGS.healthPanelMissingHpLabel}</Label>
+                  <Label>{UI_STRINGS.healthPanelMissingHpLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center">
-                  <span className={cn("text-muted-foreground", missingHp > 0 && "text-destructive")}>
+                <div className="flex items-center justify-end">
+                  <span className="font-bold text-lg text-muted-foreground">
                     {missingHp}
                   </span>
                 </div>
