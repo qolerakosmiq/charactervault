@@ -22,7 +22,7 @@
   "healthPanelCustomModLabel": { "en": "Custom Modifier", "fr": "Modificateur Personnalisé" },
   "healthPanelMaxHpLabel": { "en": "Maximum Hit Points", "fr": "Points de Vie Maximum" },
   "healthPanelMissingHpLabel": { "en": "Missing Hit Points", "fr": "Points de Vie Manquants" },
-  "healthPanelMaxHpMiscModInfoNoteFull": { "en": "&lt;b&gt;Note:&lt;/b&gt; The &lt;badge outline&gt;Misc Modifier&lt;/badge&gt; to Maximum Hit Points includes bonuses from magic items, active feats, and other persistent effects.", "fr": "&lt;b&gt;Note :&lt;/b&gt; Le modificateur &lt;badge outline&gt;Divers&lt;/badge&gt; aux Points de Vie Maximum inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." },
+  "healthPanelMaxHpMiscModInfoNoteFull": { "en": "<b>Note:</b> The <badge outline>Misc Modifier</badge> to Maximum Hit Points includes bonuses from magic items, active feats, and other persistent effects.", "fr": "<b>Note :</b> Le modificateur <badge outline>Divers</badge> aux Points de Vie Maximum inclut les bonus des objets magiques, des dons actifs et d'autres effets persistants." },
   "maxHpDialogBaseHpLabel": { "en": "Base Hit Points", "fr": "Points de Vie de Base" },
   "maxHpDialogAbilityModLabel": { "en": "Ability Modifier", "fr": "Modificateur de Caractéristique" },
   "maxHpDialogMiscModLabel": { "en": "Misc Modifier", "fr": "Modificateur Divers" },
