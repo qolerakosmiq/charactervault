@@ -152,6 +152,17 @@ const HealthPanelComponent = ({
   
   const healthBarIndicatorColor = "bg-emerald-600";
 
+  const footerContent = React.useMemo(() => {
+    if (!UI_STRINGS) return null;
+    return (
+        <p className={textStyleDescription}>
+          {parseAndRenderUIString(UI_STRINGS.healthPanelMaxHpMiscModInfoNoteFull, {
+            badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+          })}
+        </p>
+    );
+  }, [UI_STRINGS]);
+
   return (
     <LockablePanelWrapper
       title={UI_STRINGS.healthPanelTitle}
@@ -160,13 +171,7 @@ const HealthPanelComponent = ({
       headerClassName="bg-muted/20"
       initialLockedState={false}
       cardContentClassName={cn("flex flex-col", panelGridGap)}
-      footer={
-        <p className={textStyleDescription}>
-          {parseAndRenderUIString(UI_STRINGS.healthPanelMaxHpMiscModInfoNoteFull, {
-            badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
-          })}
-        </p>
-      }
+      footer={footerContent}
     >
       {({ isLocked: panelIsLocked }) => (
         <>
