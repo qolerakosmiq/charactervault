@@ -226,7 +226,7 @@ const HealthPanelComponent = ({
               <div className={cn("grid grid-cols-2", panelGridGap)}>
                 {/* Row 1 */}
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="current-hp-input" className="text-sm font-medium block w-full text-center mb-0">
+                  <Label htmlFor="current-hp-input" className="block w-full text-center">
                     {UI_STRINGS.healthPanelCurrentHpLabel}
                   </Label>
                   <Input
@@ -244,7 +244,7 @@ const HealthPanelComponent = ({
                   />
                 </div>
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="nonlethal-damage-input" className="text-sm font-medium block w-full text-center">
+                  <Label htmlFor="nonlethal-damage-input" className="block w-full text-center">
                       {UI_STRINGS.healthPanelNonlethalDamageLabel}
                   </Label>
                   <Input
@@ -263,7 +263,7 @@ const HealthPanelComponent = ({
 
                 {/* Row 2 */}
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="temporary-hp-input" className="text-sm font-medium block w-full text-center">
+                  <Label htmlFor="temporary-hp-input" className="block w-full text-center">
                       {UI_STRINGS.healthPanelTemporaryHitPointsLabel}
                   </Label>
                   <Input
@@ -280,7 +280,7 @@ const HealthPanelComponent = ({
                   />
                 </div>
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="number-of-wounds-input" className="text-sm font-medium block w-full text-center">
+                  <Label htmlFor="number-of-wounds-input" className="block w-full text-center">
                       {UI_STRINGS.healthPanelNumberOfWoundsLabel}
                   </Label>
                   <Input
@@ -314,18 +314,18 @@ const HealthPanelComponent = ({
                 </div>
 
                 {/* Row 4 - Ability Modifier */}
-                <div className="flex items-center justify-start h-10">
+                <div className="flex items-center justify-start items-center h-10">
                   <Label>{UI_STRINGS.healthPanelAbilityModLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center h-10">
+                <div className="flex items-center justify-center items-center h-10">
                   <DualBadge leftLabel={conAbbr} rightLabel={`${finalConstitutionModifier >= 0 ? '+' : ''}${finalConstitutionModifier}`} color={conModBadgeColor} />
                 </div>
                 
                 {/* Row 5 - Misc Modifier */}
-                <div className="flex items-center justify-start h-10">
+                <div className="flex items-center justify-start items-center h-10">
                   <Label>{UI_STRINGS.healthPanelMiscMaxHpLabel}</Label>
                 </div>
-                <div className="flex items-center justify-center h-10">
+                <div className="flex items-center justify-center items-center h-10">
                   <span className={cn(
                       "font-semibold",
                       calculatedMiscMaxHpBonus === 0 && "text-muted-foreground",
@@ -375,7 +375,7 @@ const HealthPanelComponent = ({
                   <Label>{UI_STRINGS.healthPanelMissingHpLabel}</Label>
                 </div>
                 <div className="flex items-center justify-center">
-                  <span className={cn(missingHp > 0 ? "text-destructive" : "text-muted-foreground")}>
+                  <span className={cn(missingHp > 0 && "text-destructive")}>
                     {missingHp}
                   </span>
                 </div>
