@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -214,7 +213,7 @@ const ResistancesPanelContent = React.memo(({
                 </div>
                 {!panelIsLocked && (
                   <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
+                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogMiscModifierLabel}</Label>
                     <div className={cn("flex justify-center", inputWidthStandard)}>
                       <Input
                         id={`${fieldPrefix}-${field}-customMod`}
@@ -266,7 +265,7 @@ const ResistancesPanelContent = React.memo(({
                 </div>
                 {!panelIsLocked && (
                   <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
+                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogMiscModifierLabel}</Label>
                     <div className={cn("flex justify-center", inputWidthStandard)}>
                       <Input
                         id={`${fieldPrefix}-${field}-customMod`}
@@ -283,35 +282,35 @@ const ResistancesPanelContent = React.memo(({
           })}
         </div>
         
-        <div className={cn("flex flex-col", panelGridGap)}>
-          <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
-          <div className={cn("grid md:grid-cols-3", panelGridGap)}>
-            {!panelIsLocked && (
-              <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="form-dr-value" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
-                  <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10", "text-left")} />
+        {(!panelIsLocked || characterData.damageReduction.length > 0) && (
+          <div className={cn("flex flex-col", panelGridGap)}>
+            <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
+            <div className={cn(panelIsLocked ? "md:grid-cols-1" : "md:grid-cols-3", "grid", panelGridGap)}>
+              {!panelIsLocked && (
+                <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
+                  <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                    <Label htmlFor="form-dr-value" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
+                    <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10", "text-left")} />
+                  </div>
+                  <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                    <Label htmlFor="form-dr-rule" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
+                    <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
+                      <SelectTrigger id="form-dr-rule" className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                      <SelectContent>{DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (<SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>))}</SelectContent>
+                    </Select>
+                  </div>
+                  <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                    <Label htmlFor="form-dr-type" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
+                    <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
+                      <SelectTrigger id="form-dr-type" className="h-9 text-sm"><SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} /></SelectTrigger>
+                      <SelectContent>{DAMAGE_REDUCTION_TYPES.map(option => (<SelectItem key={option.id} value={option.id} disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}>{option.label}</SelectItem>))}</SelectContent>
+                    </Select>
+                  </div>
+                  <Button type="button" onClick={handleAddDamageReduction} size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}</Button>
                 </div>
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="form-dr-rule" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
-                  <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
-                    <SelectTrigger id="form-dr-rule" className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                    <SelectContent>{DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (<SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>))}</SelectContent>
-                  </Select>
-                </div>
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="form-dr-type" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
-                  <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
-                    <SelectTrigger id="form-dr-type" className="h-9 text-sm"><SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} /></SelectTrigger>
-                    <SelectContent>{DAMAGE_REDUCTION_TYPES.map(option => (<SelectItem key={option.id} value={option.id} disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}>{option.label}</SelectItem>))}</SelectContent>
-                  </Select>
-                </div>
-                <Button type="button" onClick={handleAddDamageReduction} size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}</Button>
-              </div>
-            )}
-            <div className={cn(panelIsLocked ? "md:col-span-3" : "md:col-span-2", "flex flex-col", panelGridGap)}>
-              {characterData.damageReduction.length > 0 ? (
-                characterData.damageReduction.map(dr => {
+              )}
+              <div className={cn(panelIsLocked ? "md:col-span-1" : "md:col-span-2", "flex flex-col", panelGridGap)}>
+                {characterData.damageReduction.map(dr => {
                   const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
                   const ruleLabel = ruleDef?.label || dr.rule;
                   const currentLangCodeForDr = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
@@ -328,13 +327,11 @@ const ResistancesPanelContent = React.memo(({
                       <div className="text-sm text-muted-foreground w-full">{getDrRuleDescription(dr)}</div>
                     </div>
                   );
-                })
-              ) : (
-                !panelIsLocked && <p className="text-sm text-muted-foreground">{UI_STRINGS.resistancesPanelNoDrEntries}</p>
-              )}
+                })}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );
