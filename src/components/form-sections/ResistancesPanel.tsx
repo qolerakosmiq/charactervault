@@ -6,7 +6,7 @@ import type { Character, ResistanceValue, DamageReductionInstance, DamageReducti
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2, Lock, Unlock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -16,13 +16,14 @@ import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
-import { getLocalizedString } from '@/i18n/i18n-data'; 
-import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
+import { getLocalizedString } from '@/i18n/i18n-data';
+import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
-import { debounceDelayFormInput, textStyleDescription } from '@/config/layout';
+import { debounceDelayFormInput, textStyleDescription, panelGridGap, panelContentPadding, panelFieldVerticalGap, textStyleInput, inputWidthStandard } from '@/config/layout';
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 
 export interface ResistancesPanelProps {
-  characterData: Pick<Character, 
+  characterData: Pick<Character,
     'fireResistance' | 'coldResistance' | 'acidResistance' | 'electricityResistance' | 'sonicResistance' |
     'spellResistance' | 'powerResistance' | 'damageReduction' | 'fortification'
   >;
@@ -35,8 +36,6 @@ export interface ResistancesPanelProps {
 const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
   const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
   const { toast } = useToast();
-  const [isLocked, setIsLocked] = React.useState(false);
-  const toggleLock = () => setIsLocked(prev => !prev);
 
   const [newDrValue, setNewDrValue] = React.useState(1);
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
@@ -82,37 +81,13 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
         setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.id || 'bypassed-by-type');
     }
   }, [newDrRule, newDrType, translations, translationsLoading]);
-  
+
   if (translationsLoading || !translations || !translations.UI_STRINGS || !translations.DAMAGE_REDUCTION_TYPES || !translations.DAMAGE_REDUCTION_RULES_OPTIONS || !aggregatedFeatEffects) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <ShieldAlert className="h-8 w-8 text-primary" />
-              <Skeleton className="h-7 w-1/2" />
-            </div>
-            <Skeleton className="h-8 w-8" />
-          </div>
-          <Skeleton className="h-4 w-3/4" />
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="flex justify-center items-center py-10">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="ml-3 text-muted-foreground">{translations?.UI_STRINGS.resistancesPanelLoading || "Loading resistance details..."}</p>
-          </div>
-          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4"> {[...Array(5)].map((_, i) => <Skeleton key={i} className="h-28 rounded-md" />)} </div> </div>
-          <Separator />
-          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"> {[...Array(3)].map((_, i) => <Skeleton key={i} className="h-28 rounded-md" />)} </div> </div>
-          <Separator className="my-6" />
-          <div> <Skeleton className="h-6 w-1/3 mb-3" /> <div className="grid md:grid-cols-2 gap-x-6 gap-y-4"> <Skeleton className="h-20 rounded-md" /> <Skeleton className="h-48 rounded-md" /> </div> </div>
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, UI_STRINGS } = translations;
-  
+
   const handleTriggerResistanceInfoDialog = (field: ResistanceFieldKeySheet) => {
     if (onOpenResistanceInfoDialog) {
       onOpenResistanceInfoDialog(field);
@@ -124,15 +99,15 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
       toast({ title: UI_STRINGS.toastInvalidDrValueTitle, description: UI_STRINGS.toastInvalidDrValueDesc, variant: "destructive"});
       return;
     }
-     if (!newDrType) { 
+     if (!newDrType) {
         toast({ title: UI_STRINGS.toastDrTypeMissingTitle, description: UI_STRINGS.toastDrTypeMissingDesc, variant: "destructive"});
         return;
     }
     const ruleLabelForToast = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === newDrRule)?.label || newDrRule;
     if ((newDrRule === 'excepted-by-type' || newDrRule === 'versus-specific-type') && newDrType === 'none') {
-      toast({ 
-        title: UI_STRINGS.toastDrInvalidCombinationTitle, 
-        description: (UI_STRINGS.toastDrInvalidCombinationDesc).replace("{ruleLabel}", ruleLabelForToast), 
+      toast({
+        title: UI_STRINGS.toastDrInvalidCombinationTitle,
+        description: (UI_STRINGS.toastDrInvalidCombinationDesc).replace("{ruleLabel}", ruleLabelForToast),
         variant: "destructive"
       });
       return;
@@ -162,13 +137,13 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
   const handleRemoveDamageReduction = (idToRemove: string) => {
     onDamageReductionChange(characterData.damageReduction.filter(dr => dr.id !== idToRemove));
   };
-  
+
   const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
     const drType = DAMAGE_REDUCTION_TYPES.find(t => t.id === typeValue);
     if (!drType) throw new Error(`[DATA_ERROR] DR Type definition not found for ID: ${typeValue}`);
     return drType.label;
   };
-  
+
   const getDrPrimaryNotation = (dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const vsLabel = UI_STRINGS.drVsLabel;
@@ -191,13 +166,13 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     if (!ruleDef) throw new Error(`[DATA_ERROR] DR Rule definition not found for ID: ${dr.rule}`);
     return <>{valueText}/{typeLabel} ({ruleDef.label})</>;
   };
-  
+
   const getDrRuleDescription = (dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
     if (!ruleDef) throw new Error(`[DATA_ERROR] DR Rule definition not found for ID: ${dr.rule}`);
     const value = dr.value;
-    
+
     let descriptionKey: keyof typeof UI_STRINGS | undefined;
 
     if (dr.rule === 'bypassed-by-type') {
@@ -222,47 +197,25 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
 
 
   return (
-    <>
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <ShieldAlert className="h-8 w-8 text-primary" />
-              <div>
-                <CardTitle className="text-2xl font-serif">{UI_STRINGS.resistancesPanelTitle}</CardTitle>
-                <CardDescription className={textStyleDescription}>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
-              </div>
-            </div>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon"
-              className={cn(
-                "h-7 w-7 shrink-0 p-1.5", 
-                isLocked
-                  ? "text-muted-foreground hover:text-foreground"
-                  : "bg-accent text-accent-foreground hover:bg-accent/90"
-              )}
-              onClick={toggleLock}
-              aria-pressed={!isLocked}
-              aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
-            >
-              {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-            </Button>
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-6">
+    <LockablePanelWrapper
+      title={UI_STRINGS.resistancesPanelTitle}
+      description={UI_STRINGS.resistancesPanelDescription}
+      icon={ShieldAlert}
+      initialLockedState={false}
+    >
+      {({ isLocked: panelIsLocked }) => (
+        <div className="space-y-6">
           <div>
             <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", panelGridGap)}>
               {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
                 const resistanceFromProp = characterData[field];
                 const itemBonus = aggregatedFeatEffects.resistanceBonuses.find(rb => rb.resistanceTo === field && rb.isActive)?.value || 0;
                 const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0) + itemBonus;
-                const label = UI_STRINGS[labelKey]; 
+                const label = UI_STRINGS[labelKey];
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
-                  <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
+                  <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm", panelFieldVerticalGap)}>
                     <div className="flex items-center justify-center">
                       <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                       <span className="text-sm font-medium">
@@ -283,17 +236,16 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                    <div className="w-full max-w-[120px] flex flex-col items-center">
+                    <div className={cn("w-full flex flex-col items-center", inputWidthStandard)}>
                        <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground mb-0.5">{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
-                       <NumberSpinnerInput
+                       <Input
                         id={`${fieldPrefix}-${field}-customMod`}
-                        value={localCustomMod} 
-                        onChange={setLocalCustomMod} 
-                        min={-50} 
-                        inputClassName="w-16 h-7 text-sm text-center" 
-                        buttonClassName="h-7 w-7"
-                        buttonSize="sm"
-                        disabled={isLocked}
+                        type="number"
+                        value={localCustomMod}
+                        onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
+                        min={-50}
+                        className={cn(textStyleInput, "h-8")}
+                        disabled={panelIsLocked}
                       />
                     </div>
                   </div>
@@ -306,7 +258,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
 
           <div>
             <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3", panelGridGap)}>
               {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
                 const resistanceFromProp = characterData[field];
                 const itemBonus = aggregatedFeatEffects.resistanceBonuses.find(rb => rb.resistanceTo === field && rb.isActive)?.value || 0;
@@ -315,7 +267,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                 const label = UI_STRINGS[labelKey];
                 const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
                 return (
-                  <div key={field} className="p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm">
+                  <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center space-y-1.5 text-center shadow-sm", panelFieldVerticalGap)}>
                      <div className="flex items-center justify-center">
                         <Icon className="h-5 w-5 mr-1.5 text-muted-foreground" />
                         <span className="text-sm font-medium">
@@ -336,18 +288,17 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                         <Info className="h-4 w-4" />
                       </Button>
                     </div>
-                     <div className="w-full max-w-[120px] flex flex-col items-center">
+                     <div className={cn("w-full flex flex-col items-center", inputWidthStandard)}>
                        <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground mb-0.5">{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
-                       <NumberSpinnerInput
+                       <Input
                         id={`${fieldPrefix}-${field}-customMod`}
+                        type="number"
                         value={localCustomMod}
-                        onChange={setLocalCustomMod}
-                        min={isFortification ? 0 : -50} 
-                        max={isFortification ? 100 : undefined} 
-                        inputClassName="w-16 h-7 text-sm text-center"
-                        buttonClassName="h-7 w-7"
-                        buttonSize="sm"
-                        disabled={isLocked}
+                        onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
+                        min={isFortification ? 0 : -50}
+                        max={isFortification ? 100 : undefined}
+                        className={cn(textStyleInput, "h-8")}
+                        disabled={panelIsLocked}
                       />
                     </div>
                   </div>
@@ -357,26 +308,24 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
             <Separator className="my-6" />
              <div>
               <h4 className="text-lg font-semibold mb-3 text-foreground/90">{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
-                <div className="grid md:grid-cols-3 gap-x-6 gap-y-4">
-                  <div className="md:col-span-1 space-y-3 border p-4 rounded-md">
+                <div className={cn("grid md:grid-cols-3", panelGridGap)}>
+                  <div className={cn("md:col-span-1 space-y-3 border p-4 rounded-md", panelFieldVerticalGap)}>
                     <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
                     <div className="w-full space-y-1">
                         <Label htmlFor="form-dr-value" className="text-sm inline-block w-full text-center">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
-                        <NumberSpinnerInput
-                        id="form-dr-value"
-                        value={newDrValue}
-                        onChange={setNewDrValue}
-                        min={1}
-                        inputClassName="h-9 text-sm w-full text-center" 
-                        buttonClassName="h-9 w-9"
-                        buttonSize="sm"
-                        className="w-full" 
-                        disabled={isLocked}
+                        <Input
+                          id="form-dr-value"
+                          type="number"
+                          value={newDrValue}
+                          onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)}
+                          min={1}
+                          className={cn(textStyleInput, "h-10 w-full")}
+                          disabled={panelIsLocked}
                         />
                     </div>
                     <div className="space-y-1">
                           <Label htmlFor="form-dr-rule" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
-                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)} disabled={isLocked}>
+                          <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)} disabled={panelIsLocked}>
                               <SelectTrigger id="form-dr-rule" className="h-9 text-sm">
                                 <SelectValue />
                               </SelectTrigger>
@@ -391,14 +340,14 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                       </div>
                     <div className="space-y-1">
                         <Label htmlFor="form-dr-type" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
-                        <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)} disabled={isLocked}>
+                        <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)} disabled={panelIsLocked}>
                             <SelectTrigger id="form-dr-type" className="h-9 text-sm">
                               <SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} />
                             </SelectTrigger>
                             <SelectContent>
                                 {DAMAGE_REDUCTION_TYPES.map(option => (
-                                    <SelectItem 
-                                      key={option.id} 
+                                    <SelectItem
+                                      key={option.id}
                                       value={option.id}
                                       disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}
                                     >
@@ -408,11 +357,11 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                             </SelectContent>
                         </Select>
                     </div>
-                    <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3 w-full" disabled={isLocked}>
+                    <Button type="button" onClick={handleAddDamageReduction} size="sm" className="mt-3 w-full" disabled={panelIsLocked}>
                         <PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}
                     </Button>
                   </div>
-                  
+
                   <div className="md:col-span-2 space-y-3">
                     {characterData.damageReduction.length > 0 ? (
                       characterData.damageReduction.map(dr => {
@@ -433,7 +382,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                                   )}
                                 </div>
                                 {!dr.isGranted && (
-                                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)} disabled={isLocked}>
+                                <Button type="button" variant="ghost" size="icon" className="h-7 w-7 text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)} disabled={panelIsLocked}>
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                                 )}
@@ -448,14 +397,12 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
                       <p className="text-sm text-muted-foreground">{UI_STRINGS.resistancesPanelNoDrEntries}</p>
                     )}
                   </div>
-
                 </div>
               </div>
-
           </div>
-        </CardContent>
-      </Card>
-    </>
+        </div>
+      )}
+    </LockablePanelWrapper>
   );
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';

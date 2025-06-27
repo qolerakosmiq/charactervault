@@ -1,7 +1,7 @@
 
 {
-  "resistancesPanelTitle": { "en": "Resistances & Other Defenses", "fr": "Résistances et autres défenses" },
-  "resistancesPanelDescription": { "en": "Manage custom modifiers for resistances, damage reductions, and fortification.", "fr": "Gérer les modificateurs personnalisés pour les résistances, les réductions de dégâts et la fortification." },
+  "resistancesPanelTitle": { "en": "Resistances", "fr": "Résistances" },
+  "resistancesPanelDescription": { "en": "Manage energy resistances, damage reduction, and other special defenses.", "fr": "Gérez les résistances aux énergies, la réduction des dégâts et d'autres défenses spéciales." },
   "resistancesPanelEnergyResistancesLabel": { "en": "Energy Resistances", "fr": "Résistances aux énergies" },
   "resistancesPanelOtherDefensesLabel": { "en": "Other Defenses", "fr": "Autres défenses" },
   "resistancesPanelDamageReductionLabel": { "en": "Damage Reduction", "fr": "Réduction des dégâts" },
