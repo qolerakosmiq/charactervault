@@ -31,6 +31,7 @@ import {
   panelBadgeGroupGap,
   textStyleValueBig,
   textStyleLabel,
+  textStyleCardTitle,
 } from '@/config/layout';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 
@@ -213,7 +214,7 @@ const ResistancesPanelContent = React.memo(({
               <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center shadow-sm", panelFieldVerticalGap)}>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                   <Icon className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-sm font-medium">{label}</span>
+                  <span className={cn(textStyleCardTitle)}>{label}</span>
                 </div>
                 <div className={cn("flex items-center justify-center", panelBadgeGroupGap)}>
                   <p className={cn(textStyleValueBig)}>{totalValue}</p>
@@ -253,7 +254,7 @@ const ResistancesPanelContent = React.memo(({
               <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center shadow-sm", panelFieldVerticalGap)}>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                   <Icon className="h-5 w-5 text-muted-foreground" />
-                  <span className="text-sm font-medium">{label} {unit && `(${unit})`}</span>
+                  <span className={cn(textStyleCardTitle)}>{label} {unit && <span className="text-sm text-muted-foreground font-normal">({unit})</span>}</span>
                 </div>
                 <div className={cn("flex items-center justify-center", panelBadgeGroupGap)}>
                   <p className={cn(textStyleValueBig)}>{totalValue}</p>
