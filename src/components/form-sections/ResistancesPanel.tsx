@@ -43,6 +43,85 @@ export interface ResistancesPanelProps {
   onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void;
 }
 
+
+interface ResistanceDisplayCardProps {
+  field: ResistanceFieldKeySheet;
+  label: string;
+  Icon: React.ElementType;
+  unit?: string;
+  isLocked: boolean;
+  value: ResistanceValue;
+  featBonus: number;
+  onCustomModChange: (field: ResistanceFieldKeySheet, value: number) => void;
+  onOpenInfoDialog: (field: ResistanceFieldKeySheet) => void;
+  uiStrings: Record<string, string>;
+}
+
+const ResistanceDisplayCard = React.memo(({
+  field,
+  label,
+  Icon,
+  unit,
+  isLocked,
+  value,
+  featBonus,
+  onCustomModChange,
+  onOpenInfoDialog,
+  uiStrings,
+}: ResistanceDisplayCardProps) => {
+  const onUpdateCallback = React.useCallback((newValue: number) => {
+    onCustomModChange(field, newValue);
+  }, [onCustomModChange, field]);
+
+  const [localCustomMod, setLocalCustomMod] = useDebouncedFormField(
+    value.customMod || 0,
+    onUpdateCallback,
+    debounceDelayFormInput
+  );
+
+  const totalValue = (value.base || 0) + localCustomMod + featBonus;
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let numericValue = parseInt(e.target.value, 10);
+    if (isNaN(numericValue)) {
+        numericValue = 0;
+    }
+    if (field === 'fortification') {
+        numericValue = Math.max(0, Math.min(100, numericValue));
+    }
+    setLocalCustomMod(numericValue);
+  };
+  
+  return (
+    <div className={cn("border rounded-md bg-card flex flex-col items-center shadow-sm", panelContentPadding, panelFieldVerticalGap)}>
+      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+        <Icon className="h-5 w-5 text-muted-foreground" />
+        <span className={cn(textStyleCardTitle)}>{label} {unit && <span className="text-sm text-muted-foreground font-normal">({unit})</span>}</span>
+      </div>
+      <div className={cn("flex items-center justify-center", panelBadgeGroupGap)}>
+        <p className={cn(textStyleValueBig)}>{totalValue}</p>
+        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => onOpenInfoDialog(field)}><Info /></Button>
+      </div>
+      {!isLocked && (
+        <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
+          <Label htmlFor={`${field}-customMod`} className={cn(textStyleLabel)}>{uiStrings.infoDialogMiscModifierLabel || "Misc Modifier"}</Label>
+          <div className={cn("flex justify-center", inputWidthStandard)}>
+            <Input
+              id={`${field}-customMod`}
+              type="number"
+              value={localCustomMod}
+              onChange={handleInputChange}
+              className={cn(textStyleInput)}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
+});
+ResistanceDisplayCard.displayName = 'ResistanceDisplayCard';
+
+
 const ResistancesPanelContent = React.memo(({
   panelIsLocked,
   characterData,
@@ -58,35 +137,26 @@ const ResistancesPanelContent = React.memo(({
   const [newDrType, setNewDrType] = React.useState<DamageReductionTypeValue | string>("none");
   const [newDrRule, setNewDrRule] = React.useState<DamageReductionRuleValue>('bypassed-by-type');
 
-  const energyResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; fieldPrefix?: string }> = React.useMemo(() => [
-    { field: 'fireResistance', labelKey: 'resistanceLabelFire', Icon: Flame, fieldPrefix: 'form-res' },
-    { field: 'coldResistance', labelKey: 'resistanceLabelCold', Icon: Snowflake, fieldPrefix: 'form-res' },
-    { field: 'acidResistance', labelKey: 'resistanceLabelAcid', Icon: Atom, fieldPrefix: 'form-res' },
-    { field: 'electricityResistance', labelKey: 'resistanceLabelElectricity', Icon: ElectricityIcon, fieldPrefix: 'form-res' },
-    { field: 'sonicResistance', labelKey: 'resistanceLabelSonic', Icon: Waves, fieldPrefix: 'form-res' },
-  ], []);
-
-  const otherNumericResistancesFields: Array<{ field: ResistanceFieldKeySheet; labelKey: keyof NonNullable<NonNullable<typeof translations>['UI_STRINGS']>; Icon: React.ElementType; unit?: string; fieldPrefix?: string }> = React.useMemo(() => [
-    { field: 'spellResistance', labelKey: 'resistanceLabelSpell', Icon: Sigma, fieldPrefix: 'form-res' },
-    { field: 'powerResistance', labelKey: 'resistanceLabelPower', Icon: Brain, fieldPrefix: 'form-res' },
-    { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%', fieldPrefix: 'form-res' },
-  ], []);
-
-  const debouncedResistanceMods = {} as Record<ResistanceFieldKeySheet, [number, (val: number) => void]>;
-
-  [...energyResistancesFields, ...otherNumericResistancesFields].forEach(({ field }) => {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const onUpdateCallback = React.useCallback((value: number) => onResistanceChange(field, 'customMod', value), [onResistanceChange, field]);
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    debouncedResistanceMods[field] = useDebouncedFormField(
-      characterData[field]?.customMod || 0,
-      onUpdateCallback,
-      debounceDelayFormInput
-    );
-  });
-  
   const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, UI_STRINGS } = translations;
   const currentLang = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
+  
+  const handleResistanceChangeCallback = React.useCallback((field: ResistanceFieldKeySheet, value: number) => {
+    onResistanceChange(field, 'customMod', value);
+  }, [onResistanceChange]);
+
+  const energyResistancesFields = React.useMemo(() => [
+    { field: 'fireResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelFire' as const, Icon: Flame },
+    { field: 'coldResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelCold' as const, Icon: Snowflake },
+    { field: 'acidResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelAcid' as const, Icon: Atom },
+    { field: 'electricityResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelElectricity' as const, Icon: ElectricityIcon },
+    { field: 'sonicResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelSonic' as const, Icon: Waves },
+  ], []);
+
+  const otherNumericResistancesFields = React.useMemo(() => [
+    { field: 'spellResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelSpell' as const, Icon: Sigma },
+    { field: 'powerResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelPower' as const, Icon: Brain },
+    { field: 'fortification' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelFortification' as const, Icon: ShieldCheck, unit: '%' },
+  ], []);
 
   React.useEffect(() => {
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
@@ -97,15 +167,8 @@ const ResistancesPanelContent = React.memo(({
         setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.id || 'bypassed-by-type');
     }
   }, [newDrRule, newDrType, DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS]);
-  
 
-  const handleTriggerResistanceInfoDialog = (field: ResistanceFieldKeySheet) => {
-    if (onOpenResistanceInfoDialog) {
-      onOpenResistanceInfoDialog(field);
-    }
-  };
-
-  const handleAddDamageReduction = () => {
+  const handleAddDamageReduction = React.useCallback(() => {
     if (newDrValue <= 0) {
       toast({ title: UI_STRINGS.toastInvalidDrValueTitle, description: UI_STRINGS.toastInvalidDrValueDesc, variant: "destructive"});
       return;
@@ -143,18 +206,18 @@ const ResistancesPanelContent = React.memo(({
     setNewDrValue(1);
     setNewDrType(DAMAGE_REDUCTION_TYPES[0]?.id || "none");
     setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.id || 'bypassed-by-type');
-  };
+  }, [characterData.damageReduction, newDrRule, newDrType, newDrValue, onDamageReductionChange, toast, UI_STRINGS, DAMAGE_REDUCTION_RULES_OPTIONS, DAMAGE_REDUCTION_TYPES]);
 
-  const handleRemoveDamageReduction = (idToRemove: string) => {
+  const handleRemoveDamageReduction = React.useCallback((idToRemove: string) => {
     onDamageReductionChange(characterData.damageReduction.filter(dr => dr.id !== idToRemove));
-  };
+  }, [characterData.damageReduction, onDamageReductionChange]);
 
-  const getDrTypeUiLabel = (typeValue: DamageReductionTypeValue | string): string => {
+  const getDrTypeUiLabel = React.useCallback((typeValue: DamageReductionTypeValue | string): string => {
     const drType = DAMAGE_REDUCTION_TYPES.find(t => t.id === typeValue);
     return drType?.label || typeValue;
-  };
+  }, [DAMAGE_REDUCTION_TYPES]);
 
-  const getDrRuleDescription = (dr: DamageReductionInstance): React.ReactNode => {
+  const getDrRuleDescription = React.useCallback((dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
     const ruleLabel = ruleDef?.label || dr.rule;
@@ -172,9 +235,9 @@ const ResistancesPanelContent = React.memo(({
     }
 
     return `${UI_STRINGS.resistancesPanelDrRuleLabel}: ${ruleLabel}`;
-  };
+  }, [UI_STRINGS, DAMAGE_REDUCTION_RULES_OPTIONS, getDrTypeUiLabel]);
 
-  const getDrPrimaryNotation = (dr: DamageReductionInstance): React.ReactNode => {
+  const getDrPrimaryNotation = React.useCallback((dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const vsLabel = UI_STRINGS.drVsLabel;
     const immunitySuffix = UI_STRINGS.drImmunitySuffixLabel;
@@ -188,44 +251,31 @@ const ResistancesPanelContent = React.memo(({
     }
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
     return <>{valueText}/{typeLabel} ({ruleDef?.label || dr.rule})</>;
-  };
+  }, [UI_STRINGS, DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, getDrTypeUiLabel]);
 
   return (
     <div className={cn("flex flex-col", panelGridGap)}>
       <div className={cn("flex flex-col", panelGridGap)}>
         <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
         <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", panelGridGap)}>
-          {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
-            const resistanceFromProp = characterData[field];
-            const itemBonus = aggregatedFeatEffects?.resistanceBonuses.find(rb => rb.resistanceTo === field && rb.isActive)?.value || 0;
-            const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0) + itemBonus;
+          {energyResistancesFields.map(({ field, labelKey, Icon }) => {
+            const featBonus = aggregatedFeatEffects?.resistanceBonuses.find(rb => rb.resistanceTo === field && rb.isActive)?.value || 0;
+            const resistanceValue = characterData[field];
             const label = UI_STRINGS[labelKey];
-            const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
+
             return (
-              <div key={field} className={cn("border rounded-md bg-card flex flex-col items-center shadow-sm", panelContentPadding, panelFieldVerticalGap)}>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <Icon className="h-5 w-5 text-muted-foreground" />
-                  <span className={cn(textStyleCardTitle)}>{label}</span>
-                </div>
-                <div className={cn("flex items-center justify-center", panelBadgeGroupGap)}>
-                  <p className={cn(textStyleValueBig)}>{totalValue}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleTriggerResistanceInfoDialog(field)}><Info /></Button>
-                </div>
-                {!panelIsLocked && (
-                  <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogMiscModifierLabel}</Label>
-                    <div className={cn("flex justify-center", inputWidthStandard)}>
-                      <Input
-                        id={`${fieldPrefix}-${field}-customMod`}
-                        type="number"
-                        value={localCustomMod}
-                        onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
-                        className={cn(textStyleInput)}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
+              <ResistanceDisplayCard
+                key={field}
+                field={field}
+                label={label}
+                Icon={Icon}
+                isLocked={panelIsLocked}
+                value={resistanceValue}
+                featBonus={featBonus}
+                onCustomModChange={handleResistanceChangeCallback}
+                onOpenInfoDialog={onOpenResistanceInfoDialog}
+                uiStrings={UI_STRINGS}
+              />
             );
           })}
         </div>
@@ -234,55 +284,30 @@ const ResistancesPanelContent = React.memo(({
       <div className={cn("flex flex-col", panelGridGap)}>
         <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
         <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3", panelGridGap)}>
-          {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
-            const resistanceFromProp = characterData[field];
-            const itemBonus = aggregatedFeatEffects?.resistanceBonuses.find(rb => rb.resistanceTo === field && rb.isActive)?.value || 0;
-            const totalValue = (resistanceFromProp?.base || 0) + (resistanceFromProp?.customMod || 0) + itemBonus;
-            const isFortification = field === 'fortification';
-            const label = UI_STRINGS[labelKey];
-            const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
-            
-            const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-              let numericValue = parseInt(e.target.value, 10);
-              if (isNaN(numericValue)) {
-                  numericValue = 0;
-              }
-              if (isFortification) {
-                  numericValue = Math.max(0, Math.min(100, numericValue));
-              }
-              setLocalCustomMod(numericValue);
-            };
+          {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit }) => {
+             const featBonus = aggregatedFeatEffects?.resistanceBonuses.find(rb => rb.resistanceTo === field && rb.isActive)?.value || 0;
+             const resistanceValue = characterData[field];
+             const label = UI_STRINGS[labelKey];
 
-            return (
-              <div key={field} className={cn("border rounded-md bg-card flex flex-col items-center shadow-sm", panelContentPadding, panelFieldVerticalGap)}>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <Icon className="h-5 w-5 text-muted-foreground" />
-                  <span className={cn(textStyleCardTitle)}>{label} {unit && <span className="text-sm text-muted-foreground font-normal">({unit})</span>}</span>
-                </div>
-                <div className={cn("flex items-center justify-center", panelBadgeGroupGap)}>
-                  <p className={cn(textStyleValueBig)}>{totalValue}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleTriggerResistanceInfoDialog(field)}><Info /></Button>
-                </div>
-                {!panelIsLocked && (
-                  <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogMiscModifierLabel}</Label>
-                    <div className={cn("flex justify-center", inputWidthStandard)}>
-                      <Input
-                        id={`${fieldPrefix}-${field}-customMod`}
-                        type="number"
-                        value={localCustomMod}
-                        onChange={handleInputChange}
-                        className={cn(textStyleInput)}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
+             return (
+              <ResistanceDisplayCard
+                key={field}
+                field={field}
+                label={label}
+                Icon={Icon}
+                unit={unit}
+                isLocked={panelIsLocked}
+                value={resistanceValue}
+                featBonus={featBonus}
+                onCustomModChange={handleResistanceChangeCallback}
+                onOpenInfoDialog={onOpenResistanceInfoDialog}
+                uiStrings={UI_STRINGS}
+              />
             );
           })}
         </div>
         
-        {(!panelIsLocked || characterData.damageReduction.length > 0) && (
+        {(!panelIsLocked || (characterData.damageReduction && characterData.damageReduction.length > 0)) && (
           <div className={cn("flex flex-col", panelGridGap)}>
             <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
             <div className={cn(panelIsLocked ? "md:grid-cols-1" : "md:grid-cols-3", "grid", panelGridGap)}>
@@ -309,26 +334,28 @@ const ResistancesPanelContent = React.memo(({
                   <Button type="button" onClick={handleAddDamageReduction} size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}</Button>
                 </div>
               )}
-              <div className={cn(panelIsLocked ? "md:col-span-1" : "md:col-span-2", "flex flex-col", panelGridGap)}>
-                {characterData.damageReduction.map(dr => {
-                  const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
-                  const ruleLabel = ruleDef?.label || dr.rule;
-                  const currentLangCodeForDr = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
-                  return (
-                    <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
-                      <div className="flex items-center justify-between w-full">
-                        <div className={cn("flex items-center flex-wrap", panelBadgeGroupGap)}>
-                          <span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span>
-                          <Badge variant="outline">{ruleLabel}</Badge>
-                          {dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}
+              {characterData.damageReduction && characterData.damageReduction.length > 0 && (
+                <div className={cn(panelIsLocked ? "md:col-span-1" : "md:col-span-2", "flex flex-col", panelGridGap)}>
+                  {characterData.damageReduction.map(dr => {
+                    const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
+                    const ruleLabel = ruleDef?.label || dr.rule;
+                    const currentLangCodeForDr = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
+                    return (
+                      <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
+                        <div className="flex items-center justify-between w-full">
+                          <div className={cn("flex items-center flex-wrap", panelBadgeGroupGap)}>
+                            <span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span>
+                            <Badge variant="outline">{ruleLabel}</Badge>
+                            {dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}
+                          </div>
+                          {!dr.isGranted && !panelIsLocked && (<Button type="button" variant="ghost" size="icon-xs" className="text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)}><Trash2 /></Button>)}
                         </div>
-                        {!dr.isGranted && !panelIsLocked && (<Button type="button" variant="ghost" size="icon-xs" className="text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)}><Trash2 /></Button>)}
+                        <div className="text-sm text-muted-foreground w-full">{getDrRuleDescription(dr)}</div>
                       </div>
-                      <div className="text-sm text-muted-foreground w-full">{getDrRuleDescription(dr)}</div>
-                    </div>
-                  );
-                })}
-              </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -345,8 +372,8 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     if (!translations) return null;
     return (
       <p className={textStyleDescription}>
-        {parseAndRenderUIString(translations.UI_STRINGS.resistancesPanelInfoNote, {
-          badge: (children: React.ReactNode) => <Badge outline>{children}</Badge>
+        {parseAndRenderUIString(translations.UI_STRINGS.resistancesPanelInfoNoteFull, {
+          badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
         })}
       </p>
     )
