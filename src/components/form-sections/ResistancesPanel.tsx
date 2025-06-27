@@ -57,6 +57,20 @@ interface ResistanceDisplayCardProps {
   uiStrings: Record<string, string>;
 }
 
+const energyResistancesFields = [
+  { field: 'fireResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelFire' as const, Icon: Flame },
+  { field: 'coldResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelCold' as const, Icon: Snowflake },
+  { field: 'acidResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelAcid' as const, Icon: Atom },
+  { field: 'electricityResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelElectricity' as const, Icon: ElectricityIcon },
+  { field: 'sonicResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelSonic' as const, Icon: Waves },
+];
+
+const otherNumericResistancesFields = [
+  { field: 'spellResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelSpell' as const, Icon: Sigma },
+  { field: 'powerResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelPower' as const, Icon: Brain },
+  { field: 'fortification' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelFortification' as const, Icon: ShieldCheck, unit: '%' },
+];
+
 const ResistanceDisplayCard = React.memo(({
   field,
   label,
@@ -146,20 +160,6 @@ const ResistancesPanelContent = React.memo(({
   const handleResistanceChangeCallback = React.useCallback((field: ResistanceFieldKeySheet, value: number) => {
     onResistanceChange(field, 'customMod', value);
   }, [onResistanceChange]);
-
-  const energyResistancesFields = React.useMemo(() => [
-    { field: 'fireResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelFire' as const, Icon: Flame },
-    { field: 'coldResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelCold' as const, Icon: Snowflake },
-    { field: 'acidResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelAcid' as const, Icon: Atom },
-    { field: 'electricityResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelElectricity' as const, Icon: ElectricityIcon },
-    { field: 'sonicResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelSonic' as const, Icon: Waves },
-  ], []);
-
-  const otherNumericResistancesFields = React.useMemo(() => [
-    { field: 'spellResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelSpell' as const, Icon: Sigma },
-    { field: 'powerResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelPower' as const, Icon: Brain },
-    { field: 'fortification' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelFortification' as const, Icon: ShieldCheck, unit: '%' },
-  ], []);
 
   React.useEffect(() => {
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
@@ -413,5 +413,3 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
-
-    
