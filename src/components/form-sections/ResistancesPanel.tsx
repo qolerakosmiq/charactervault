@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects, InfoDialogContentType } from '@/types/character';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
@@ -44,6 +44,29 @@ export interface ResistancesPanelProps {
   onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void;
 }
 
+const energyResistancesFields: Array<{
+  field: ResistanceFieldKeySheet;
+  labelKey: keyof NonNullable<ReturnType<typeof useI18n>['translations']>['UI_STRINGS'];
+  Icon: React.ElementType;
+}> = [
+  { field: 'fireResistance', labelKey: 'resistanceLabelFire', Icon: Flame },
+  { field: 'coldResistance', labelKey: 'resistanceLabelCold', Icon: Snowflake },
+  { field: 'acidResistance', labelKey: 'resistanceLabelAcid', Icon: Atom },
+  { field: 'electricityResistance', labelKey: 'resistanceLabelElectricity', Icon: ElectricityIcon },
+  { field: 'sonicResistance', labelKey: 'resistanceLabelSonic', Icon: Waves },
+];
+
+const otherNumericResistancesFields: Array<{
+  field: ResistanceFieldKeySheet;
+  labelKey: keyof NonNullable<ReturnType<typeof useI18n>['translations']>['UI_STRINGS'];
+  Icon: React.ElementType;
+  unit?: string;
+}> = [
+  { field: 'spellResistance', labelKey: 'resistanceLabelSpell', Icon: Sigma },
+  { field: 'powerResistance', labelKey: 'resistanceLabelPower', Icon: Brain },
+  { field: 'fortification', labelKey: 'resistanceLabelFortification', Icon: ShieldCheck, unit: '%' },
+];
+
 interface ResistanceDisplayCardProps {
   field: ResistanceFieldKeySheet;
   label: string;
@@ -57,19 +80,6 @@ interface ResistanceDisplayCardProps {
   uiStrings: Record<string, string>;
 }
 
-const energyResistancesFields = [
-  { field: 'fireResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelFire' as const, Icon: Flame },
-  { field: 'coldResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelCold' as const, Icon: Snowflake },
-  { field: 'acidResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelAcid' as const, Icon: Atom },
-  { field: 'electricityResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelElectricity' as const, Icon: ElectricityIcon },
-  { field: 'sonicResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelSonic' as const, Icon: Waves },
-];
-
-const otherNumericResistancesFields = [
-  { field: 'spellResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelSpell' as const, Icon: Sigma },
-  { field: 'powerResistance' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelPower' as const, Icon: Brain },
-  { field: 'fortification' as ResistanceFieldKeySheet, labelKey: 'resistanceLabelFortification' as const, Icon: ShieldCheck, unit: '%' },
-];
 
 const ResistanceDisplayCard = React.memo(({
   field,
@@ -116,9 +126,17 @@ const ResistanceDisplayCard = React.memo(({
         <Icon className="h-5 w-5 text-muted-foreground" />
         <span className={cn(textStyleCardTitle)}>{label} {unit && <span className="text-sm text-muted-foreground font-normal">({unit})</span>}</span>
       </div>
-      <div className={cn("flex items-center justify-center")}>
+      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
         <p className={cn(textStyleValueBig)}>{totalValue}</p>
-        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={handleOpenDialog}><Info /></Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-xs"
+          className="ml-1 text-muted-foreground hover:text-foreground"
+          onClick={handleOpenDialog}
+        >
+          <Info />
+        </Button>
       </div>
       {!isLocked && (
         <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
@@ -147,7 +165,7 @@ const ResistancesPanelContent = React.memo(({
   onDamageReductionChange,
   onOpenResistanceInfoDialog,
   translations
-}: ResistancesPanelProps & { panelIsLocked: boolean, translations: NonNullable<ReturnType<typeof useI18n>['translations']>}) => {
+}: ResistancesPanelProps & { panelIsLocked: boolean, translations: NonNullable<ReturnType<typeof useI18n>['translations']> }) => {
   const { toast } = useToast();
 
   const [newDrValue, setNewDrValue] = React.useState(1);
