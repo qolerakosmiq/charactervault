@@ -278,7 +278,7 @@ const ResistancesPanelContent = React.memo(({
 
   return (
     <>
-      <div className="flex flex-col">
+      <div className={cn("flex flex-col", panelGridGap)}>
         <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
         <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", panelGridGap)}>
           {energyResistancesFields.map(({ field, labelKey, Icon }) => {
@@ -304,7 +304,7 @@ const ResistancesPanelContent = React.memo(({
         </div>
       </div>
       
-      <div className="flex flex-col">
+      <div className={cn("flex flex-col", panelGridGap)}>
         <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
         <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3", panelGridGap)}>
           {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit }) => {
@@ -332,7 +332,7 @@ const ResistancesPanelContent = React.memo(({
       </div>
         
       {showDrSection && (
-        <div className="flex flex-col">
+        <div className={cn("flex flex-col", panelGridGap)}>
           <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
           <div className={cn("grid md:grid-cols-3", panelGridGap, !panelIsLocked && "grid-cols-1")}>
             {!panelIsLocked && (
@@ -412,7 +412,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
       description={translations.UI_STRINGS.resistancesPanelDescription}
       icon={ShieldAlert}
       initialLockedState={false}
-      cardContentClassName={panelGridGap}
+      cardContentClassName={cn("flex flex-col", panelGridGap)}
       footer={footerContent}
     >
       {({ isLocked: panelIsLocked }) => (
