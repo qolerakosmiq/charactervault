@@ -21,11 +21,9 @@ export const textStyleBadgeSmall = 'text-xs';
 export const textStyleBadgeMedium = 'text-sm';
 export const textStyleInlineBadge = 'rounded-md px-1.5 py-0.5 align-baseline';
 export const textStyleSectionSubheading = 'text-lg font-semibold text-primary';
-export const textStylePanelSectionHeader = 'text-secondary';
+export const textStylePanelSectionHeader = 'text-lg font-semibold text-muted-foreground';
 
 
 // Sizing
 export const inputWidthStandard = 'max-w-24'; // For spinners
 export const inputWidthFull = 'w-full'; // For standard inputs that should fill their container.
-
-
