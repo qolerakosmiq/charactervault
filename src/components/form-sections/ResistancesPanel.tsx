@@ -220,7 +220,7 @@ const ResistancesPanelContent = React.memo(({
                   <p className={cn(textStyleValueBig)}>{totalValue}</p>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => handleTriggerResistanceInfoDialog(field)}><Info className="h-4 w-4" /></Button>
                 </div>
-                <div className="flex flex-col items-center gap-1">
+                <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
                   <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
                   <div className={cn("flex justify-center", inputWidthStandard)}>
                      <Input
@@ -228,7 +228,6 @@ const ResistancesPanelContent = React.memo(({
                       type="number"
                       value={localCustomMod}
                       onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
-                      min={-50}
                       className={cn(textStyleInput)}
                       disabled={panelIsLocked}
                     />
@@ -250,6 +249,18 @@ const ResistancesPanelContent = React.memo(({
             const isFortification = field === 'fortification';
             const label = UI_STRINGS[labelKey];
             const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
+            
+            const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+              let numericValue = parseInt(e.target.value, 10);
+              if (isNaN(numericValue)) {
+                  numericValue = 0;
+              }
+              if (isFortification) {
+                  numericValue = Math.max(0, Math.min(100, numericValue));
+              }
+              setLocalCustomMod(numericValue);
+            };
+
             return (
               <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center shadow-sm", panelFieldVerticalGap)}>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
@@ -260,16 +271,14 @@ const ResistancesPanelContent = React.memo(({
                   <p className={cn(textStyleValueBig)}>{totalValue}</p>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 text-muted-foreground hover:text-foreground" onClick={() => handleTriggerResistanceInfoDialog(field)}><Info className="h-4 w-4" /></Button>
                 </div>
-                <div className="flex flex-col items-center gap-1">
+                <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
                   <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
                   <div className={cn("flex justify-center", inputWidthStandard)}>
                     <Input
                       id={`${fieldPrefix}-${field}-customMod`}
                       type="number"
                       value={localCustomMod}
-                      onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
-                      min={isFortification ? 0 : -50}
-                      max={isFortification ? 100 : undefined}
+                      onChange={handleInputChange}
                       className={cn(textStyleInput)}
                       disabled={panelIsLocked}
                     />
@@ -287,7 +296,7 @@ const ResistancesPanelContent = React.memo(({
               <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
               <div className="flex flex-col gap-1">
                 <Label htmlFor="form-dr-value" className="text-sm inline-block text-center">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
-                <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} min={1} className={cn(textStyleInput, "h-10")} disabled={panelIsLocked} />
+                <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10")} disabled={panelIsLocked} />
               </div>
               <div className="flex flex-col gap-1">
                 <Label htmlFor="form-dr-rule" className="text-sm inline-block text-left">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
