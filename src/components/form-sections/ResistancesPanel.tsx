@@ -3,7 +3,6 @@
 
 import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Lock, Unlock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -16,7 +15,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
-import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
+import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import {
   debounceDelayFormInput,
   textStyleDescription,
@@ -78,15 +77,19 @@ const ResistancesPanelContent = React.memo(({
 
   [...energyResistancesFields, ...otherNumericResistancesFields].forEach(({ field }) => {
     // eslint-disable-next-line react-hooks/rules-of-hooks
+    const onUpdateCallback = React.useCallback((value: number) => onResistanceChange(field, 'customMod', value), [onResistanceChange, field]);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
     debouncedResistanceMods[field] = useDebouncedFormField(
       characterData[field]?.customMod || 0,
-      (value) => onResistanceChange(field, 'customMod', value),
+      onUpdateCallback,
       debounceDelayFormInput
     );
   });
+  
+  const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, UI_STRINGS } = translations;
+  const currentLang = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
 
   React.useEffect(() => {
-    const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS } = translations;
     if (newDrRule !== 'bypassed-by-type' && newDrType === 'none') {
       const firstNonNoneType = DAMAGE_REDUCTION_TYPES.find(t => t.id !== 'none')?.id || 'magic';
       setNewDrType(firstNonNoneType);
@@ -94,10 +97,8 @@ const ResistancesPanelContent = React.memo(({
     if (newDrType === "none" && !newDrRule) {
         setNewDrRule(DAMAGE_REDUCTION_RULES_OPTIONS[0]?.id || 'bypassed-by-type');
     }
-  }, [newDrRule, newDrType, translations]);
+  }, [newDrRule, newDrType, DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS]);
   
-  const { DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, UI_STRINGS } = translations;
-  const currentLang = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
 
   const handleTriggerResistanceInfoDialog = (field: ResistanceFieldKeySheet) => {
     if (onOpenResistanceInfoDialog) {
@@ -286,18 +287,18 @@ const ResistancesPanelContent = React.memo(({
           <div className={cn("grid md:grid-cols-3", panelGridGap)}>
             <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
               <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                <Label htmlFor="form-dr-value" className="text-sm inline-block text-center">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
-                <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10")} disabled={panelIsLocked} />
+                <Label htmlFor="form-dr-value" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
+                <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10", "text-left")} disabled={panelIsLocked} />
               </div>
               <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                <Label htmlFor="form-dr-rule" className="text-sm inline-block text-left">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
+                <Label htmlFor="form-dr-rule" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
                 <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)} disabled={panelIsLocked}>
                   <SelectTrigger id="form-dr-rule" className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>{DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (<SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>))}</SelectContent>
                 </Select>
               </div>
               <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                <Label htmlFor="form-dr-type" className="text-sm inline-block text-left">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
+                <Label htmlFor="form-dr-type" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                 <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)} disabled={panelIsLocked}>
                   <SelectTrigger id="form-dr-type" className="h-9 text-sm"><SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} /></SelectTrigger>
                   <SelectContent>{DAMAGE_REDUCTION_TYPES.map(option => (<SelectItem key={option.id} value={option.id} disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}>{option.label}</SelectItem>))}</SelectContent>
@@ -334,6 +335,15 @@ ResistancesPanelContent.displayName = 'ResistancesPanelContent';
 const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
   
+  const footerContent = React.useMemo(() => {
+    if (!translations) return null;
+    return (
+      <p className={textStyleDescription}>
+        {getLocalizedString(translations.UI_STRINGS.infoDialogItemBonusLabel, 'en')} {translations.UI_STRINGS.infoDialogFromFeatsAndItems || "is calculated from active feats and equipped items."}
+      </p>
+    )
+  }, [translations]);
+
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return null;
   }
@@ -344,6 +354,8 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
       description={translations.UI_STRINGS.resistancesPanelDescription}
       icon={ShieldAlert}
       initialLockedState={false}
+      cardContentClassName="gap-6"
+      footer={footerContent}
     >
       {({ isLocked: panelIsLocked }) => (
         <ResistancesPanelContent

@@ -5,12 +5,11 @@
   "resistancesPanelEnergyResistancesLabel": { "en": "Energy Resistances", "fr": "Résistances aux énergies" },
   "resistancesPanelOtherDefensesLabel": { "en": "Other Defenses", "fr": "Autres défenses" },
   "resistancesPanelDamageReductionLabel": { "en": "Damage Reduction", "fr": "Réduction des dégâts" },
-  "resistancesPanelAddCustomDrLabel": { "en": "Add Custom Damage Reduction", "fr": "Ajouter une réduction de dégâts personnalisée" },
   "resistancesPanelDrValueLabel": { "en": "Value", "fr": "Valeur" },
   "resistancesPanelDrRuleLabel": { "en": "Rule", "fr": "Règle" },
-  "resistancesPanelDrTypeLabel": { "en": "Type (Bypassed by / Versus / Except)", "fr": "Type (Contournée par / Contre / Sauf)" },
+  "resistancesPanelDrTypeLabel": { "en": "Type", "fr": "Type" },
   "resistancesPanelDrSelectTypePlaceholder": { "en": "Select type...", "fr": "Choisir un type..." },
-  "resistancesPanelAddDrButton": { "en": "Add DR", "fr": "Ajouter RD" },
+  "resistancesPanelAddDrButton": { "en": "Add Damage Reduction", "fr": "Ajouter Réduction des Dégâts" },
   "resistancesPanelNoDrEntries": { "en": "No Damage Reduction entries.", "fr": "Aucune entrée de réduction des dégâts." },
   "toastInvalidDrValueTitle": { "en": "Invalid DR Value", "fr": "Valeur de RD invalide" },
   "toastInvalidDrValueDesc": { "en": "Damage Reduction value must be greater than 0.", "fr": "La valeur de la réduction des dégâts doit être supérieure à 0." },
@@ -36,6 +35,6 @@
   "drExceptedByTypeDesc": { "en": "Reduces damage from all sources by <badge>{value}</badge>, except for <badge>{typeLabel}</badge> damage.", "fr": "Réduit les dégâts de toutes sources de <badge>{value}</badge>, sauf pour les dégâts de type <badge>{typeLabel}</badge>." },
   "resistancesPanelLoading": { "en": "Loading resistance details...", "fr": "Chargement des détails de résistance..." },
   "infoDialogItemBonusLabel": { "en": "Item Bonus", "fr": "Bonus d'Objet" },
-  "infoDialogTotalResistanceLabel": { "en": "Total Resistance", "fr": "Résistance Totale" }
+  "infoDialogTotalResistanceLabel": { "en": "Total Resistance", "fr": "Résistance Totale" },
+  "infoDialogFromFeatsAndItems": { "en": "is calculated from active feats and equipped items.", "fr": "est calculé à partir des dons actifs et des objets équipés." }
 }
-    
