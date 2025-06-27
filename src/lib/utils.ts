@@ -3,6 +3,7 @@ import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import React from 'react';
 import { Badge } from '@/components/ui/badge';
+import { textStyleInlineBadge } from "@/config/layout";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -70,13 +71,13 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       const badgeChildNodes = parseAndRenderUIString(badgeContentWithNbsp, dataContext);
       
       elements.push(
-        <Badge key={`${match.index}-${elements.length}-badge-${Math.random().toString(36).substring(7)}`} variant={isOutline ? "outline" : "default"} className="whitespace-nowrap">
+        <Badge key={`${match.index}-${elements.length}-badge-${Math.random().toString(36).substring(7)}`} variant={isOutline ? "outline" : "default"} className={cn("whitespace-nowrap", textStyleInlineBadge)}>
           {badgeChildNodes}
         </Badge>
       );
     } else if (colorMatch) {
       const colorContentMatch = colorMatch.match(/<color accent>(.*?)<\/color>/);
-      const content = colorContentMatch ? colorContentMatch[1] : '';
+      const content = colorContentMatch ? contentMatch[1] : '';
       elements.push(
         <span key={`${match.index}-${elements.length}-color-${Math.random().toString(36).substring(7)}`} className="text-accent">
           {parseAndRenderUIString(content, dataContext)}
