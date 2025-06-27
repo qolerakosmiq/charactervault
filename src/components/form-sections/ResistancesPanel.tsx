@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useI18n } from '@/context/I18nProvider';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { cn } from '@/lib/utils';
+import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
@@ -158,21 +158,20 @@ const ResistancesPanelContent = React.memo(({
   const getDrRuleDescription = (dr: DamageReductionInstance): React.ReactNode => {
     const typeLabel = getDrTypeUiLabel(dr.type);
     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
-    const value = dr.value;
     const ruleLabel = ruleDef?.label || dr.rule;
     let descriptionKey: keyof typeof UI_STRINGS | undefined;
     if (dr.rule === 'bypassed-by-type') descriptionKey = dr.type === "none" ? 'drBypassedByNoneDesc' : 'drBypassedByTypeDesc';
     else if (dr.rule === 'versus-specific-type') descriptionKey = 'drVersusSpecificTypeDesc';
     else if (dr.rule === 'excepted-by-type') descriptionKey = 'drExceptedByTypeDesc';
+
     if (descriptionKey && UI_STRINGS[descriptionKey]) {
         const template = UI_STRINGS[descriptionKey];
-        const parts = template.split(/({value}|{typeLabel})/g);
-        return parts.map((part, index) => {
-            if (part === "{value}") return <Badge key={`${dr.id}-val-${index}`} variant="outline">{value}</Badge>;
-            if (part === "{typeLabel}") return <Badge key={`${dr.id}-type-${index}`} variant="outline">{typeLabel}</Badge>;
-            return part;
+        return parseAndRenderUIString(template, {
+          value: dr.value,
+          typeLabel: typeLabel
         });
     }
+
     return `${UI_STRINGS.resistancesPanelDrRuleLabel}: ${ruleLabel}`;
   };
 
@@ -315,7 +314,7 @@ const ResistancesPanelContent = React.memo(({
                   return (
                     <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
                       <div className="flex items-center justify-between w-full">
-                        <div className={cn("flex items-center flex-wrap", panelBadgeGroupGap)}><span className="font-semibold text-xl text-accent">{getDrPrimaryNotation(dr)}</span><Badge variant="outline">{ruleLabel}</Badge>{dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}</div>
+                        <div className={cn("flex items-center flex-wrap", panelBadgeGroupGap)}><span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span><Badge variant="outline">{ruleLabel}</Badge>{dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}</div>
                         {!dr.isGranted && (<Button type="button" variant="ghost" size="icon-xs" className="text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)} disabled={panelIsLocked}><Trash2 /></Button>)}
                       </div>
                       <div className="text-sm text-muted-foreground w-full">{getDrRuleDescription(dr)}</div>
@@ -339,7 +338,9 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     if (!translations) return null;
     return (
       <p className={textStyleDescription}>
-        {getLocalizedString(translations.UI_STRINGS.infoDialogItemBonusLabel, 'en')} {translations.UI_STRINGS.infoDialogFromFeatsAndItems || "is calculated from active feats and equipped items."}
+        {parseAndRenderUIString(translations.UI_STRINGS.resistancesPanelInfoNote, {
+          badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+        })}
       </p>
     )
   }, [translations]);

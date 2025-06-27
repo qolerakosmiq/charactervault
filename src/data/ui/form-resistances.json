@@ -11,6 +11,7 @@
   "resistancesPanelDrSelectTypePlaceholder": { "en": "Select type...", "fr": "Choisir un type..." },
   "resistancesPanelAddDrButton": { "en": "Add Damage Reduction", "fr": "Ajouter Réduction des Dégâts" },
   "resistancesPanelNoDrEntries": { "en": "No Damage Reduction entries.", "fr": "Aucune entrée de réduction des dégâts." },
+  "resistancesPanelInfoNote": { "en": "<b>Note:</b> The <badge outline>Item Bonus</badge> is calculated from active feats and equipped items.", "fr": "<b>Note :</b> Le <badge outline>Bonus d'Objet</badge> est calculé à partir des dons actifs et des objets équipés." },
   "toastInvalidDrValueTitle": { "en": "Invalid DR Value", "fr": "Valeur de RD invalide" },
   "toastInvalidDrValueDesc": { "en": "Damage Reduction value must be greater than 0.", "fr": "La valeur de la réduction des dégâts doit être supérieure à 0." },
   "toastDrTypeMissingTitle": { "en": "DR Type Missing", "fr": "Type de RD manquant" },
@@ -34,7 +35,5 @@
   "drVersusSpecificTypeDesc": { "en": "Reduces damage from <badge>{typeLabel}</badge> sources by <badge>{value}</badge>.", "fr": "Réduit les dégâts des sources de type <badge>{typeLabel}</badge> de <badge>{value}</badge>." },
   "drExceptedByTypeDesc": { "en": "Reduces damage from all sources by <badge>{value}</badge>, except for <badge>{typeLabel}</badge> damage.", "fr": "Réduit les dégâts de toutes sources de <badge>{value}</badge>, sauf pour les dégâts de type <badge>{typeLabel}</badge>." },
   "resistancesPanelLoading": { "en": "Loading resistance details...", "fr": "Chargement des détails de résistance..." },
-  "infoDialogItemBonusLabel": { "en": "Item Bonus", "fr": "Bonus d'Objet" },
-  "infoDialogTotalResistanceLabel": { "en": "Total Resistance", "fr": "Résistance Totale" },
-  "infoDialogFromFeatsAndItems": { "en": "is calculated from active feats and equipped items.", "fr": "est calculé à partir des dons actifs et des objets équipés." }
+  "infoDialogTotalResistanceLabel": { "en": "Total Resistance", "fr": "Résistance Totale" }
 }
