@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type {
   FeatDefinitionJsonData, CharacterFeatInstance, Character, AbilityScores, Skill as SkillType,
   SkillDefinitionJsonData, FeatTypeString, AvailableFeatSlotsBreakdown, AggregatedFeatEffects, ComboboxOption, NoteEffectDetail, LocalizedString, DndClassOption,
@@ -72,63 +72,192 @@ export interface SkillsFormSectionProps {
   aggregatedFeatEffects: AggFeatsType | null;
 }
 
-
-// Helper component for a single skill row to encapsulate its debounced field
-const DebouncedSkillRankInput: React.FC<{
+const DebouncedSkillInput = React.memo(({
+  skillId,
+  initialValue,
+  onDebouncedChange,
+  step,
+  max,
+  min = 0,
+  disabled = false,
+  inputClassName
+}: {
   skillId: string;
   initialValue: number;
-  onDebouncedChange: (newRank: number) => void;
-  currentStepForInput: number;
-  maxRanksValue: number;
+  onDebouncedChange: (newValue: number) => void;
+  step: number;
+  max: number;
+  min?: number;
   disabled?: boolean;
-}> = React.memo(({ skillId, initialValue, onDebouncedChange, currentStepForInput, maxRanksValue, disabled }) => {
-  const [localRank, setLocalRank] = useDebouncedFormField(
+  inputClassName?: string;
+}) => {
+  const [localValue, setLocalValue] = useDebouncedFormField(
     initialValue,
     onDebouncedChange,
     debounceDelayFormInput
   );
   return (
     <NumberSpinnerInput
-      id={`skill_ranks_${skillId}`}
-      value={localRank}
-      onChange={setLocalRank}
-      min={0}
-      max={maxRanksValue}
-      step={currentStepForInput}
-      inputClassName="w-14 h-7 text-sm"
+      id={`skill_input_${skillId}`}
+      value={localValue}
+      onChange={setLocalValue}
+      min={min}
+      max={max}
+      step={step}
+      inputClassName={cn("w-14 h-7 text-sm", inputClassName)}
       buttonSize="sm"
       buttonClassName="h-7 w-7"
       disabled={disabled}
     />
   );
 });
-DebouncedSkillRankInput.displayName = 'DebouncedSkillRankInput';
+DebouncedSkillInput.displayName = 'DebouncedSkillInput';
 
-const DebouncedSkillMiscModInput: React.FC<{
-  skillId: string;
-  initialValue: number;
-  onDebouncedChange: (newMiscMod: number) => void;
-  disabled?: boolean;
-}> = React.memo(({ skillId, initialValue, onDebouncedChange, disabled }) => {
-  const [localMiscMod, setLocalMiscMod] = useDebouncedFormField(
-    initialValue,
-    onDebouncedChange,
-    debounceDelayFormInput
-  );
+
+const SkillRow = React.memo(({
+  skillInstance,
+  allCombinedSkillDefinitions,
+  actualAbilityScores,
+  characterLevel,
+  skillPointIntelligenceModifier,
+  aggregatedFeatEffects,
+  characterRace,
+  characterSize,
+  allPredefinedSkillDefinitions,
+  allCustomSkillDefinitions,
+  onSkillChange,
+  handleTriggerSkillInfoDialog,
+  handleTriggerSkillRollDialog,
+  panelIsLocked,
+  translations
+}: {
+  skillInstance: SkillDisplayInfo;
+  allCombinedSkillDefinitions: SkillDisplayInfo[];
+  actualAbilityScores: AbilityScores;
+  characterLevel: number;
+  skillPointIntelligenceModifier: number;
+  aggregatedFeatEffects: AggFeatsType;
+  characterRace: DndRaceId;
+  characterSize: CharacterSize;
+  allPredefinedSkillDefinitions: readonly SkillDefinitionJsonData[];
+  allCustomSkillDefinitions: readonly CustomSkillDefinition[];
+  onSkillChange: (skillId: string, ranks: number, miscModifier: number, isClassSkill?: boolean) => void;
+  handleTriggerSkillInfoDialog: (skillId: string) => void;
+  handleTriggerSkillRollDialog: (skillId: string) => void;
+  panelIsLocked: boolean;
+  translations: NonNullable<ReturnType<typeof useI18n>['translations']>;
+}) => {
+
+  const { ABILITY_LABELS, SKILL_DEFINITIONS, SKILL_SYNERGIES, DND_RACES, SIZES, UI_STRINGS } = translations;
+  const { id, ranks, miscModifier, isClassSkill, name, keyAbility, isCustom } = skillInstance;
+
+  const keyAbilityLabelInfo = ABILITY_LABELS.find(al => al.id === keyAbility);
+  const keyAbilityDisplay = keyAbility && keyAbility !== 'none' && keyAbilityLabelInfo ? keyAbilityLabelInfo.abbr : '';
+
+  const baseAbilityMod = (keyAbility && keyAbility !== 'none') ? getAbilityModifierByName(actualAbilityScores, keyAbility) : 0;
+  const synergyBonus = calculateTotalSynergyBonus(id, allCombinedSkillDefinitions, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
+  const featSkillBonus = aggregatedFeatEffects.skillBonuses[id] || 0;
+  const currentRacialBonus = calculateRacialSkillBonus(id, characterRace, DND_RACES, SKILL_DEFINITIONS);
+  const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(id, characterSize, SIZES);
+  
+  const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
+  const totalBonus = (ranks || 0) + baseAbilityMod + calculatedMiscModifier + (miscModifier || 0);
+  
+  const maxRanksValue = calculateMaxRanks(characterLevel, isClassSkill || false, skillPointIntelligenceModifier);
+  const skillCostDisplay = (keyAbility === 'none' || isClassSkill) ? 1 : 2;
+  const currentStepForInput = (keyAbility === 'none' || isClassSkill) ? 1 : 0.5;
+
+  const handleRankChange = React.useCallback((newRank: number) => {
+    onSkillChange(id, newRank, miscModifier || 0, isClassSkill);
+  }, [id, miscModifier, isClassSkill, onSkillChange]);
+
+  const handleMiscModChange = React.useCallback((newMiscMod: number) => {
+    onSkillChange(id, ranks || 0, newMiscMod, isClassSkill);
+  }, [id, ranks, isClassSkill, onSkillChange]);
+
+  const handleClassSkillChange = React.useCallback((checked: boolean) => {
+    onSkillChange(id, ranks || 0, miscModifier || 0, checked);
+  }, [id, ranks, miscModifier, onSkillChange]);
+
   return (
-    <NumberSpinnerInput
-      id={`skill_misc_${skillId}`}
-      value={localMiscMod}
-      onChange={setLocalMiscMod}
-      min={-20} max={20}
-      inputClassName="w-16 h-7 text-sm text-center"
-      buttonClassName="h-7 w-7"
-      buttonSize="sm"
-      disabled={disabled}
-    />
+    <div className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 transition-colors text-sm">
+      <div className="flex justify-center w-10">
+        <Checkbox
+          id={`skill_class_${id}`}
+          checked={isClassSkill}
+          onCheckedChange={handleClassSkillChange}
+          className="h-3.5 w-3.5"
+          disabled={panelIsLocked}
+        />
+      </div>
+      <div className="flex items-center">
+        <Label htmlFor={`skill_ranks_${id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
+          {name}
+          {isCustom && (<>{'\u00A0'}<Badge variant="outline">{UI_STRINGS.badgeCustomLabel}</Badge></>)}
+        </Label>
+      </div>
+      <span className="font-bold text-accent text-xl w-10 text-right pr-1">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
+      <div className="flex items-center justify-start w-14">
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 text-muted-foreground hover:text-foreground"
+          onClick={() => handleTriggerSkillInfoDialog(id)}
+          aria-label={UI_STRINGS.skillsTableTooltipInfoForSkill.replace("{skillName}", name)}
+          disabled={panelIsLocked}
+        >
+          <Info className="h-4 w-4" />
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          className="h-6 w-6 text-muted-foreground hover:text-primary"
+          onClick={() => handleTriggerSkillRollDialog(id)}
+          aria-label={UI_STRINGS.rollDialogSkillCheckAriaLabel.replace("{skillName}", name)}
+          disabled={panelIsLocked}
+        >
+          <Dices className="h-4 w-4" />
+        </Button>
+      </div>
+      <span className="text-sm text-muted-foreground text-center w-10">
+        {keyAbilityDisplay ? <Badge variant="outline" className="font-normal">{keyAbilityDisplay}</Badge> : ''}
+      </span>
+      <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
+      <div className="w-16 flex justify-center">
+        <DebouncedSkillInput
+          skillId={`misc-${id}`}
+          initialValue={miscModifier || 0}
+          onDebouncedChange={handleMiscModChange}
+          step={1}
+          min={-20}
+          max={20}
+          disabled={panelIsLocked}
+          inputClassName="w-12 text-center"
+        />
+      </div>
+      <div className="w-32 flex justify-center">
+        <DebouncedSkillInput
+          skillId={id}
+          initialValue={ranks || 0}
+          onDebouncedChange={handleRankChange}
+          step={currentStepForInput}
+          max={maxRanksValue}
+          disabled={panelIsLocked}
+        />
+      </div>
+      <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
+      <span className={cn(
+        "text-sm text-center w-10",
+        (ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
+      )}>
+        {maxRanksValue}
+      </span>
+    </div>
   );
 });
-DebouncedSkillMiscModInput.displayName = 'DebouncedSkillMiscModInput';
+SkillRow.displayName = 'SkillRow';
 
 
 const SkillsFormSectionComponent = ({
@@ -309,7 +438,7 @@ const SkillsFormSectionComponent = ({
   if (translationsLoading || !translations || !aggregatedFeatEffects) {
     return null;
   }
-  const { DND_CLASSES, DND_RACES, SKILL_DEFINITIONS, CLASS_SKILLS, SKILL_SYNERGIES, SIZES, UI_STRINGS, ABILITY_LABELS } = translations;
+  const { UI_STRINGS } = translations;
   
   const racialBonusPartForContext = skillPointCalcData.racialBonusSkillPoints !== 0
     ? UI_STRINGS.skillPointRacialBonusPartFormat
@@ -388,111 +517,26 @@ const SkillsFormSectionComponent = ({
                 <span className="text-center w-10">{UI_STRINGS.skillsTableMaxHeader}</span>
               </div>
 
-              {validSkillsForDisplay.map(skillInstanceProp => {
-                const skillDef = allCombinedSkillDefinitions.find(def => def.id === skillInstanceProp.id);
-                if (!skillDef) throw new Error(`Skill definition for ID '${skillInstanceProp.id}' not found in allCombinedSkillDefinitions.`);
-
-                const keyAbility = skillDef.keyAbility;
-                const abilityLabelInfo = ABILITY_LABELS.find(al => al.id === keyAbility);
-
-                let keyAbilityDisplay = '';
-                if (keyAbility && keyAbility !== 'none' && abilityLabelInfo) {
-                  keyAbilityDisplay = abilityLabelInfo.abbr;
-                } else if (keyAbility === 'none') {
-                  keyAbilityDisplay = ''; 
-                }
-
-                const baseAbilityMod = (keyAbility && keyAbility !== 'none')
-                  ? getAbilityModifierByName(actualAbilityScores, keyAbility)
-                  : 0;
-
-                const synergyBonus = calculateTotalSynergyBonus(skillDef.id, characterSkillInstances, SKILL_DEFINITIONS, SKILL_SYNERGIES, allCustomSkillDefinitions);
-                const featSkillBonus = aggregatedFeatEffects.skillBonuses[skillDef.id] || 0;
-                const currentRacialBonus = calculateRacialSkillBonus(skillDef.id, characterRace, DND_RACES, SKILL_DEFINITIONS);
-                const currentSizeSpecificBonus = calculateSizeSpecificSkillBonus(skillDef.id, characterSize, SIZES);
-                const calculatedMiscModifier = synergyBonus + featSkillBonus + currentRacialBonus + currentSizeSpecificBonus;
-                const committedRankValue = skillInstanceProp.ranks || 0;
-                const totalBonus = committedRankValue + baseAbilityMod + calculatedMiscModifier + (skillInstanceProp.miscModifier || 0);
-                const maxRanksValue = calculateMaxRanks(characterLevel, skillInstanceProp.isClassSkill || false, skillPointCalcData.intelligenceModifier);
-                const skillCostDisplay = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 2;
-                const currentStepForInput = (skillDef.keyAbility === 'none' || skillInstanceProp.isClassSkill) ? 1 : 0.5;
-
-                return (
-                  <div key={skillInstanceProp.id} className="grid grid-cols-[auto_1fr_auto_auto_auto_auto_auto_auto_auto_auto] gap-x-2 px-1 py-1.5 items-center border-b border-border/50 transition-colors text-sm">
-                    <div className="flex justify-center w-10">
-                      <Checkbox
-                        id={`skill_class_${skillInstanceProp.id}`}
-                        checked={skillInstanceProp.isClassSkill}
-                        onCheckedChange={(checked) => {
-                            onSkillChange(skillInstanceProp.id, skillInstanceProp.ranks || 0, skillInstanceProp.miscModifier || 0, !!checked);
-                        }}
-                        className="h-3.5 w-3.5"
-                        disabled={panelIsLocked}
-                      />
-                    </div>
-                    <div className="flex items-center">
-                        <Label htmlFor={`skill_ranks_${skillInstanceProp.id}`} className="text-sm pr-1 leading-tight flex-grow flex items-center">
-                            {skillDef.name}
-                            {skillDef.isCustom && (<>{'\u00A0'}<Badge variant="outline">{UI_STRINGS.badgeCustomLabel}</Badge></>)}
-                        </Label>
-                    </div>
-                    <span className="font-bold text-accent text-xl w-10 text-right pr-1">{totalBonus >= 0 ? '+' : ''}{totalBonus}</span>
-                    <div className="flex items-center justify-start w-14">
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-muted-foreground hover:text-foreground"
-                        onClick={() => handleTriggerSkillInfoDialog(skillInstanceProp.id)}
-                        aria-label={UI_STRINGS.skillsTableTooltipInfoForSkill.replace("{skillName}", skillDef.name)}
-                        disabled={panelIsLocked}
-                      >
-                        <Info className="h-4 w-4" />
-                      </Button>
-                       <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          className="h-6 w-6 text-muted-foreground hover:text-primary"
-                          onClick={() => handleTriggerSkillRollDialog(skillInstanceProp.id)}
-                          aria-label={UI_STRINGS.rollDialogSkillCheckAriaLabel.replace("{skillName}", skillDef.name)}
-                          disabled={panelIsLocked}
-                        >
-                          <Dices className="h-4 w-4" />
-                      </Button>
-                    </div>
-                    <span className="text-sm text-muted-foreground text-center w-10">
-                      {keyAbilityDisplay ? <Badge variant="outline" className="font-normal">{keyAbilityDisplay}</Badge> : ''}
-                    </span>
-                    <span className="text-sm text-center w-12">{baseAbilityMod >= 0 ? '+' : ''}{baseAbilityMod}</span>
-                    <div className="w-16 flex justify-center">
-                        <DebouncedSkillMiscModInput
-                          skillId={skillInstanceProp.id}
-                          initialValue={skillInstanceProp.miscModifier || 0}
-                          onDebouncedChange={(newMiscVal) => onSkillChange(skillInstanceProp.id, committedRankValue, newMiscVal, skillInstanceProp.isClassSkill)}
-                          disabled={panelIsLocked}
-                        />
-                    </div>
-                    <div className="w-32 flex justify-center">
-                      <DebouncedSkillRankInput
-                        skillId={skillInstanceProp.id}
-                        initialValue={committedRankValue}
-                        currentStepForInput={currentStepForInput}
-                        maxRanksValue={maxRanksValue}
-                        onDebouncedChange={(newRank) => onSkillChange(skillInstanceProp.id, newRank, skillInstanceProp.miscModifier || 0, skillInstanceProp.isClassSkill)}
-                        disabled={panelIsLocked}
-                      />
-                    </div>
-                    <span className="text-sm text-muted-foreground text-center w-12">{skillCostDisplay}</span>
-                    <span className={cn(
-                        "text-sm text-center w-10",
-                        (skillInstanceProp.ranks || 0) > maxRanksValue ? "text-destructive font-bold" : "text-muted-foreground"
-                      )}>
-                        {maxRanksValue}
-                    </span>
-                  </div>
-                );
-              })}
+              {validSkillsForDisplay.map(skillInstance => (
+                <SkillRow
+                  key={skillInstance.id}
+                  skillInstance={skillInstance}
+                  allCombinedSkillDefinitions={allCombinedSkillDefinitions}
+                  actualAbilityScores={actualAbilityScores}
+                  characterLevel={characterLevel}
+                  skillPointIntelligenceModifier={skillPointCalcData.intelligenceModifier}
+                  aggregatedFeatEffects={aggregatedFeatEffects}
+                  characterRace={characterRace}
+                  characterSize={characterSize}
+                  allPredefinedSkillDefinitions={allPredefinedSkillDefinitions}
+                  allCustomSkillDefinitions={allCustomSkillDefinitions}
+                  onSkillChange={onSkillChange}
+                  handleTriggerSkillInfoDialog={handleTriggerSkillInfoDialog}
+                  handleTriggerSkillRollDialog={handleTriggerSkillRollDialog}
+                  panelIsLocked={panelIsLocked}
+                  translations={translations}
+                />
+              ))}
             </div>
           </div>
         </CardContent>
@@ -503,3 +547,9 @@ const SkillsFormSectionComponent = ({
 SkillsFormSectionComponent.displayName = 'SkillsFormSectionComponent';
 
 export const SkillsFormSection = React.memo(SkillsFormSectionComponent);
+
+    
+    
+    
+
+    
