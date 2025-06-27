@@ -4,7 +4,7 @@
 import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Loader2, Lock, Unlock } from 'lucide-react';
+import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Lock, Unlock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
@@ -13,7 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useI18n } from '@/context/I18nProvider';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
@@ -209,8 +208,16 @@ const ResistancesPanelContent = React.memo(({
                 </div>
                 <div className="w-full flex flex-col items-center space-y-1">
                   <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground">{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
-                  <div className={cn("flex justify-center w-full", inputWidthStandard)}>
-                    <Input id={`${fieldPrefix}-${field}-customMod`} type="number" value={localCustomMod} onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)} min={-50} className={cn(textStyleInput)} disabled={panelIsLocked} />
+                  <div className={cn("flex justify-center", inputWidthStandard)}>
+                    <Input
+                      id={`${fieldPrefix}-${field}-customMod`}
+                      type="number"
+                      value={localCustomMod}
+                      onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
+                      min={-50}
+                      className={cn(textStyleInput)}
+                      disabled={panelIsLocked}
+                    />
                   </div>
                 </div>
               </div>
@@ -241,8 +248,17 @@ const ResistancesPanelContent = React.memo(({
                 </div>
                 <div className="w-full flex flex-col items-center space-y-1">
                   <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground">{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
-                  <div className={cn("flex justify-center w-full", inputWidthStandard)}>
-                    <Input id={`${fieldPrefix}-${field}-customMod`} type="number" value={localCustomMod} onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)} min={isFortification ? 0 : -50} max={isFortification ? 100 : undefined} className={cn(textStyleInput)} disabled={panelIsLocked} />
+                  <div className={cn("flex justify-center", inputWidthStandard)}>
+                    <Input
+                      id={`${fieldPrefix}-${field}-customMod`}
+                      type="number"
+                      value={localCustomMod}
+                      onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
+                      min={isFortification ? 0 : -50}
+                      max={isFortification ? 100 : undefined}
+                      className={cn(textStyleInput)}
+                      disabled={panelIsLocked}
+                    />
                   </div>
                 </div>
               </div>
@@ -304,7 +320,9 @@ ResistancesPanelContent.displayName = 'ResistancesPanelContent';
 
 const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onResistanceChange, onDamageReductionChange, onOpenResistanceInfoDialog }: ResistancesPanelProps) => {
   const { translations, isLoading: translationsLoading } = useI18n();
+
   if (translationsLoading || !translations) return null;
+
   return (
     <LockablePanelWrapper
       title={translations.UI_STRINGS.resistancesPanelTitle}
