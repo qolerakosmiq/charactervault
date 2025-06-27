@@ -356,9 +356,6 @@ const ResistancesPanelContent = React.memo(({
                 </div>
               )}
                {panelIsLocked && characterData.damageReduction.length === 0 && null}
-               {!panelIsLocked && characterData.damageReduction.length === 0 && (
-                  <p className="text-sm text-muted-foreground md:col-span-2">{UI_STRINGS.resistancesPanelNoDrEntries}</p>
-               )}
             </div>
           </div>
         )}
