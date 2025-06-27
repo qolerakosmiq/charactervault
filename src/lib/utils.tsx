@@ -77,7 +77,7 @@ export function parseAndRenderUIString(uiString: string, dataContext?: Record<st
       );
     } else if (colorMatch) {
       const colorContentMatch = colorMatch.match(/<color accent>(.*?)<\/color>/);
-      const content = colorContentMatch ? contentMatch[1] : '';
+      const content = colorContentMatch ? colorContentMatch[1] : '';
       elements.push(
         <span key={`${match.index}-${elements.length}-color-${Math.random().toString(36).substring(7)}`} className="text-accent">
           {parseAndRenderUIString(content, dataContext)}
