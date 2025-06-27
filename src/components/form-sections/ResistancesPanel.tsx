@@ -25,7 +25,6 @@ import {
   textStyleInput,
   inputWidthStandard,
   panelFieldHorizontalGap,
-  panelBadgeGroupGap,
   textStyleValueBig,
   textStyleLabel,
   textStyleCardTitle,
@@ -98,7 +97,7 @@ const ResistanceDisplayCard = React.memo(({
         <Icon className="h-5 w-5 text-muted-foreground" />
         <span className={cn(textStyleCardTitle)}>{label} {unit && <span className="text-sm text-muted-foreground font-normal">({unit})</span>}</span>
       </div>
-      <div className={cn("flex items-center justify-center", panelBadgeGroupGap)}>
+      <div className={cn("flex items-center justify-center")}>
         <p className={cn(textStyleValueBig)}>{totalValue}</p>
         <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => onOpenInfoDialog(field)}><Info /></Button>
       </div>
@@ -342,7 +341,7 @@ const ResistancesPanelContent = React.memo(({
                     return (
                       <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
                         <div className="flex items-center justify-between w-full">
-                          <div className={cn("flex items-center flex-wrap", panelBadgeGroupGap)}>
+                          <div className={cn("flex items-center flex-wrap", panelGridGap)}>
                             <span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span>
                             <Badge variant="outline">{ruleLabel}</Badge>
                             {dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}
@@ -355,7 +354,6 @@ const ResistancesPanelContent = React.memo(({
                   })}
                 </div>
               )}
-               {panelIsLocked && characterData.damageReduction.length === 0 && null}
             </div>
           </div>
         )}
