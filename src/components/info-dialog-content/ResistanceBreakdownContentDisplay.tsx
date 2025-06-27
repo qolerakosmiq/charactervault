@@ -26,10 +26,10 @@ export const ResistanceBreakdownContentDisplay = ({
           <span className="text-foreground">{uiStrings.infoDialogBaseValueLabel || "Base Value"}</span>
           <span className="font-bold">{resistanceBreakdown.base}</span>
         </div>
-        {resistanceBreakdown.itemBonus !== 0 && (
+        {resistanceBreakdown.miscBonus !== 0 && (
            <div className="flex justify-between text-sm">
-            <span className="text-foreground">{uiStrings.infoDialogItemBonusLabel || "Item Bonus"}</span>
-            {renderModifierValue(resistanceBreakdown.itemBonus)}
+            <span className="text-foreground">{uiStrings.infoDialogMiscModifierLabel || "Misc Modifier"}</span>
+            {renderModifierValue(resistanceBreakdown.miscBonus)}
           </div>
         )}
         <div className="flex justify-between text-sm">
@@ -45,5 +45,3 @@ export const ResistanceBreakdownContentDisplay = ({
     </div>
   );
 };
-
-    

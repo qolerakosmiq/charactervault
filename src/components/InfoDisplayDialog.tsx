@@ -81,7 +81,7 @@ export interface ResistanceBreakdownDetails {
   name: string;
   base: number;
   customMod: number;
-  itemBonus: number;
+  miscBonus: number;
   total: number;
 }
 
@@ -500,7 +500,7 @@ export function InfoDisplayDialog({
         const resistanceValue = character[contentType.resistanceField] as ResistanceValue;
         const resistanceFieldLabelKey = `resistanceLabel${contentType.resistanceField.charAt(0).toUpperCase() + contentType.resistanceField.slice(1).replace('Resistance', '')}` as keyof typeof UI_STRINGS;
         const resistanceLabel = UI_STRINGS[resistanceFieldLabelKey] || contentType.resistanceField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(' Resistance', '');
-        const itemBonus = aggregatedFeatEffectsProp.resistanceBonuses.find(rb => rb.resistanceTo === contentType.resistanceField && rb.isActive)?.value || 0;
+        const miscBonus = aggregatedFeatEffectsProp.resistanceBonuses.find(rb => rb.resistanceTo === contentType.resistanceField && rb.isActive)?.value || 0;
 
         data = {
           title: (UI_STRINGS.infoDialogTitleResistanceBreakdown || "Resistance Breakdown ({resistanceName})").replace("{resistanceName}", resistanceLabel),
@@ -509,8 +509,8 @@ export function InfoDisplayDialog({
                 name: resistanceLabel,
                 base: resistanceValue.base || 0,
                 customMod: resistanceValue.customMod || 0,
-                itemBonus: itemBonus,
-                total: (resistanceValue.base || 0) + (resistanceValue.customMod || 0) + itemBonus,
+                miscBonus: miscBonus,
+                total: (resistanceValue.base || 0) + (resistanceValue.customMod || 0) + miscBonus,
             },
             uiStrings: UI_STRINGS,
           })],
