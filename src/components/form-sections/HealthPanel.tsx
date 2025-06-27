@@ -86,7 +86,7 @@ const HealthPanelContent = React.memo(({
     if (calculatedMaxHp > 0 && localHp > calculatedMaxHp) {
         setLocalHp(calculatedMaxHp);
     }
-  }, [calculatedMaxHp, localHp]);
+  }, [calculatedMaxHp, localHp, setLocalHp]);
 
   const missingHp = React.useMemo(() => Math.max(0, calculatedMaxHp - localHp), [calculatedMaxHp, localHp]);
 
@@ -367,7 +367,6 @@ const HealthPanelComponent = ({
       title={translations.UI_STRINGS.healthPanelTitle}
       description={translations.UI_STRINGS.healthPanelDescription}
       icon={Heart}
-      headerClassName="bg-muted/20"
       initialLockedState={false}
       cardContentClassName={cn("flex flex-col", panelGridGap)}
       footer={footerContent}

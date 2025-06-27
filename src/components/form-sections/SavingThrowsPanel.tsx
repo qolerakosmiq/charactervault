@@ -323,7 +323,6 @@ const SavingThrowsPanelComponent = ({
       title={UI_STRINGS.savingThrowsPanelTitle}
       description={UI_STRINGS.savingThrowsPanelDescription}
       icon={Zap}
-      headerClassName="bg-muted/20"
       initialLockedState={false}
       footer={footerContent}
     >

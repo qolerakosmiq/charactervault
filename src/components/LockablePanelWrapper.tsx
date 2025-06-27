@@ -18,7 +18,6 @@ interface LockablePanelWrapperProps {
   onLockChange?: (isLocked: boolean) => void;
   cardClassName?: string;
   cardContentClassName?: string;
-  headerClassName?: string;
   headerActions?: ((isPanelLocked: boolean) => React.ReactNode) | React.ReactNode;
   footer?: React.ReactNode;
 }
@@ -32,7 +31,6 @@ const LockablePanelWrapperComponent = ({
   onLockChange,
   cardClassName,
   cardContentClassName,
-  headerClassName,
   headerActions,
   footer,
 }: LockablePanelWrapperProps) => {
@@ -56,7 +54,7 @@ const LockablePanelWrapperComponent = ({
 
   return (
     <Card className={cardClassName}>
-      <CardHeader className={cn("relative", panelHeaderPadding, headerClassName)}>
+      <CardHeader className={cn("relative bg-muted/20", panelHeaderPadding)}>
         <div className="flex items-start pr-10">
           {Icon && <Icon className="text-primary h-7 w-7 mr-3 shrink-0" />}
           <div>

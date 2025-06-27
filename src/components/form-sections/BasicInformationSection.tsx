@@ -364,7 +364,7 @@ const BasicInformationSectionContent = React.memo(({
           }
           if (newAlignmentToSet && newAlignmentToSet !== localAlignment) setLocalAlignment(newAlignmentToSet);
       }
-    }, [localClassName, selectedClassInfo, PREFERRED_DEFAULT_ALIGNMENT_IDS, ALIGNMENTS, localAlignment]);
+    }, [localClassName, selectedClassInfo, PREFERRED_DEFAULT_ALIGNMENT_IDS, ALIGNMENTS, localAlignment, setLocalAlignment]);
   
     React.useEffect(() => {
       if (localDeity === "" || !DND_DEITIES) return;
@@ -378,7 +378,7 @@ const BasicInformationSectionContent = React.memo(({
         if (!isAlignmentValidForRequirement(currentDeityInfo.alignment, currentClassInfo.deityAlignmentRestriction)) deityIsValid = false;
       }
       if (!deityIsValid) setLocalDeity("");
-    }, [localAlignment, localClassName, localDeity, DND_DEITIES, DND_CLASSES]);
+    }, [localAlignment, localClassName, localDeity, DND_DEITIES, DND_CLASSES, setLocalDeity]);
     
     const disabledStates = React.useMemo(() => {
       const states: Record<string, boolean> = {};
@@ -517,7 +517,7 @@ const BasicInformationSectionContent = React.memo(({
               <div className="flex-grow">
                 <Select name="alignment" value={localAlignment === "" ? UI_EMPTY_SELECTION_VALUE : localAlignment} onValueChange={(value) => setLocalAlignment(value === UI_EMPTY_SELECTION_VALUE ? "" : value as CharacterAlignment)} disabled={panelIsLocked} >
                   <SelectTrigger id="alignment"> <SelectValue /> </SelectTrigger>
-                  <SelectContent> {ALIGNMENTS.filter(a => selectedClassInfo?.alignmentRestriction ? isAlignmentValidForRequirement(a.id, selectedClassInfo.alignmentRestriction) : true).map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
+                  <SelectContent> {ALIGNMENTS.filter(a => selectedClassInfo?.alignmentRestriction ? isAlignmentValidForRequirement(a.id as CharacterAlignment, selectedClassInfo.alignmentRestriction) : true).map(align => ( <SelectItem key={align.id} value={align.id === "" ? UI_EMPTY_SELECTION_VALUE : align.id}>{align.label}</SelectItem> ))} </SelectContent>
                 </Select>
               </div>
               <Button type="button" variant="ghost" size="icon-sm" onClick={onOpenAlignmentInfoDialog} disabled={panelIsLocked && !localAlignment} className="shrink-0"> <Info /> </Button>
@@ -717,7 +717,6 @@ const BasicInformationSectionComponent = ({
       title={UI_STRINGS.basicInformationPanelTitle}
       description={UI_STRINGS.basicInformationPanelDescription}
       icon={ScrollText}
-      headerClassName="bg-muted/20"
       initialLockedState={false}
     >
       {({ isLocked: panelIsLocked }) => (

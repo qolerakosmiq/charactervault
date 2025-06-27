@@ -93,8 +93,6 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
       title={UI_STRINGS.experiencePanelTitle}
       description={UI_STRINGS.experiencePanelDescription}
       icon={Award}
-      headerClassName="bg-muted/20"
-      cardContentClassName={cn("flex flex-col", panelGridGap)}
       initialLockedState={false}
     >
       {({ isLocked: panelIsLocked }) => (
@@ -164,4 +162,3 @@ const ExperiencePanelComponent: React.FC<ExperiencePanelProps> = ({
 };
 ExperiencePanelComponent.displayName = "ExperiencePanelComponent";
 export const ExperiencePanel = React.memo(ExperiencePanelComponent);
-

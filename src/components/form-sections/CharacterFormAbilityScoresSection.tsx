@@ -292,7 +292,6 @@ const CharacterFormAbilityScoresSectionComponent = ({
         title={translations.UI_STRINGS.abilityScoresPanelTitle}
         description={translations.UI_STRINGS.abilityScoresPanelDescription}
         icon={Dices}
-        headerClassName="bg-muted/20"
         initialLockedState={false}
         footer={
           <p className={textStyleDescription}>

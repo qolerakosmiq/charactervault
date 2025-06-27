@@ -45,7 +45,7 @@ const ArmorClassPanelContent = React.memo(({
   onCharacterUpdate,
   onOpenAcBreakdownDialog,
   translations,
-}: ArmorClassPanelProps & { panelIsLocked: boolean, translations: ReturnType<typeof useI18n>['translations']}) => {
+}: ArmorClassPanelProps & { panelIsLocked: boolean, translations: NonNullable<ReturnType<typeof useI18n>['translations']>}) => {
 
   const handleUpdateCallback = React.useCallback((fieldName: keyof Pick<Character, 'acMiscModifier'>) => (value: number) => {
     if (onCharacterUpdate) {
@@ -252,7 +252,6 @@ const ArmorClassPanelComponent = ({ character, aggregatedFeatEffects, onCharacte
       title={UI_STRINGS.armorClassPanelTitle}
       description={UI_STRINGS.armorClassPanelDescription}
       icon={Shield}
-      headerClassName="bg-muted/20"
       initialLockedState={false}
       cardContentClassName={panelGridGap}
       footer={footerContent}
