@@ -7,7 +7,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Lock, Unlock } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Separator } from '@/components/ui/separator';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
@@ -285,20 +284,19 @@ const ResistancesPanelContent = React.memo(({
         <div className={cn("flex flex-col", panelGridGap)}>
           <h4 className={textStyleSectionSubheading}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
           <div className={cn("grid md:grid-cols-3", panelGridGap)}>
-            <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelFieldVerticalGap)}>
-              <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
-              <div className="flex flex-col gap-1">
+            <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
+              <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                 <Label htmlFor="form-dr-value" className="text-sm inline-block text-center">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
                 <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10")} disabled={panelIsLocked} />
               </div>
-              <div className="flex flex-col gap-1">
+              <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                 <Label htmlFor="form-dr-rule" className="text-sm inline-block text-left">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
                 <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)} disabled={panelIsLocked}>
                   <SelectTrigger id="form-dr-rule" className="h-9 text-sm"><SelectValue /></SelectTrigger>
                   <SelectContent>{DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (<SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>))}</SelectContent>
                 </Select>
               </div>
-              <div className="flex flex-col gap-1">
+              <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                 <Label htmlFor="form-dr-type" className="text-sm inline-block text-left">{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
                 <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)} disabled={panelIsLocked}>
                   <SelectTrigger id="form-dr-type" className="h-9 text-sm"><SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} /></SelectTrigger>
