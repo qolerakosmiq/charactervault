@@ -278,7 +278,7 @@ const ResistancesPanelContent = React.memo(({
 
   return (
     <>
-      <div className={cn("flex flex-col", panelGridGap)}>
+      <div className="flex flex-col">
         <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
         <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", panelGridGap)}>
           {energyResistancesFields.map(({ field, labelKey, Icon }) => {
@@ -304,7 +304,7 @@ const ResistancesPanelContent = React.memo(({
         </div>
       </div>
       
-      <div className={cn("flex flex-col", panelGridGap)}>
+      <div className="flex flex-col">
         <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
         <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3", panelGridGap)}>
           {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit }) => {
@@ -332,7 +332,7 @@ const ResistancesPanelContent = React.memo(({
       </div>
         
       {showDrSection && (
-        <div className={cn("flex flex-col", panelGridGap)}>
+        <div className="flex flex-col">
           <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
           <div className={cn("grid md:grid-cols-3", panelGridGap, !panelIsLocked && "grid-cols-1")}>
             {!panelIsLocked && (
@@ -365,7 +365,7 @@ const ResistancesPanelContent = React.memo(({
                   const ruleLabel = ruleDef?.label || dr.rule;
                   const currentLangCodeForDr = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
                   return (
-                    <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelGridGap)}>
+                    <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
                       <div className="flex items-center justify-between w-full">
                         <div className={cn("flex items-center flex-wrap", panelFieldHorizontalGap)}>
                           <span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span>
