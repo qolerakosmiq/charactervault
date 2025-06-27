@@ -20,9 +20,11 @@ export const textStyleSubLabel = "text-sm text-muted-foreground";
 export const textStyleBadgeSmall = 'text-xs';
 export const textStyleBadgeMedium = 'text-sm';
 export const textStyleSectionSubheading = 'text-lg font-semibold text-primary';
+export const textStylePanelSectionHeader = 'text-lg font-semibold text-primary';
 
 
 // Sizing
 export const inputWidthStandard = 'max-w-24'; // For spinners
 export const inputWidthFull = 'w-full'; // For standard inputs that should fill their container.
+
 

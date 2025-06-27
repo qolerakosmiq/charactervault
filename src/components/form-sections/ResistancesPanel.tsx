@@ -3,7 +3,7 @@
 
 import *as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character';
-import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2, Lock, Unlock } from 'lucide-react';
+import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,12 +24,12 @@ import {
   panelFieldVerticalGap,
   textStyleInput,
   inputWidthStandard,
-  textStyleSectionSubheading,
   panelFieldHorizontalGap,
   panelBadgeGroupGap,
   textStyleValueBig,
   textStyleLabel,
   textStyleCardTitle,
+  textStylePanelSectionHeader,
 } from '@/config/layout';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 
@@ -195,7 +195,7 @@ const ResistancesPanelContent = React.memo(({
   return (
     <div className={cn("flex flex-col", panelGridGap)}>
       <div className={cn("flex flex-col", panelGridGap)}>
-        <h4 className={cn(textStyleSectionSubheading)}>{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
+        <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
         <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", panelGridGap)}>
           {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
             const resistanceFromProp = characterData[field];
@@ -233,7 +233,7 @@ const ResistancesPanelContent = React.memo(({
       </div>
       
       <div className={cn("flex flex-col", panelGridGap)}>
-        <h4 className={cn(textStyleSectionSubheading)}>{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
+        <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
         <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3", panelGridGap)}>
           {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
             const resistanceFromProp = characterData[field];
@@ -283,7 +283,7 @@ const ResistancesPanelContent = React.memo(({
         </div>
         
         <div className={cn("flex flex-col", panelGridGap)}>
-          <h4 className={textStyleSectionSubheading}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
+          <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
           <div className={cn("grid md:grid-cols-3", panelGridGap)}>
             <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
               <div className={cn("flex flex-col", panelFieldVerticalGap)}>
