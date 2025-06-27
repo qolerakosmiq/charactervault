@@ -206,7 +206,7 @@ const ResistancesPanelContent = React.memo(({
                   <p className="text-xl font-bold text-accent text-center">{totalValue}</p>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleTriggerResistanceInfoDialog(field)}><Info className="h-4 w-4" /></Button>
                 </div>
-                <div className="w-full flex flex-col items-center space-y-1">
+                <div className="flex flex-col items-center space-y-1">
                   <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground">{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
                   <div className={cn("flex justify-center", inputWidthStandard)}>
                     <Input
@@ -246,7 +246,7 @@ const ResistancesPanelContent = React.memo(({
                   <p className="text-xl font-bold text-accent text-center">{totalValue}</p>
                   <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={() => handleTriggerResistanceInfoDialog(field)}><Info className="h-4 w-4" /></Button>
                 </div>
-                <div className="w-full flex flex-col items-center space-y-1">
+                <div className="flex flex-col items-center space-y-1">
                   <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className="text-xs text-muted-foreground">{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
                   <div className={cn("flex justify-center", inputWidthStandard)}>
                     <Input
