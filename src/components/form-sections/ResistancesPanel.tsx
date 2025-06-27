@@ -2,7 +2,7 @@
 'use client';
 
 import *as React from 'react';
-import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects } from '@/types/character';
+import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects, InfoDialogContentType } from '@/types/character';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -80,7 +80,7 @@ const ResistanceDisplayCard = React.memo(({
 
   const totalValue = (value.base || 0) + localCustomMod + featBonus;
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = React.useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     let numericValue = parseInt(e.target.value, 10);
     if (isNaN(numericValue)) {
         numericValue = 0;
@@ -89,7 +89,11 @@ const ResistanceDisplayCard = React.memo(({
         numericValue = Math.max(0, Math.min(100, numericValue));
     }
     setLocalCustomMod(numericValue);
-  };
+  }, [field, setLocalCustomMod]);
+
+  const handleOpenDialog = React.useCallback(() => {
+    onOpenInfoDialog(field);
+  }, [onOpenInfoDialog, field]);
   
   return (
     <div className={cn("border rounded-md bg-card flex flex-col items-center shadow-sm", panelContentPadding, panelFieldVerticalGap)}>
@@ -99,7 +103,7 @@ const ResistanceDisplayCard = React.memo(({
       </div>
       <div className={cn("flex items-center justify-center")}>
         <p className={cn(textStyleValueBig)}>{totalValue}</p>
-        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => onOpenInfoDialog(field)}><Info /></Button>
+        <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={handleOpenDialog}><Info /></Button>
       </div>
       {!isLocked && (
         <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
