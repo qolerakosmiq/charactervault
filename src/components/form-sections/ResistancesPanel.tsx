@@ -187,8 +187,8 @@ const ResistancesPanelContent = React.memo(({
 
   return (
     <div className={cn("flex flex-col", panelGridGap)}>
-      <div>
-        <h4 className={cn(textStyleSectionSubheading, "mb-2")}>{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
+      <div className='flex flex-col gap-2'>
+        <h4 className={cn(textStyleSectionSubheading)}>{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
         <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", panelGridGap)}>
           {energyResistancesFields.map(({ field, labelKey, Icon, fieldPrefix }) => {
             const resistanceFromProp = characterData[field];
@@ -197,7 +197,7 @@ const ResistancesPanelContent = React.memo(({
             const label = UI_STRINGS[labelKey];
             const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
             return (
-              <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center text-center shadow-sm", panelFieldVerticalGap, "gap-2")}>
+              <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center text-center shadow-sm", panelFieldVerticalGap)}>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                   <Icon className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm font-medium">{label}</span>
@@ -225,9 +225,9 @@ const ResistancesPanelContent = React.memo(({
           })}
         </div>
       </div>
-      <Separator />
-      <div>
-        <h4 className={cn(textStyleSectionSubheading, "mb-2")}>{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
+      
+      <div className='flex flex-col gap-2'>
+        <h4 className={cn(textStyleSectionSubheading)}>{UI_STRINGS.resistancesPanelOtherDefensesLabel}</h4>
         <div className={cn("grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3", panelGridGap)}>
           {otherNumericResistancesFields.map(({ field, labelKey, Icon, unit, fieldPrefix }) => {
             const resistanceFromProp = characterData[field];
@@ -237,7 +237,7 @@ const ResistancesPanelContent = React.memo(({
             const label = UI_STRINGS[labelKey];
             const [localCustomMod, setLocalCustomMod] = debouncedResistanceMods[field];
             return (
-              <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center text-center shadow-sm", panelFieldVerticalGap, "gap-2")}>
+              <div key={field} className={cn("p-3 border rounded-md bg-card flex flex-col items-center text-center shadow-sm", panelFieldVerticalGap)}>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                   <Icon className="h-5 w-5 text-muted-foreground" />
                   <span className="text-sm font-medium">{label} {unit && `(${unit})`}</span>
@@ -265,8 +265,8 @@ const ResistancesPanelContent = React.memo(({
             );
           })}
         </div>
-        <Separator />
-        <div className="flex flex-col gap-4">
+        
+        <div className={cn("flex flex-col", panelGridGap)}>
           <h4 className={textStyleSectionSubheading}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
           <div className={cn("grid md:grid-cols-3", panelGridGap)}>
             <div className={cn("md:col-span-1 border p-4 rounded-md flex flex-col", panelGridGap)}>
