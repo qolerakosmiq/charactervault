@@ -20,7 +20,7 @@ export const textStyleSubLabel = "text-sm text-muted-foreground";
 export const textStyleBadgeSmall = 'text-xs';
 export const textStyleBadgeMedium = 'text-sm';
 export const textStyleSectionSubheading = 'text-lg font-semibold text-primary';
-export const textStylePanelSectionHeader = 'text-lg font-semibold text-secondary';
+export const textStylePanelSectionHeader = 'text-lg font-semibold text-secondary-foreground';
 
 
 // Sizing
