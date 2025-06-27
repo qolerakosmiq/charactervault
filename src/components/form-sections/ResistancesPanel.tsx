@@ -365,9 +365,9 @@ const ResistancesPanelContent = React.memo(({
                   const ruleLabel = ruleDef?.label || dr.rule;
                   const currentLangCodeForDr = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
                   return (
-                    <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
+                    <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelGridGap)}>
                       <div className="flex items-center justify-between w-full">
-                        <div className={cn("flex items-center flex-wrap", panelGridGap)}>
+                        <div className={cn("flex items-center flex-wrap", panelFieldHorizontalGap)}>
                           <span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span>
                           <Badge variant="outline">{ruleLabel}</Badge>
                           {dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}
