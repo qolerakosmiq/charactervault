@@ -273,7 +273,7 @@ const ResistancesPanelContent = React.memo(({
               <Label className="text-md font-medium">{UI_STRINGS.resistancesPanelAddCustomDrLabel}</Label>
               <div className="w-full space-y-1">
                 <Label htmlFor="form-dr-value" className="text-sm inline-block w-full text-center">{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
-                <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} min={1} className={cn(textStyleInput, "h-10 w-full")} disabled={panelIsLocked} />
+                <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} min={1} className={cn(textStyleInput, "h-10")} disabled={panelIsLocked} />
               </div>
               <div className="space-y-1">
                 <Label htmlFor="form-dr-rule" className="text-sm inline-block w-full text-left">{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
