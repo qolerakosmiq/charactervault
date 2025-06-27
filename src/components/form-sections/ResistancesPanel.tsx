@@ -15,7 +15,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
-import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
+import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
 import {
   debounceDelayFormInput,
   textStyleDescription,
@@ -277,7 +277,7 @@ const ResistancesPanelContent = React.memo(({
   const showDrSection = !panelIsLocked || (characterData.damageReduction && characterData.damageReduction.length > 0);
 
   return (
-    <div className={cn("flex flex-col", panelGridGap)}>
+    <>
       <div className={cn("flex flex-col", panelGridGap)}>
         <h4 className={cn(textStylePanelSectionHeader)}>{UI_STRINGS.resistancesPanelEnergyResistancesLabel}</h4>
         <div className={cn("grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5", panelGridGap)}>
@@ -329,61 +329,61 @@ const ResistancesPanelContent = React.memo(({
             );
           })}
         </div>
-        
-        {showDrSection && (
-          <div className={cn("flex flex-col", panelGridGap)}>
-            <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
-            <div className={cn("grid md:grid-cols-3", panelGridGap, !panelIsLocked && "grid-cols-1")}>
-              {!panelIsLocked && (
-                <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
-                  <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                    <Label htmlFor="form-dr-value" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
-                    <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10", "text-left")} />
-                  </div>
-                  <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                    <Label htmlFor="form-dr-rule" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
-                    <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
-                      <SelectTrigger id="form-dr-rule" className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                      <SelectContent>{DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (<SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>))}</SelectContent>
-                    </Select>
-                  </div>
-                  <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                    <Label htmlFor="form-dr-type" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
-                    <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
-                      <SelectTrigger id="form-dr-type" className="h-9 text-sm"><SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} /></SelectTrigger>
-                      <SelectContent>{DAMAGE_REDUCTION_TYPES.map(option => (<SelectItem key={option.id} value={option.id} disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}>{option.label}</SelectItem>))}</SelectContent>
-                    </Select>
-                  </div>
-                  <Button type="button" onClick={handleAddDamageReduction} size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}</Button>
-                </div>
-              )}
-              {characterData.damageReduction && characterData.damageReduction.length > 0 && (
-                <div className={cn("flex flex-col", panelGridGap, panelIsLocked ? "md:col-span-3" : "md:col-span-2")}>
-                  {characterData.damageReduction.map(dr => {
-                    const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
-                    const ruleLabel = ruleDef?.label || dr.rule;
-                    const currentLangCodeForDr = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
-                    return (
-                      <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
-                        <div className="flex items-center justify-between w-full">
-                          <div className={cn("flex items-center flex-wrap", panelGridGap)}>
-                            <span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span>
-                            <Badge variant="outline">{ruleLabel}</Badge>
-                            {dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}
-                          </div>
-                          {!dr.isGranted && !panelIsLocked && (<Button type="button" variant="ghost" size="icon-xs" className="text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)}><Trash2 /></Button>)}
-                        </div>
-                        <div className="text-sm text-muted-foreground w-full">{getDrRuleDescription(dr)}</div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
       </div>
-    </div>
+        
+      {showDrSection && (
+        <div className={cn("flex flex-col", panelGridGap)}>
+          <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
+          <div className={cn("grid md:grid-cols-3", panelGridGap, !panelIsLocked && "grid-cols-1")}>
+            {!panelIsLocked && (
+              <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
+                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                  <Label htmlFor="form-dr-value" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
+                  <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10", "text-left")} />
+                </div>
+                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                  <Label htmlFor="form-dr-rule" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
+                  <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
+                    <SelectTrigger id="form-dr-rule" className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>{DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (<SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>))}</SelectContent>
+                  </Select>
+                </div>
+                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                  <Label htmlFor="form-dr-type" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
+                  <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
+                    <SelectTrigger id="form-dr-type" className="h-9 text-sm"><SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} /></SelectTrigger>
+                    <SelectContent>{DAMAGE_REDUCTION_TYPES.map(option => (<SelectItem key={option.id} value={option.id} disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}>{option.label}</SelectItem>))}</SelectContent>
+                  </Select>
+                </div>
+                <Button type="button" onClick={handleAddDamageReduction} size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}</Button>
+              </div>
+            )}
+            {characterData.damageReduction && characterData.damageReduction.length > 0 && (
+              <div className={cn("flex flex-col", panelGridGap, panelIsLocked ? "md:col-span-3" : "md:col-span-2")}>
+                {characterData.damageReduction.map(dr => {
+                  const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
+                  const ruleLabel = ruleDef?.label || dr.rule;
+                  const currentLangCodeForDr = UI_STRINGS.currentLangCodeForNotesFallback as LanguageCode || DEFAULT_LANGUAGE;
+                  return (
+                    <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
+                      <div className="flex items-center justify-between w-full">
+                        <div className={cn("flex items-center flex-wrap", panelGridGap)}>
+                          <span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span>
+                          <Badge variant="outline">{ruleLabel}</Badge>
+                          {dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}
+                        </div>
+                        {!dr.isGranted && !panelIsLocked && (<Button type="button" variant="ghost" size="icon-xs" className="text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)}><Trash2 /></Button>)}
+                      </div>
+                      <div className="text-sm text-muted-foreground w-full">{getDrRuleDescription(dr)}</div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   );
 });
 ResistancesPanelContent.displayName = 'ResistancesPanelContent';
@@ -412,7 +412,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
       description={translations.UI_STRINGS.resistancesPanelDescription}
       icon={ShieldAlert}
       initialLockedState={false}
-      cardContentClassName="gap-6"
+      cardContentClassName={panelGridGap}
       footer={footerContent}
     >
       {({ isLocked: panelIsLocked }) => (
