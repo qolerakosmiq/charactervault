@@ -309,7 +309,7 @@ const ResistancesPanelContent = React.memo(({
         {(!panelIsLocked || (characterData.damageReduction && characterData.damageReduction.length > 0)) && (
           <div className={cn("flex flex-col", panelGridGap)}>
             <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
-            <div className={cn("grid md:grid-cols-3", panelGridGap, !panelIsLocked && "grid-cols-1", panelIsLocked && "md:grid-cols-1")}>
+            <div className={cn("grid md:grid-cols-3", panelGridGap, !panelIsLocked && "grid-cols-1")}>
               {!panelIsLocked && (
                 <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
                   <div className={cn("flex flex-col", panelFieldVerticalGap)}>
