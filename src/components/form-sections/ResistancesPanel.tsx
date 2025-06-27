@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -42,7 +43,6 @@ export interface ResistancesPanelProps {
   onDamageReductionChange: (newDrArray: DamageReductionInstance[]) => void;
   onOpenResistanceInfoDialog: (resistanceField: ResistanceFieldKeySheet) => void;
 }
-
 
 interface ResistanceDisplayCardProps {
   field: ResistanceFieldKeySheet;
@@ -120,7 +120,6 @@ const ResistanceDisplayCard = React.memo(({
   );
 });
 ResistanceDisplayCard.displayName = 'ResistanceDisplayCard';
-
 
 const ResistancesPanelContent = React.memo(({
   panelIsLocked,
@@ -310,7 +309,7 @@ const ResistancesPanelContent = React.memo(({
         {(!panelIsLocked || (characterData.damageReduction && characterData.damageReduction.length > 0)) && (
           <div className={cn("flex flex-col", panelGridGap)}>
             <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
-            <div className={cn(panelIsLocked ? "md:grid-cols-1" : "md:grid-cols-3", "grid", panelGridGap)}>
+            <div className={cn("grid md:grid-cols-3", panelGridGap, !panelIsLocked && "grid-cols-1", panelIsLocked && "md:grid-cols-1")}>
               {!panelIsLocked && (
                 <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
                   <div className={cn("flex flex-col", panelFieldVerticalGap)}>
@@ -335,7 +334,7 @@ const ResistancesPanelContent = React.memo(({
                 </div>
               )}
               {characterData.damageReduction && characterData.damageReduction.length > 0 && (
-                <div className={cn(panelIsLocked ? "md:col-span-1" : "md:col-span-2", "flex flex-col", panelGridGap)}>
+                <div className={cn("flex flex-col", panelGridGap, panelIsLocked ? "md:col-span-3" : "md:col-span-2")}>
                   {characterData.damageReduction.map(dr => {
                     const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
                     const ruleLabel = ruleDef?.label || dr.rule;
@@ -356,6 +355,10 @@ const ResistancesPanelContent = React.memo(({
                   })}
                 </div>
               )}
+               {panelIsLocked && characterData.damageReduction.length === 0 && null}
+               {!panelIsLocked && characterData.damageReduction.length === 0 && (
+                  <p className="text-sm text-muted-foreground md:col-span-2">{UI_STRINGS.resistancesPanelNoDrEntries}</p>
+               )}
             </div>
           </div>
         )}
@@ -372,7 +375,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     if (!translations) return null;
     return (
       <p className={textStyleDescription}>
-        {parseAndRenderUIString(translations.UI_STRINGS.resistancesPanelInfoNoteFull, {
+        {parseAndRenderUIString(translations.UI_STRINGS.resistancesPanelInfoNote, {
           badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
         })}
       </p>
