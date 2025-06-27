@@ -19,7 +19,7 @@ import { cn } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data'; 
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config'; 
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
-import { debounceDelayFormInput } from '@/config/layout';
+import { debounceDelayFormInput, textStyleDescription } from '@/config/layout';
 
 export interface ResistancesPanelProps {
   characterData: Pick<Character, 
@@ -230,7 +230,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
               <ShieldAlert className="h-8 w-8 text-primary" />
               <div>
                 <CardTitle className="text-2xl font-serif">{UI_STRINGS.resistancesPanelTitle}</CardTitle>
-                <CardDescription>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
+                <CardDescription className={textStyleDescription}>{UI_STRINGS.resistancesPanelDescription}</CardDescription>
               </div>
             </div>
             <Button

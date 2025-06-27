@@ -34,7 +34,7 @@ import { cn } from '@/lib/utils';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
-import { debounceDelayFormInput } from '@/config/layout';
+import { debounceDelayFormInput, textStyleDescription } from '@/config/layout';
 
 export type CombatFieldKey = keyof Pick<Character,
   'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' |
@@ -383,7 +383,6 @@ const CombatPanelComponent = ({
             const conditionText = UI_STRINGS[conditionTextKey] || effect.condition;
             label = `${label} (${conditionText})`;
         }
-
         components.push({label, value: effect.value, isRawValue: typeof effect.value === 'string'});
     });
 
@@ -616,7 +615,7 @@ const CombatPanelComponent = ({
             <Swords className="h-8 w-8 text-primary" />
             <div>
               <CardTitle className="text-2xl font-serif">{UI_STRINGS.combatPanelTitle || "Combat Stats"}</CardTitle>
-              <CardDescription>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
+              <CardDescription className={textStyleDescription}>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
             </div>
           </div>
           <Button

@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -6,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Lock, Unlock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useI18n } from '@/context/I18nProvider';
-import { panelHeaderPadding, panelGridGap, panelContentPadding } from '@/config/layout';
+import { panelHeaderPadding, panelGridGap, panelContentPadding, textStyleDescription } from '@/config/layout';
 
 interface LockablePanelWrapperProps {
   title: string;
@@ -60,7 +61,7 @@ const LockablePanelWrapperComponent = ({
           {Icon && <Icon className="text-primary h-7 w-7 mr-3 shrink-0" />}
           <div>
             <CardTitle className="font-serif text-xl">{title}</CardTitle>
-            {description && !isLocked && <CardDescription>{description}</CardDescription>}
+            {description && !isLocked && <CardDescription className={textStyleDescription}>{description}</CardDescription>}
           </div>
         </div>
         <div className="absolute top-4 right-4 flex">
