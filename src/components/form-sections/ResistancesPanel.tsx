@@ -1,7 +1,7 @@
 
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import type { Character, ResistanceValue, DamageReductionInstance, DamageReductionTypeValue, DamageReductionRuleValue, ResistanceFieldKeySheet, AggregatedFeatEffects, InfoDialogContentType } from '@/types/character';
 import { ShieldAlert, Waves, Flame, Snowflake, Zap as ElectricityIcon, Atom, Sigma, ShieldCheck, Brain, Info, PlusCircle, Trash2 } from 'lucide-react';
 import { Label } from '@/components/ui/label';
@@ -31,6 +31,7 @@ import {
   textStylePanelSectionHeader,
 } from '@/config/layout';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { Separator } from '../ui/separator';
 
 export interface ResistancesPanelProps {
   characterData: Pick<Character,
@@ -255,6 +256,8 @@ const ResistancesPanelContent = React.memo(({
     return <>{valueText}/{typeLabel} ({ruleDef?.label || dr.rule})</>;
   }, [UI_STRINGS, DAMAGE_REDUCTION_TYPES, DAMAGE_REDUCTION_RULES_OPTIONS, getDrTypeUiLabel]);
 
+  const showDrSection = !panelIsLocked || (characterData.damageReduction && characterData.damageReduction.length > 0);
+
   return (
     <div className={cn("flex flex-col", panelGridGap)}>
       <div className={cn("flex flex-col", panelGridGap)}>
@@ -309,7 +312,7 @@ const ResistancesPanelContent = React.memo(({
           })}
         </div>
         
-        {(!panelIsLocked || (characterData.damageReduction && characterData.damageReduction.length > 0)) && (
+        {showDrSection && (
           <div className={cn("flex flex-col", panelGridGap)}>
             <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
             <div className={cn("grid md:grid-cols-3", panelGridGap, !panelIsLocked && "grid-cols-1")}>
@@ -410,3 +413,5 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
 };
 ResistancesPanelComponent.displayName = 'ResistancesPanelComponent';
 export const ResistancesPanel = React.memo(ResistancesPanelComponent);
+
+    
