@@ -30,10 +30,10 @@
   "resistanceLabelFortification": { "en": "Fortification", "fr": "Fortification" },
   "drVsLabel": { "en": "vs.", "fr": "vs" },
   "drImmunitySuffixLabel": { "en": "(Immunity)", "fr": "(Immunité)" },
-  "drBypassedByNoneDesc": { "en": "Reduces damage from all sources by <badge>{value}</badge>.", "fr": "Réduit les dégâts de toutes sources de <badge>{value}</badge>." },
-  "drBypassedByTypeDesc": { "en": "Reduces damage by <badge>{value}</badge> unless bypassed by <badge>{typeLabel}</badge> weapons/damage.", "fr": "Réduit les dégâts de <badge>{value}</badge> sauf si contournée par des armes/dégâts de type <badge>{typeLabel}</badge>." },
-  "drVersusSpecificTypeDesc": { "en": "Reduces damage from <badge>{typeLabel}</badge> sources by <badge>{value}</badge>.", "fr": "Réduit les dégâts des sources de type <badge>{typeLabel}</badge> de <badge>{value}</badge>." },
-  "drExceptedByTypeDesc": { "en": "Reduces damage from all sources by <badge>{value}</badge>, except for <badge>{typeLabel}</badge> damage.", "fr": "Réduit les dégâts de toutes sources de <badge>{value}</badge>, sauf pour les dégâts de type <badge>{typeLabel}</badge>." },
+  "drBypassedByNoneDesc": { "en": "Reduces damage from all sources by <badge outline>{value}</badge>.", "fr": "Réduit les dégâts de toutes sources de <badge outline>{value}</badge>." },
+  "drBypassedByTypeDesc": { "en": "Reduces damage by <badge outline>{value}</badge> unless bypassed by <badge outline>{typeLabel}</badge> weapons/damage.", "fr": "Réduit les dégâts de <badge outline>{value}</badge> sauf si contournée par des armes/dégâts de type <badge outline>{typeLabel}</badge>." },
+  "drExceptedByTypeDesc": { "en": "Provides <badge outline>{value}</badge> damage reduction against all sources, except for <badge outline>{typeLabel}</badge> damage (which is not reduced).", "fr": "Fournit une réduction de dégâts de <badge outline>{value}</badge> contre toutes les sources, à l'exception des dégâts de type <badge outline>{typeLabel}</badge> (qui ne sont pas réduits)." },
+  "drVersusSpecificTypeDesc": { "en": "Reduces damage from <badge outline>{typeLabel}</badge> sources by <badge outline>{value}</badge>.", "fr": "Réduit les dégâts des sources de type <badge outline>{typeLabel}</badge> de <badge outline>{value}</badge>." },
   "resistancesPanelLoading": { "en": "Loading resistance details...", "fr": "Chargement des détails de résistance..." },
   "infoDialogTotalResistanceLabel": { "en": "Total Resistance", "fr": "Résistance Totale" }
 }
