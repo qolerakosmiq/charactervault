@@ -15,7 +15,7 @@ import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
-import { renderModifierValue } from '@/components/info-dialog-content/dialog-utils';
+import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import {
   debounceDelayFormInput,
   textStyleDescription,
@@ -212,19 +212,20 @@ const ResistancesPanelContent = React.memo(({
                   <p className={cn(textStyleValueBig)}>{totalValue}</p>
                   <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleTriggerResistanceInfoDialog(field)}><Info /></Button>
                 </div>
-                <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-                  <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
-                  <div className={cn("flex justify-center", inputWidthStandard)}>
-                     <Input
-                      id={`${fieldPrefix}-${field}-customMod`}
-                      type="number"
-                      value={localCustomMod}
-                      onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
-                      className={cn(textStyleInput)}
-                      disabled={panelIsLocked}
-                    />
+                {!panelIsLocked && (
+                  <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
+                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
+                    <div className={cn("flex justify-center", inputWidthStandard)}>
+                      <Input
+                        id={`${fieldPrefix}-${field}-customMod`}
+                        type="number"
+                        value={localCustomMod}
+                        onChange={(e) => setLocalCustomMod(parseInt(e.target.value, 10) || 0)}
+                        className={cn(textStyleInput)}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
@@ -263,19 +264,20 @@ const ResistancesPanelContent = React.memo(({
                   <p className={cn(textStyleValueBig)}>{totalValue}</p>
                   <Button type="button" variant="ghost" size="icon-xs" className="text-muted-foreground hover:text-foreground" onClick={() => handleTriggerResistanceInfoDialog(field)}><Info /></Button>
                 </div>
-                <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-                  <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
-                  <div className={cn("flex justify-center", inputWidthStandard)}>
-                    <Input
-                      id={`${fieldPrefix}-${field}-customMod`}
-                      type="number"
-                      value={localCustomMod}
-                      onChange={handleInputChange}
-                      className={cn(textStyleInput)}
-                      disabled={panelIsLocked}
-                    />
+                {!panelIsLocked && (
+                  <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
+                    <Label htmlFor={`${fieldPrefix}-${field}-customMod`} className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
+                    <div className={cn("flex justify-center", inputWidthStandard)}>
+                      <Input
+                        id={`${fieldPrefix}-${field}-customMod`}
+                        type="number"
+                        value={localCustomMod}
+                        onChange={handleInputChange}
+                        className={cn(textStyleInput)}
+                      />
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             );
           })}
@@ -284,28 +286,30 @@ const ResistancesPanelContent = React.memo(({
         <div className={cn("flex flex-col", panelGridGap)}>
           <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.resistancesPanelDamageReductionLabel}</h4>
           <div className={cn("grid md:grid-cols-3", panelGridGap)}>
-            <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
-              <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                <Label htmlFor="form-dr-value" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
-                <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10", "text-left")} disabled={panelIsLocked} />
+            {!panelIsLocked && (
+              <div className={cn("md:col-span-1 border rounded-md flex flex-col", panelContentPadding, panelGridGap)}>
+                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                  <Label htmlFor="form-dr-value" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrValueLabel}</Label>
+                  <Input id="form-dr-value" type="number" value={newDrValue} onChange={(e) => setNewDrValue(parseInt(e.target.value, 10) || 0)} className={cn(textStyleInput, "h-10", "text-left")} />
+                </div>
+                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                  <Label htmlFor="form-dr-rule" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
+                  <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)}>
+                    <SelectTrigger id="form-dr-rule" className="h-9 text-sm"><SelectValue /></SelectTrigger>
+                    <SelectContent>{DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (<SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>))}</SelectContent>
+                  </Select>
+                </div>
+                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                  <Label htmlFor="form-dr-type" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
+                  <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)}>
+                    <SelectTrigger id="form-dr-type" className="h-9 text-sm"><SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} /></SelectTrigger>
+                    <SelectContent>{DAMAGE_REDUCTION_TYPES.map(option => (<SelectItem key={option.id} value={option.id} disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}>{option.label}</SelectItem>))}</SelectContent>
+                  </Select>
+                </div>
+                <Button type="button" onClick={handleAddDamageReduction} size="sm" className="w-full"><PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}</Button>
               </div>
-              <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                <Label htmlFor="form-dr-rule" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrRuleLabel}</Label>
-                <Select value={newDrRule} onValueChange={(val) => setNewDrRule(val as DamageReductionRuleValue)} disabled={panelIsLocked}>
-                  <SelectTrigger id="form-dr-rule" className="h-9 text-sm"><SelectValue /></SelectTrigger>
-                  <SelectContent>{DAMAGE_REDUCTION_RULES_OPTIONS.map(option => (<SelectItem key={option.id} value={option.id}>{option.label}</SelectItem>))}</SelectContent>
-                </Select>
-              </div>
-              <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                <Label htmlFor="form-dr-type" className={cn(textStyleLabel, "text-left")}>{UI_STRINGS.resistancesPanelDrTypeLabel}</Label>
-                <Select value={newDrType} onValueChange={(val) => setNewDrType(val as DamageReductionTypeValue | string)} disabled={panelIsLocked}>
-                  <SelectTrigger id="form-dr-type" className="h-9 text-sm"><SelectValue placeholder={UI_STRINGS.resistancesPanelDrSelectTypePlaceholder} /></SelectTrigger>
-                  <SelectContent>{DAMAGE_REDUCTION_TYPES.map(option => (<SelectItem key={option.id} value={option.id} disabled={option.id === 'none' && newDrRule !== 'bypassed-by-type'}>{option.label}</SelectItem>))}</SelectContent>
-                </Select>
-              </div>
-              <Button type="button" onClick={handleAddDamageReduction} size="sm" className="w-full" disabled={panelIsLocked}><PlusCircle className="mr-2 h-4 w-4" /> {UI_STRINGS.resistancesPanelAddDrButton}</Button>
-            </div>
-            <div className={cn("md:col-span-2 flex flex-col", panelGridGap)}>
+            )}
+            <div className={cn(panelIsLocked ? "md:col-span-3" : "md:col-span-2", "flex flex-col", panelGridGap)}>
               {characterData.damageReduction.length > 0 ? (
                 characterData.damageReduction.map(dr => {
                   const ruleDef = DAMAGE_REDUCTION_RULES_OPTIONS.find(opt => opt.id === dr.rule);
@@ -314,14 +318,20 @@ const ResistancesPanelContent = React.memo(({
                   return (
                     <div key={dr.id} className={cn("flex flex-col items-start justify-between border rounded-md bg-muted/5 text-sm", panelContentPadding, panelFieldVerticalGap)}>
                       <div className="flex items-center justify-between w-full">
-                        <div className={cn("flex items-center flex-wrap", panelBadgeGroupGap)}><span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span><Badge variant="outline">{ruleLabel}</Badge>{dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}</div>
-                        {!dr.isGranted && (<Button type="button" variant="ghost" size="icon-xs" className="text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)} disabled={panelIsLocked}><Trash2 /></Button>)}
+                        <div className={cn("flex items-center flex-wrap", panelBadgeGroupGap)}>
+                          <span className="font-semibold text-lg text-accent">{getDrPrimaryNotation(dr)}</span>
+                          <Badge variant="outline">{ruleLabel}</Badge>
+                          {dr.isGranted && dr.source && (<Badge variant="secondary">{getLocalizedString(dr.source, currentLangCodeForDr, DEFAULT_LANGUAGE, `drSource.${dr.id}`)}</Badge>)}
+                        </div>
+                        {!dr.isGranted && !panelIsLocked && (<Button type="button" variant="ghost" size="icon-xs" className="text-destructive hover:text-destructive/80 shrink-0" onClick={() => handleRemoveDamageReduction(dr.id)}><Trash2 /></Button>)}
                       </div>
                       <div className="text-sm text-muted-foreground w-full">{getDrRuleDescription(dr)}</div>
                     </div>
                   );
                 })
-              ) : (<p className="text-sm text-muted-foreground">{UI_STRINGS.resistancesPanelNoDrEntries}</p>)}
+              ) : (
+                !panelIsLocked && <p className="text-sm text-muted-foreground">{UI_STRINGS.resistancesPanelNoDrEntries}</p>
+              )}
             </div>
           </div>
         </div>
@@ -339,7 +349,7 @@ const ResistancesPanelComponent = ({ characterData, aggregatedFeatEffects, onRes
     return (
       <p className={textStyleDescription}>
         {parseAndRenderUIString(translations.UI_STRINGS.resistancesPanelInfoNote, {
-          badge: (children: React.ReactNode) => <Badge variant="outline">{children}</Badge>
+          badge: (children: React.ReactNode) => <Badge outline>{children}</Badge>
         })}
       </p>
     )
