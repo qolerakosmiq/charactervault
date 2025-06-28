@@ -1,4 +1,3 @@
-
 {
   "combatPanelTitle": { "en": "Combat", "fr": "Combat" },
   "combatPanelDescription": { "en": "Key offensive and grappling statistics.", "fr": "Statistiques offensives et de lutte clés." },
@@ -11,7 +10,8 @@
   "combatExpertiseValueLabel": { "en": "Combat Expertise", "fr": "Expertise du Combat" },
   "combatExpertiseDescription": { "en": "Set penalty to attack for AC bonus.", "fr": "Définir la pénalité à l'attaque pour un bonus à la CA." },
   "attacksPanelMeleeTitle": { "en": "Melee Attacks", "fr": "Attaques au Corps à Corps" },
-  "attacksPanelMeleeWeaponLabel": { "en": "Melee Weapon", "fr": "Arme de Corps à Corps" },
+  "attacksPanelMainHandMeleeWeaponLabel": { "en": "Main Hand Melee Weapon", "fr": "Arme de Corps à Corps (Principale)" },
+  "attacksPanelOffHandMeleeWeaponLabel": { "en": "Off Hand Melee Weapon", "fr": "Arme de Corps à Corps (Secondaire)" },
   "attacksPanelWeaponDamageLabel": { "en": "Damage", "fr": "Dégâts" },
   "attacksPanelWeaponCriticalLabel": { "en": "Critical", "fr": "Critique" },
   "attacksPanelCriticalOnLabel": { "en": "Critical on {range}", "fr": "Critique sur {range}" },
@@ -20,8 +20,6 @@
   "attacksPanelDamageBonusLabel": { "en": "Damage Bonus", "fr": "Bonus de Dégâts" },
   "attacksPanelRangedTitle": { "en": "Ranged Attacks", "fr": "Attaques à Distance" },
   "attacksPanelRangedWeaponLabel": { "en": "Ranged Weapon", "fr": "Arme à Distance" },
-  "attacksPanelNoRangedWeapons": { "en": "No ranged weapons", "fr": "Aucune arme à distance" },
-  "attacksPanelSelectRangedWeapon": { "en": "Select ranged weapon...", "fr": "Choisir une arme à distance..." },
   "attacksPanelWeaponRangeLabel": { "en": "Range", "fr": "Portée" },
   "attacksPanelUnarmedOption": { "en": "Unarmed", "fr": "À mains nues" },
   "infoDialogBabClassLabel": { "en": "{classLabel} Base Attack Bonus", "fr": "Bonus d'Attaque de Base de {classLabel}" },
@@ -50,4 +48,3 @@
   "infoDialogTitleRangedAttackBreakdown": { "en": "Ranged Attack Breakdown", "fr": "Détail de l'Attaque à Distance" },
   "infoDialogTitleRangedDamageBreakdown": { "en": "Ranged Damage Breakdown", "fr": "Détail des Dégâts à Distance" }
 }
-    
