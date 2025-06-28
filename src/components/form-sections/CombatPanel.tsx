@@ -145,17 +145,22 @@ const CombatPanelComponent = ({
   const hasCombatExpertiseFeat = React.useMemo(() => allFeatDefinitions.some(f => f.id === 'combat-expertise' && characterFeats.some(cf => cf.definitionId === f.id)), [allFeatDefinitions, characterFeats]);
   const maxBabForSpinners = React.useMemo(() => (DND_CLASSES ? getBab(classes || [], DND_CLASSES) : [0])[0] || 0, [classes, DND_CLASSES]);
   
-  const allWeaponAndShieldDefinitions = React.useMemo(() => {
-    if (translationsLoading || !ITEM_DEFINITIONS_WEAPONS || !ITEM_DEFINITIONS_SHIELDS) return [];
-    const weapons = ITEM_DEFINITIONS_WEAPONS || [];
-    const shields = (ITEM_DEFINITIONS_SHIELDS || []).filter(s => s.damage);
-    return [...weapons, ...shields];
+  const allWeaponAndShieldDefinitionsMap = React.useMemo(() => {
+    if (translationsLoading || !ITEM_DEFINITIONS_WEAPONS || !ITEM_DEFINITIONS_SHIELDS) return new Map();
+    const map = new Map<string, ItemDefinition>();
+    const allDefs = [...(ITEM_DEFINITIONS_WEAPONS || []), ...(ITEM_DEFINITIONS_SHIELDS || []).filter(s => s.damage)];
+    allDefs.forEach(def => {
+      if (def && def.definitionId) {
+        map.set(def.definitionId, def);
+      }
+    });
+    return map;
   }, [translationsLoading, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_SHIELDS]);
 
   const getWeaponDefinition = React.useCallback((definitionId: string | undefined): ItemDefinition | undefined => {
     if (!definitionId) return undefined;
-    return allWeaponAndShieldDefinitions.find(def => def.definitionId === definitionId);
-  }, [allWeaponAndShieldDefinitions]);
+    return allWeaponAndShieldDefinitionsMap.get(definitionId);
+  }, [allWeaponAndShieldDefinitionsMap]);
   
   const getWeaponEnhancementBonus = React.useCallback((itemDef?: ItemDefinition): { attack: number, damage: number } => {
     let attackBonus = 0;
@@ -237,7 +242,7 @@ const CombatPanelComponent = ({
       { instanceId: 'unarmed', definitionId: 'unarmed-placeholder', quantity: 1, definition: unarmedDef },
       ...meleeInventoryItems,
     ];
-  }, [inventory, getWeaponDefinition, UI_STRINGS, unarmedBaseDamageFromFeat]);
+  }, [UI_STRINGS, inventory, getWeaponDefinition, unarmedBaseDamageFromFeat]);
   
   const rangedWeaponInstances = React.useMemo(() => {
     if (!inventory) return [];
@@ -460,7 +465,7 @@ const CombatPanelComponent = ({
   const handleGrappleModifierInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' }), [onOpenCombatStatInfoDialog]);
   
   const handleRollAction = React.useCallback((rollType: 'initiative' | 'grapple' | 'melee-attack' | 'melee-damage' | 'ranged-attack' | 'ranged-damage') => {
-    if (!UI_STRINGS) return;
+    if (!UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS || !aggregatedFeatEffects) return;
     
     let dialogTitle = "";
     let baseModifier = 0;
@@ -534,7 +539,7 @@ const CombatPanelComponent = ({
       weaponDamageDiceString, weaponCriticalMultiplier, extraDamageDice,
       rerollTwentiesForChecks: rollType.includes('attack') || rollType.includes('damage') ? false : rerollTwentiesForChecks,
     });
-  }, [UI_STRINGS, onOpenRollDialog, rerollTwentiesForChecks, currentLang, baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, localInitiativeMiscModifier, localGrappleMiscModifier, calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, parseCritMultiplier, totalBabWithModifier, strModifier, dexModifier, size, SIZES, attackRollBonuses, classes, DND_CLASSES, meleeAttackBreakdown, meleeDamageBreakdown, rangedAttackBreakdown, rangedDamageBreakdown, meleeExtraDamageDice, rangedExtraDamageDice]);
+  }, [UI_STRINGS, DND_CLASSES, SIZES, ABILITY_LABELS, onOpenRollDialog, rerollTwentiesForChecks, currentLang, baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, localInitiativeMiscModifier, localGrappleMiscModifier, calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, parseCritMultiplier, totalBabWithModifier, strModifier, dexModifier, size, attackRollBonuses, classes, meleeAttackBreakdown, meleeDamageBreakdown, rangedAttackBreakdown, rangedDamageBreakdown, meleeExtraDamageDice, rangedExtraDamageDice]);
   
   const mainHandWeaponDisplay = React.useMemo(() => {
     if (!selectedMainHandMeleeWeaponDefinition || !UI_STRINGS) return null;
@@ -566,7 +571,7 @@ const CombatPanelComponent = ({
     );
   }, [selectedRangedWeaponDefinition, UI_STRINGS]);
 
-  if (translationsLoading || !UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS) {
+  if (translationsLoading || !UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS || !aggregatedFeatEffects) {
     return null;
   }
 
@@ -727,7 +732,7 @@ const CombatPanelComponent = ({
                             {meleeWeaponInstances.map(wInst => (
                               <SelectItem key={`cs-mainhand-${wInst.instanceId}`} value={wInst.instanceId}>
                                 {getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}
-                                {wInst.instanceId !== 'unarmed' && ` (x${wInst.quantity})`}
+                                {wInst.instanceId !== 'unarmed' && wInst.quantity > 1 && ` (x${wInst.quantity})`}
                               </SelectItem>
                             ))}
                           </SelectGroup>
@@ -745,7 +750,7 @@ const CombatPanelComponent = ({
                             {meleeWeaponInstances.map(wInst => (
                               <SelectItem key={`cs-offhand-${wInst.instanceId}`} value={wInst.instanceId}>
                                 {getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}
-                                {wInst.instanceId !== 'unarmed' && ` (x${wInst.quantity})`}
+                                {wInst.instanceId !== 'unarmed' && wInst.quantity > 1 && ` (x${wInst.quantity})`}
                               </SelectItem>
                             ))}
                           </SelectGroup>
