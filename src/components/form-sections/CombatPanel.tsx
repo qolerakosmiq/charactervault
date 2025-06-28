@@ -76,6 +76,11 @@ const CombatPanelComponent = ({
   onOpenCombatStatInfoDialog,
   onOpenRollDialog
 }: CombatPanelProps) => {
+  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
+  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
+    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
+  }));
+  
   const {
     classes, abilityScores, size, inventory, equippedGear,
     feats: characterFeats, babMiscModifier, initiativeMiscModifier,
@@ -83,19 +88,15 @@ const CombatPanelComponent = ({
     combatExpertiseValue
   } = combatData;
   
-  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
-  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
-    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
-  }));
-
-  const { DND_CLASSES, SIZES, ABILITY_LABELS, UI_STRINGS, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_SHIELDS } = translations || {};
   const {
     attackRollBonuses,
     damageRollBonuses,
     initiativeBonus,
     modifiedMechanics,
   } = aggregatedFeatEffects || {};
-  
+
+  const { DND_CLASSES, SIZES, ABILITY_LABELS, UI_STRINGS, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_SHIELDS } = translations || {};
+
   const handleUpdateCallback = React.useCallback((fieldName: CombatFieldKey) => (value: any) => {
     if (onCharacterUpdate) {
       onCharacterUpdate(fieldName, value);
@@ -381,6 +382,29 @@ const CombatPanelComponent = ({
     [getActiveDamageBonuses, selectedRangedWeaponDefinition]
   );
 
+  const initiativeBreakdown = React.useMemo(() => {
+    if (!UI_STRINGS) return [];
+    const breakdown: GenericBreakdownItem[] = [];
+    if (dexModifier !== 0) breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || 'Ability Mod ({abilityAbbr})').replace("{abilityAbbr}", 'DEX'), value: dexModifier });
+    if ((initiativeBonus || 0) !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: initiativeBonus || 0 });
+    if (localInitiativeMiscModifier !== 0) breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localInitiativeMiscModifier || 0 });
+    return breakdown;
+  }, [UI_STRINGS, dexModifier, initiativeBonus, localInitiativeMiscModifier]);
+
+  const grappleBreakdown = React.useMemo(() => {
+      if (!UI_STRINGS || !SIZES || !DND_CLASSES || !attackRollBonuses) return [];
+      const breakdown: GenericBreakdownItem[] = [];
+      const featGrappleBonus = (attackRollBonuses.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0);
+
+      if(totalBabWithModifier[0]) breakdown.push({ label: UI_STRINGS.attacksPanelBabLabel || 'Base Attack Bonus', value: totalBabWithModifier[0] });
+      if(strModifier) breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || 'Ability Mod ({abilityAbbr})').replace("{abilityAbbr}", 'STR'), value: strModifier });
+      const sizeModGrapple = getSizeModifierGrapple(size, SIZES || []);
+      if(sizeModGrapple) breakdown.push({ label: UI_STRINGS.attacksPanelSizeModLabel || 'Size Mod (Attack)', value: sizeModGrapple });
+      if(featGrappleBonus) breakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: featGrappleBonus });
+      if(localGrappleMiscModifier) breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localGrappleMiscModifier || 0 });
+      return breakdown;
+  }, [UI_STRINGS, SIZES, DND_CLASSES, size, strModifier, localGrappleMiscModifier, attackRollBonuses, totalBabWithModifier]);
+
   const getAttackBreakdown = React.useCallback((isMelee: boolean): GenericBreakdownItem[] => {
     if (!UI_STRINGS || !ABILITY_LABELS) return [];
     const weaponDef = isMelee ? selectedMainHandMeleeWeaponDefinition : selectedRangedWeaponDefinition;
@@ -404,7 +428,7 @@ const CombatPanelComponent = ({
     if (isMelee && (localCombatExpertiseValue || 0) > 0) components.push({ label: UI_STRINGS.combatExpertisePenaltyLabel, value: -(localCombatExpertiseValue || 0) });
     
     return components;
-  }, [UI_STRINGS, ABILITY_LABELS, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, selectedMainHandMeleeWeaponInstanceId, totalBabWithModifier, meleeAbilityModForAttack, dexModifier, sizeModifierAttack, getWeaponEnhancementBonus, getActiveAttackBonuses, localPowerAttackValue, localCombatExpertiseValue, strModifier]);
+  }, [UI_STRINGS, ABILITY_LABELS, totalBabWithModifier, sizeModifierAttack, getWeaponEnhancementBonus, getActiveAttackBonuses, localPowerAttackValue, localCombatExpertiseValue, strModifier, dexModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, selectedMainHandMeleeWeaponInstanceId, meleeAbilityModForAttack]);
 
   const getDamageBreakdown = React.useCallback((isMelee: boolean): GenericBreakdownItem[] => {
     if (!UI_STRINGS || !ABILITY_LABELS) return [];
@@ -465,7 +489,7 @@ const CombatPanelComponent = ({
   const handleGrappleModifierInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' }), [onOpenCombatStatInfoDialog]);
   
   const handleRollAction = React.useCallback((rollType: 'initiative' | 'grapple' | 'melee-attack' | 'melee-damage' | 'ranged-attack' | 'ranged-damage') => {
-    if (!UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS || !aggregatedFeatEffects) return;
+    if (!UI_STRINGS || !onOpenRollDialog) return;
     
     let dialogTitle = "";
     let baseModifier = 0;
@@ -478,32 +502,24 @@ const CombatPanelComponent = ({
       case 'initiative':
         dialogTitle = UI_STRINGS.rollDialogTitleInitiative || 'Roll Initiative';
         baseModifier = baseInitiative;
-        if (dexModifier !== 0) calculationBreakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || 'Ability Mod ({abilityAbbr})').replace("{abilityAbbr}", 'DEX'), value: dexModifier });
-        if ((initiativeBonus || 0) !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: initiativeBonus || 0 });
-        if (localInitiativeMiscModifier !== 0) calculationBreakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localInitiativeMiscModifier || 0 });
+        calculationBreakdown = initiativeBreakdown;
         break;
       
       case 'grapple':
         dialogTitle = UI_STRINGS.rollDialogTitleGrappleCheck || 'Roll Grapple Check';
         baseModifier = totalGrappleModifier;
-        if(totalBabWithModifier[0]) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelBabLabel || 'Base Attack Bonus', value: totalBabWithModifier[0] });
-        if(strModifier) calculationBreakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || 'Ability Mod ({abilityAbbr})').replace("{abilityAbbr}", 'STR'), value: strModifier });
-        const sizeModGrapple = getSizeModifierGrapple(size, SIZES || []);
-        if(sizeModGrapple) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelSizeModLabel || 'Size Mod (Attack)', value: sizeModGrapple });
-        const featGrappleBonus = (attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0);
-        if(featGrappleBonus) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: featGrappleBonus });
-        if(localGrappleMiscModifier) calculationBreakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localGrappleMiscModifier || 0 });
+        calculationBreakdown = grappleBreakdown;
         break;
 
       case 'melee-attack':
-        calculationBreakdown = meleeAttackBreakdown.filter(c => c.label !== (UI_STRINGS.infoDialogTotalLabel || "Total"));
+        calculationBreakdown = meleeAttackBreakdown;
         baseModifier = calculatedMeleeAttackBonus;
         const meleeWeaponName = selectedMainHandMeleeWeaponDefinition ? getLocalizedString(selectedMainHandMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption;
         dialogTitle = (UI_STRINGS.rollDialogTitleMeleeAttackFormat || "Roll Melee Attack ({weaponName})").replace("{weaponName}", meleeWeaponName);
         break;
       
       case 'melee-damage':
-        calculationBreakdown = meleeDamageBreakdown.filter(c => c.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
+        calculationBreakdown = meleeDamageBreakdown;
         baseModifier = calculatedMeleeNumericalDamageBonus;
         const meleeDamageWeaponName = selectedMainHandMeleeWeaponDefinition ? getLocalizedString(selectedMainHandMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption;
         const meleeDamageDice = selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMainHandMeleeWeaponDefinition?.damage || '—';
@@ -515,7 +531,7 @@ const CombatPanelComponent = ({
       
       case 'ranged-attack':
         if (!selectedRangedWeaponDefinition) return;
-        calculationBreakdown = rangedAttackBreakdown.filter(c => c.label !== (UI_STRINGS.infoDialogTotalLabel || "Total"));
+        calculationBreakdown = rangedAttackBreakdown;
         baseModifier = calculatedRangedAttackBonus;
         const rangedWeaponName = getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
         dialogTitle = (UI_STRINGS.rollDialogTitleRangedAttackFormat || "Roll Ranged Attack ({weaponName})").replace("{weaponName}", rangedWeaponName);
@@ -523,7 +539,7 @@ const CombatPanelComponent = ({
       
       case 'ranged-damage':
         if (!selectedRangedWeaponDefinition) return;
-        calculationBreakdown = rangedDamageBreakdown.filter(c => c.label !== (UI_STRINGS.infoDialogTotalNumericBonusLabel || "Total Numeric Bonus"));
+        calculationBreakdown = rangedDamageBreakdown;
         baseModifier = calculatedRangedNumericalDamageBonus;
         const rangedDamageWeaponName = getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE);
         const rangedDamageDice = selectedRangedWeaponDefinition?.damage || '—';
@@ -539,7 +555,14 @@ const CombatPanelComponent = ({
       weaponDamageDiceString, weaponCriticalMultiplier, extraDamageDice,
       rerollTwentiesForChecks: rollType.includes('attack') || rollType.includes('damage') ? false : rerollTwentiesForChecks,
     });
-  }, [UI_STRINGS, DND_CLASSES, SIZES, ABILITY_LABELS, onOpenRollDialog, rerollTwentiesForChecks, currentLang, baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, localInitiativeMiscModifier, localGrappleMiscModifier, calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, parseCritMultiplier, totalBabWithModifier, strModifier, dexModifier, size, attackRollBonuses, classes, meleeAttackBreakdown, meleeDamageBreakdown, rangedAttackBreakdown, rangedDamageBreakdown, meleeExtraDamageDice, rangedExtraDamageDice]);
+  }, [
+    UI_STRINGS, onOpenRollDialog, rerollTwentiesForChecks, currentLang, baseInitiative, totalGrappleModifier,
+    selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, calculatedMeleeAttackBonus,
+    calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus,
+    unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, parseCritMultiplier,
+    meleeAttackBreakdown, meleeDamageBreakdown, rangedAttackBreakdown, rangedDamageBreakdown,
+    meleeExtraDamageDice, rangedExtraDamageDice, initiativeBreakdown, grappleBreakdown
+  ]);
   
   const mainHandWeaponDisplay = React.useMemo(() => {
     if (!selectedMainHandMeleeWeaponDefinition || !UI_STRINGS) return null;
