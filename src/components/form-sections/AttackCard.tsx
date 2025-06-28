@@ -109,8 +109,8 @@ export const AttackCard = React.memo(({
           </div>
         </div>
       </div>
-      <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-        <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+      <div className={cn("flex flex-col", "gap-4")}>
+        <div className={cn("flex flex-col gap-2")}>
           <Label htmlFor={`${attackType}-weapon-select`} className={textStyleLabel}>
             {attackType === 'melee' ? uiStrings.attacksPanelMainHandMeleeWeaponLabel : uiStrings.attacksPanelRangedWeaponLabel}
           </Label>
@@ -133,7 +133,7 @@ export const AttackCard = React.memo(({
           {weaponDisplay}
         </div>
         {offHandWeaponInstances && onSelectedOffHandWeaponChange && selectedOffHandWeaponInstanceId && (
-          <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+          <div className={cn("flex flex-col gap-2")}>
             <Label htmlFor="off-hand-weapon-select" className={textStyleLabel}>{uiStrings.attacksPanelOffHandMeleeWeaponLabel}</Label>
             <Select value={selectedOffHandWeaponInstanceId} onValueChange={onSelectedOffHandWeaponChange} disabled={isPanelLocked}>
               <SelectTrigger id="off-hand-weapon-select"><SelectValue /></SelectTrigger>
