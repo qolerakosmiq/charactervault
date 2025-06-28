@@ -133,11 +133,11 @@ const CombatPanelComponent = ({
   }, [classes, strModifier, size, SIZES, DND_CLASSES, localGrappleMiscModifier, aggregatedFeatEffects]);
 
   const allWeaponAndShieldDefinitions = React.useMemo(() => {
-    if (translationsLoading || !translations) return [];
+    if (translationsLoading || !ITEM_DEFINITIONS_WEAPONS || !ITEM_DEFINITIONS_SHIELDS) return [];
     const weapons = ITEM_DEFINITIONS_WEAPONS || [];
     const shields = (ITEM_DEFINITIONS_SHIELDS || []).filter(s => s.damage);
     return [...weapons, ...shields];
-  }, [translations, translationsLoading, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_SHIELDS]);
+  }, [translationsLoading, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_SHIELDS]);
 
   const getWeaponDefinition = React.useCallback((definitionId: string | undefined): ItemDefinition | undefined => {
     if (!definitionId) return undefined;
@@ -200,7 +200,7 @@ const CombatPanelComponent = ({
   }, [aggregatedFeatEffects, UI_STRINGS]);
 
   const meleeWeaponInstances = React.useMemo(() => {
-    if (!translations || !aggregatedFeatEffects) return [];
+    if (!UI_STRINGS || !aggregatedFeatEffects) return [];
     const inventoryItems = inventory?.filter(itemInst => {
         const itemDef = getWeaponDefinition(itemInst.definitionId);
         return itemDef && (itemDef.itemType === 'weapon' || (itemDef.itemType === 'shield' && !!itemDef.damage));
@@ -224,7 +224,7 @@ const CombatPanelComponent = ({
       { instanceId: 'unarmed', definitionId: 'unarmed-placeholder', quantity: 1, definition: unarmedDef },
       ...meleeInventoryItems,
     ];
-  }, [inventory, getWeaponDefinition, aggregatedFeatEffects, translations, unarmedBaseDamageFromFeat]);
+  }, [inventory, getWeaponDefinition, aggregatedFeatEffects, UI_STRINGS, unarmedBaseDamageFromFeat]);
   
   const rangedWeaponInstances = React.useMemo(() => {
     if (!inventory) return [];
@@ -465,9 +465,28 @@ const CombatPanelComponent = ({
           extraDamageDice = damageBonuses.filter(d => typeof d.value === 'string' && d.value.includes('d')).map(d => d.value as string);
         }
         
-        const { components } = (rollType === 'melee-attack' ? onOpenCombatStatInfoDialog({ type: 'meleeAttackBreakdown', components: [] }) : onOpenCombatStatInfoDialog({ type: 'meleeDamageBreakdown', components: [] })) || {components: []};
-        calculationBreakdown = components;
-        
+        const abilityMod = meleeAbilityModForAttack;
+        const abilityAbbr = ABILITY_LABELS.find(al => al.id === (weaponDef?.isFinesseWeapon && dexMod > strMod ? 'dexterity' : 'strength'))?.abbr || 'MOD';
+        const sizeMod = sizeModifierAttack || 0;
+        const enhBonus = getWeaponEnhancementBonus(weaponDef);
+        const featBonusAttack = getActiveAttackBonuses(selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? 'unarmed' : 'melee', weaponDef).reduce((sum, eff) => sum + ((eff.value as number) || 0), 0);
+        const featBonusDamage = getActiveDamageBonuses(selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? 'unarmed' : 'melee', weaponDef).reduce((sum, eff) => sum + ((eff.value as number) || 0), 0);
+
+        if (rollType === 'melee-attack') {
+            calculationBreakdown.push({ label: UI_STRINGS.attacksPanelBabLabel, value: bab });
+            calculationBreakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+            if(sizeMod !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
+            if(enhBonus.attack !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus.attack });
+            if(featBonusAttack !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonusAttack });
+            if ((powerAttackValue || 0) > 0) calculationBreakdown.push({ label: UI_STRINGS.powerAttackPenaltyLabel, value: -(powerAttackValue || 0) });
+            if ((combatExpertiseValue || 0) > 0) calculationBreakdown.push({ label: UI_STRINGS.combatExpertisePenaltyLabel, value: -(combatExpertiseValue || 0) });
+        } else { // melee-damage
+            const baseDamage = weaponInstId === 'unarmed' ? unarmedBaseDamageFromFeat : weaponDef?.damage;
+            if (abilityMod !== 0) calculationBreakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", 'STR'), value: strMod });
+            if (enhBonus.damage !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus.damage });
+            if (featBonusDamage !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonusDamage });
+            if ((powerAttackValue || 0) > 0) calculationBreakdown.push({ label: UI_STRINGS.powerAttackDamageBonusLabel, value: (powerAttackValue || 0) });
+        }
         break;
       }
       
@@ -487,9 +506,23 @@ const CombatPanelComponent = ({
           extraDamageDice = damageBonuses.filter(d => typeof d.value === 'string' && d.value.includes('d')).map(d => d.value as string);
         }
         
-        const { components } = (rollType === 'ranged-attack' ? onOpenCombatStatInfoDialog({ type: 'rangedAttackBreakdown', components: [] }) : onOpenCombatStatInfoDialog({ type: 'rangedDamageBreakdown', components: [] })) || {components: []};
-        calculationBreakdown = components;
+        const abilityMod = dexMod;
+        const abilityAbbr = ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr || 'DEX';
+        const sizeMod = sizeModifierAttack || 0;
+        const enhBonus = getWeaponEnhancementBonus(weaponDef);
+        const featBonusAttack = getActiveAttackBonuses('ranged', weaponDef).reduce((sum, eff) => sum + ((eff.value as number) || 0), 0);
+        const featBonusDamage = getActiveDamageBonuses('ranged', weaponDef).reduce((sum, eff) => sum + ((eff.value as number) || 0), 0);
 
+        if (rollType === 'ranged-attack') {
+            calculationBreakdown.push({ label: UI_STRINGS.attacksPanelBabLabel, value: bab });
+            calculationBreakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+            if (sizeMod !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
+            if (enhBonus.attack !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus.attack });
+            if (featBonusAttack !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonusAttack });
+        } else { // ranged-damage
+            if (enhBonus.damage !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus.damage });
+            if (featBonusDamage !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonusDamage });
+        }
         break;
       }
     }
@@ -500,10 +533,10 @@ const CombatPanelComponent = ({
       rerollTwentiesForChecks: rollType.includes('attack') || rollType.includes('damage') ? false : rerollTwentiesForChecks,
     });
   }, [
-    UI_STRINGS, DND_CLASSES, SIZES, ABILITY_LABELS, abilityScores, classes, size, aggregatedFeatEffects, onOpenRollDialog, rerollTwentiesForChecks, localInitiativeMiscModifier, localGrappleMiscModifier, currentLang,
-    baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition,
-    calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus,
-    handleOpenAttackBreakdown, handleOpenDamageBreakdown, parseCritMultiplier, getActiveDamageBonuses, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId
+    UI_STRINGS, DND_CLASSES, SIZES, ABILITY_LABELS, abilityScores, classes, size, aggregatedFeatEffects, onOpenRollDialog, rerollTwentiesForChecks, currentLang,
+    baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, localInitiativeMiscModifier, localGrappleMiscModifier,
+    calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus, localPowerAttackValue, localCombatExpertiseValue,
+    parseCritMultiplier, getActiveDamageBonuses, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, totalBabWithModifier, meleeAbilityModForAttack, sizeModifierAttack, getWeaponEnhancementBonus, getActiveAttackBonuses
   ]);
   
 
@@ -638,104 +671,82 @@ const CombatPanelComponent = ({
             </div>
           )}
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
-            <Card className="flex flex-col">
-              <CardContent className={cn("flex flex-col h-full", panelContentPadding, panelGridGap)}>
+            <Card className={cn("flex flex-col", panelContentPadding, panelGridGap)}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
-                  <div className="grid grid-cols-2 gap-4">
-                      <div className="text-center flex flex-col gap-1">
-                        <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
-                        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                          <p className={cn(textStyleValueBig, "text-accent")}>{`${calculatedMeleeAttackBonus >= 0 ? '+' : ''}${calculatedMeleeAttackBonus}`}</p>
-                          <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(true)}><Info /></Button>
-                          <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('melee-attack')} aria-label={(UI_STRINGS.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", selectedMainHandMeleeWeaponDefinition?.label ? getLocalizedString(selectedMainHandMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : 'Unarmed')}><Dices /></Button>
-                        </div>
-                      </div>
-                      <div className="text-center flex flex-col gap-1">
-                        <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel}</Label>
-                        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                          <p className={cn(textStyleValueBig, "text-accent")}>{`${calculatedMeleeNumericalDamageBonus >= 0 ? '+' : ''}${calculatedMeleeNumericalDamageBonus}`}</p>
-                          <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenDamageBreakdown(true)}><Info /></Button>
-                          <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('melee-damage')} disabled={(!selectedMainHandMeleeWeaponDefinition && selectedMainHandMeleeWeaponInstanceId !== 'unarmed')} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedMainHandMeleeWeaponDefinition?.label ? getLocalizedString(selectedMainHandMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed")}><Dices /></Button>
-                        </div>
-                      </div>
-                  </div>
-                <div className={cn("flex flex-col mt-auto", panelGridGap)}>
-                  <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                      <Label htmlFor="main-hand-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel}</Label>
-                      <Select value={selectedMainHandMeleeWeaponInstanceId} onValueChange={setSelectedMainHandMeleeWeaponInstanceId} disabled={panelIsLocked}>
-                        <SelectTrigger id="main-hand-weapon-select"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {meleeWeaponInstances.map(wInst => (
-                              <SelectItem key={`cs-mainhand-${wInst.instanceId}`} value={wInst.instanceId}>
-                                {getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}
-                                {wInst.instanceId !== 'unarmed' && ` (x${wInst.quantity})`}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      {selectedMainHandMeleeWeaponDefinition && (
-                        <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap, "mt-2")}>
-                          <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMainHandMeleeWeaponDefinition.damage || 'N/A'} className={textStyleBadgeSmall} />
-                          <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedMainHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedMainHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
-                        </div>
-                      )}
-                  </div>
-                  <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                      <Label htmlFor="off-hand-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel}</Label>
-                      <Select value={selectedOffHandMeleeWeaponInstanceId} onValueChange={setSelectedOffHandMeleeWeaponInstanceId} disabled={panelIsLocked}>
-                        <SelectTrigger id="off-hand-weapon-select"><SelectValue /></SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                              <SelectItem value="none">{UI_STRINGS.deityNoneOption}</SelectItem>
-                            {meleeWeaponInstances.map(wInst => (
-                              <SelectItem key={`cs-offhand-${wInst.instanceId}`} value={wInst.instanceId}>
-                                {getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}
-                                {wInst.instanceId !== 'unarmed' && ` (x${wInst.quantity})`}
-                              </SelectItem>
-                            ))}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                      {selectedOffHandMeleeWeaponDefinition && (
-                        <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap, "mt-2")}>
-                          <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedOffHandMeleeWeaponDefinition.damage || 'N/A'} className={textStyleBadgeSmall} />
-                          <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedOffHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedOffHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
-                        </div>
-                      )}
-                  </div>
+                <div className="flex flex-col gap-4">
+                    <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                        <Label htmlFor="main-hand-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel}</Label>
+                        <Select value={selectedMainHandMeleeWeaponInstanceId} onValueChange={setSelectedMainHandMeleeWeaponInstanceId} disabled={panelIsLocked}>
+                          <SelectTrigger id="main-hand-weapon-select"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                              {meleeWeaponInstances.map(wInst => (
+                                <SelectItem key={`cs-mainhand-${wInst.instanceId}`} value={wInst.instanceId}>
+                                  {getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}
+                                  {wInst.instanceId !== 'unarmed' && ` (x${wInst.quantity})`}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        {selectedMainHandMeleeWeaponDefinition && (
+                          <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap, "mt-2")}>
+                            <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMainHandMeleeWeaponDefinition.damage || 'N/A'} className={textStyleBadgeSmall} />
+                            <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedMainHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedMainHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
+                          </div>
+                        )}
+                    </div>
+                    <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                        <Label htmlFor="off-hand-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel}</Label>
+                        <Select value={selectedOffHandMeleeWeaponInstanceId} onValueChange={setSelectedOffHandMeleeWeaponInstanceId} disabled={panelIsLocked}>
+                          <SelectTrigger id="off-hand-weapon-select"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            <SelectGroup>
+                                <SelectItem value="none">{UI_STRINGS.deityNoneOption}</SelectItem>
+                              {meleeWeaponInstances.map(wInst => (
+                                <SelectItem key={`cs-offhand-${wInst.instanceId}`} value={wInst.instanceId}>
+                                  {getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}
+                                  {wInst.instanceId !== 'unarmed' && ` (x${wInst.quantity})`}
+                                </SelectItem>
+                              ))}
+                            </SelectGroup>
+                          </SelectContent>
+                        </Select>
+                        {selectedOffHandMeleeWeaponDefinition && (
+                          <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap, "mt-2")}>
+                            <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedOffHandMeleeWeaponDefinition.damage || 'N/A'} className={textStyleBadgeSmall} />
+                            <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedOffHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedOffHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
+                          </div>
+                        )}
+                    </div>
                 </div>
-              </CardContent>
-            </Card>
-            <Card className="flex flex-col">
-              <CardContent className={cn("flex flex-col h-full", panelContentPadding, panelGridGap)}>
-                <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
-                {selectedRangedWeaponDefinition ? (
-                  <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                     <div className="text-center flex flex-col gap-1">
                       <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                         <p className={cn(textStyleValueBig, "text-accent")}>{`${calculatedRangedAttackBonus >= 0 ? '+' : ''}${calculatedRangedAttackBonus}`}</p>
-                         <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(false)}><Info /></Button>
-                         <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-attack')} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
+                        <p className={cn(textStyleValueBig, "text-accent")}>{`${calculatedMeleeAttackBonus >= 0 ? '+' : ''}${calculatedMeleeAttackBonus}`}</p>
+                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(true)}><Info /></Button>
+                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('melee-attack')} aria-label={(UI_STRINGS.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", selectedMainHandMeleeWeaponDefinition?.label ? getLocalizedString(selectedMainHandMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : 'Unarmed')}><Dices /></Button>
                       </div>
                     </div>
                     <div className="text-center flex flex-col gap-1">
                       <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel}</Label>
                       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                        <p className={cn(textStyleValueBig, "text-accent")}>{`${calculatedRangedNumericalDamageBonus >= 0 ? '+' : ''}${calculatedRangedNumericalDamageBonus}`}</p>
-                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenDamageBreakdown(false)}><Info /></Button>
-                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-damage')} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
+                        <p className={cn(textStyleValueBig, "text-accent")}>{`${calculatedMeleeNumericalDamageBonus >= 0 ? '+' : ''}${calculatedMeleeNumericalDamageBonus}`}</p>
+                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenDamageBreakdown(true)}><Info /></Button>
+                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('melee-damage')} disabled={(!selectedMainHandMeleeWeaponDefinition && selectedMainHandMeleeWeaponInstanceId !== 'unarmed')} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedMainHandMeleeWeaponDefinition?.label ? getLocalizedString(selectedMainHandMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed")}><Dices /></Button>
                       </div>
                     </div>
-                  </div>
-                ) : <div className="grid grid-cols-2 gap-4" />}
-                  <div className={cn("flex flex-col mt-auto", panelFieldVerticalGap)}>
+                </div>
+            </Card>
+            <Card className={cn("flex flex-col", panelContentPadding, panelGridGap)}>
+                <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
+                <div className="flex flex-col gap-4 mt-auto">
+                    <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                       <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel}</Label>
                       <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked}>
                         <SelectTrigger id="ranged-weapon-select">
-                          <SelectValue placeholder={UI_STRINGS.deityNoneOption} />
+                          <SelectValue placeholder={rangedWeaponInstances.length === 0 ? (UI_STRINGS.attacksPanelNoRangedWeapons) : (UI_STRINGS.attacksPanelSelectRangedWeapon)} />
                         </SelectTrigger>
                         <SelectContent>
                             <SelectGroup>
@@ -750,8 +761,26 @@ const CombatPanelComponent = ({
                           <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
                         </div>
                       )}
+                    </div>
+                </div>
+                 <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center flex flex-col gap-1">
+                      <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
+                      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                         <p className={cn(textStyleValueBig, "text-accent")}>{selectedRangedWeaponDefinition ? `${calculatedRangedAttackBonus >= 0 ? '+' : ''}${calculatedRangedAttackBonus}` : 'N/A'}</p>
+                         <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(false)} disabled={!selectedRangedWeaponDefinition}><Info /></Button>
+                         <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-attack')} disabled={!selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
+                      </div>
+                    </div>
+                    <div className="text-center flex flex-col gap-1">
+                      <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel}</Label>
+                      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                        <p className={cn(textStyleValueBig, "text-accent")}>{selectedRangedWeaponDefinition ? `${calculatedRangedNumericalDamageBonus >= 0 ? '+' : ''}${calculatedRangedNumericalDamageBonus}` : 'N/A'}</p>
+                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenDamageBreakdown(false)} disabled={!selectedRangedWeaponDefinition}><Info /></Button>
+                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-damage')} disabled={!selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
+                      </div>
+                    </div>
                   </div>
-              </CardContent>
             </Card>
           </div>
         </CardContent>
