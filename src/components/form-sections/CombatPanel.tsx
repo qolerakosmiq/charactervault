@@ -1,7 +1,7 @@
 
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type {
   Character,
   InfoDialogContentType,
@@ -21,20 +21,36 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { NumberSpinnerInput } from '@/components/ui/NumberSpinnerInput';
-import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon, Lock, Unlock } from 'lucide-react';
+import { Swords, Info, Loader2, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon } from 'lucide-react';
 import { getAbilityModifierByName, getBab, calculateInitiative, calculateGrapple, getSizeModifierGrapple, getUnarmedGrappleDamage, getSizeModifierAttack, parseAndRollDice } from '@/lib/dnd-utils';
 import { useI18n } from '@/context/I18nProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
-import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
 import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
-import { debounceDelayFormInput, textStyleDescription } from '@/config/layout';
+import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
+import { Input } from '@/components/ui/input';
+import {
+  debounceDelayFormInput,
+  panelContentPadding,
+  panelFieldHorizontalGap,
+  panelFieldVerticalGap,
+  panelGridGap,
+  textStyleCardTitle,
+  textStyleDescription,
+  textStyleInput,
+  textStyleLabel,
+  textStyleModifier,
+  textStyleValueBig,
+  inputWidthStandard,
+  textStylePanelSectionHeader,
+  textStyleSubLabel,
+} from '@/config/layout';
+
 
 export type CombatFieldKey = keyof Pick<Character,
   'babMiscModifier' | 'initiativeMiscModifier' | 'grappleMiscModifier' |
@@ -62,8 +78,6 @@ const CombatPanelComponent = ({
   const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
     rerollTwentiesForChecks: state.rerollTwentiesForChecks,
   }));
-  const [isLocked, setIsLocked] = React.useState(false);
-  const toggleLock = () => setIsLocked(prev => !prev);
 
   const [selectedMeleeWeaponInstanceId, setSelectedMeleeWeaponInstanceId] = React.useState<string>('unarmed');
   const [selectedRangedWeaponInstanceId, setSelectedRangedWeaponInstanceId] = React.useState<string>('none');
@@ -214,23 +228,7 @@ const CombatPanelComponent = ({
 
 
   if (!combatData || translationsLoading || !translations || !aggregatedFeatEffects || !allFeatDefinitions) {
-    return (
-      <Card>
-        <CardHeader>
-          <div className="flex justify-between items-start">
-            <div className="flex items-center space-x-3">
-              <Swords className="h-8 w-8 text-primary" />
-              <Skeleton className="h-7 w-1/2" />
-            </div>
-            <Skeleton className="h-8 w-8" />
-          </div>
-          <Skeleton className="h-4 w-3/4" />
-        </CardHeader>
-        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
-          {[...Array(6)].map((_, i) => <Skeleton key={`combat-panel-skel-${i}`} className="h-32 rounded-md" />)}
-        </CardContent>
-      </Card>
-    );
+    return null;
   }
 
   const { DND_CLASSES, SIZES, UI_STRINGS, ABILITY_LABELS } = translations;
@@ -606,320 +604,241 @@ const CombatPanelComponent = ({
     });
   };
 
-
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex justify-between items-start">
-          <div className="flex items-center space-x-3">
-            <Swords className="h-8 w-8 text-primary" />
-            <div>
-              <CardTitle className="text-2xl font-serif">{UI_STRINGS.combatPanelTitle || "Combat Stats"}</CardTitle>
-              <CardDescription className={textStyleDescription}>{UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}</CardDescription>
-            </div>
-          </div>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            className={cn(
-              "h-7 w-7 shrink-0 p-1.5", 
-              isLocked
-                ? "text-muted-foreground hover:text-foreground"
-                : "bg-accent text-accent-foreground hover:bg-accent/90"
-            )}
-            onClick={toggleLock}
-            aria-pressed={!isLocked}
-            aria-label={isLocked ? UI_STRINGS.lockButtonAriaLabelUnlocked : UI_STRINGS.lockButtonAriaLabelLocked}
-            disabled={!onCharacterUpdate}
-          >
-            {isLocked ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Row 1: BAB, Initiative */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-            <Label htmlFor="bab-display" className="text-md font-medium block">{UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus"}</Label>
-            <div className="flex items-center justify-center">
-              <p id="bab-display" className="text-xl font-bold text-accent">
-                {totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
-              </p>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleBabInfo} disabled={isLocked}>
-                <Info className="h-4 w-4" />
-              </Button>
-            </div>
-            {numFlurryExtraAttacks > 0 && (
-               <div className="flex items-center justify-center">
-                <span className="text-xs font-medium text-muted-foreground mr-1">{UI_STRINGS.combatPanelFlurryOfBlowsLabel || "Flurry of Blows"}:</span>
-                <p id="flurry-display" className="text-base font-bold text-accent/80">
-                  {flurryAttackSequence.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
+    <LockablePanelWrapper
+      title={UI_STRINGS.combatPanelTitle || "Combat"}
+      description={UI_STRINGS.combatPanelDescription || "Key offensive and grappling statistics."}
+      icon={Swords}
+      initialLockedState={false}
+    >
+      {({ isLocked: panelIsLocked }) => (
+        <CardContent className={cn("flex flex-col", panelGridGap)}>
+
+          {/* Vitals Section */}
+          <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
+            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+              <Label htmlFor="bab-display" className={textStyleCardTitle}>{UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus"}</Label>
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                <p id="bab-display" className={textStyleValueBig}>
+                  {totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
                 </p>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleBabInfo}><Info /></Button>
               </div>
-            )}
-            <div className="mt-auto space-y-1">
-              <Label htmlFor="bab-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
-              <div className="flex justify-center">
-                <NumberSpinnerInput
-                  id="bab-custom-mod"
-                  value={localBabMiscModifier}
-                  onChange={setLocalBabMiscModifier}
-                  min={-20} max={20}
-                  inputClassName="h-8 text-sm w-20"
-                  buttonClassName="h-8 w-8"
-                  disabled={isLocked || !onCharacterUpdate}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-            <Label htmlFor="initiative-display" className="text-md font-medium block">{UI_STRINGS.combatPanelInitiativeLabel || "Initiative"}</Label>
-            <div className="flex items-center justify-center">
-              <p id="initiative-display" className="text-xl font-bold text-accent">
-                {baseInitiative >= 0 ? '+' : ''}{baseInitiative}
-              </p>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleInitiativeInfo} disabled={isLocked}>
-                <Info className="h-4 w-4" />
-              </Button>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenInitiativeRoll} aria-label={UI_STRINGS.rollDialogInitiativeAriaLabel || "Roll Initiative"} disabled={isLocked}>
-                <Dices className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="mt-auto space-y-1">
-              <Label htmlFor="initiative-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
-              <div className="flex justify-center">
-                <NumberSpinnerInput
-                  id="initiative-custom-mod"
-                  value={localInitiativeMiscModifier}
-                  onChange={setLocalInitiativeMiscModifier}
-                  min={-20} max={20}
-                  inputClassName="h-8 text-sm w-20"
-                  buttonClassName="h-8 w-8"
-                  disabled={isLocked || !onCharacterUpdate}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Row 2: Grapple Modifier, Grapple Damage */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-            <Label htmlFor="grapple-mod-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleModifierLabel || "Grapple Modifier"}</Label>
-            <div className="flex items-center justify-center">
-              <p id="grapple-mod-display" className="text-xl font-bold text-accent">
-                {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
-              </p>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleGrappleModifierInfo} disabled={isLocked}>
-                <Info className="h-4 w-4" />
-              </Button>
-              <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenGrappleCheckRoll} aria-label={UI_STRINGS.rollDialogGrappleCheckAriaLabel || "Roll Grapple Check"} disabled={isLocked}>
-                <Dices className="h-4 w-4" />
-              </Button>
-            </div>
-            <div className="mt-auto space-y-1">
-              <Label htmlFor="grapple-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
-              <div className="flex justify-center">
-                <NumberSpinnerInput
-                  id="grapple-custom-mod"
-                  value={localGrappleMiscModifier}
-                  onChange={setLocalGrappleMiscModifier}
-                  min={-20} max={20}
-                  inputClassName="h-8 text-sm w-20"
-                  buttonClassName="h-8 w-8"
-                  disabled={isLocked || !onCharacterUpdate}
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="p-3 border rounded-md bg-muted/20 space-y-2 flex flex-col text-center">
-              <Label htmlFor="grapple-damage-display" className="text-md font-medium block">{UI_STRINGS.combatPanelGrappleDamageLabel || "Grapple Damage"}</Label>
-              <div className="flex items-center justify-center">
-                  <p id="grapple-damage-display" className="text-xl font-bold text-accent">
-                    {displayedGrappleDamageTotal}
+              {numFlurryExtraAttacks > 0 && (
+                <div className="flex items-center justify-center">
+                  <span className="text-xs font-medium text-muted-foreground mr-1">{UI_STRINGS.combatPanelFlurryOfBlowsLabel || "Flurry of Blows"}:</span>
+                  <p id="flurry-display" className="text-base font-bold text-accent/80">
+                    {flurryAttackSequence.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}
                   </p>
-                  <Button type="button" variant="ghost" size="icon" className="h-7 w-7 ml-1 text-muted-foreground hover:text-foreground" onClick={handleGrappleDamageInfo} disabled={isLocked}>
-                      <Info className="h-4 w-4" />
-                  </Button>
+                </div>
+              )}
+              <div className={cn("mt-auto flex flex-col items-center", panelFieldVerticalGap)}>
+                <Label htmlFor="bab-custom-mod" className={textStyleSubLabel}>{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
+                <div className={cn("flex justify-center", inputWidthStandard)}>
+                  <Input
+                    id="bab-custom-mod"
+                    type="number"
+                    value={localBabMiscModifier}
+                    onChange={(e) => setLocalBabMiscModifier(parseInt(e.target.value, 10) || 0)}
+                    disabled={panelIsLocked}
+                    className={cn(textStyleInput)}
+                  />
+                </div>
               </div>
-              <div className="mt-auto space-y-2">
-                  <div className="space-y-1">
-                      <Label className="text-xs text-muted-foreground block">{UI_STRINGS.combatPanelGrappleWeaponLabel || "Weapon"}</Label>
-                      <Select
-                          value={localGrappleWeaponChoice}
-                          onValueChange={setLocalGrappleWeaponChoice}
-                          disabled={isLocked || !onCharacterUpdate}
-                      >
-                          <SelectTrigger className="h-8 text-sm w-full max-w-[200px] mx-auto">
-                              <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                              <SelectItem value="unarmed">{UI_STRINGS.infoDialogGrappleDmgUnarmedLabel || "Unarmed"}</SelectItem>
-                          </SelectContent>
-                      </Select>
-                  </div>
-                  <div className="space-y-1">
-                      <Label htmlFor="grapple-damage-custom-mod" className="text-xs text-muted-foreground block">{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
-                      <div className="flex justify-center">
-                        <NumberSpinnerInput
-                            id="grapple-damage-custom-mod"
-                            value={localGrappleDamageBonus}
-                            onChange={setLocalGrappleDamageBonus}
-                            min={-20} max={20}
-                            inputClassName="h-8 text-sm w-20"
-                            buttonClassName="h-8 w-8"
-                            disabled={isLocked || !onCharacterUpdate}
-                        />
-                      </div>
-                  </div>
+            </div>
+
+            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+              <Label htmlFor="initiative-display" className={textStyleCardTitle}>{UI_STRINGS.combatPanelInitiativeLabel || "Initiative"}</Label>
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                <p id="initiative-display" className={textStyleValueBig}>
+                  {baseInitiative >= 0 ? '+' : ''}{baseInitiative}
+                </p>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleInitiativeInfo}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenInitiativeRoll} aria-label={UI_STRINGS.rollDialogInitiativeAriaLabel || "Roll Initiative"} disabled={panelIsLocked}><Dices /></Button>
               </div>
+              <div className={cn("mt-auto flex flex-col items-center", panelFieldVerticalGap)}>
+                <Label htmlFor="initiative-custom-mod" className={textStyleSubLabel}>{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
+                <div className={cn("flex justify-center", inputWidthStandard)}>
+                  <Input
+                    id="initiative-custom-mod"
+                    type="number"
+                    value={localInitiativeMiscModifier}
+                    onChange={(e) => setLocalInitiativeMiscModifier(parseInt(e.target.value, 10) || 0)}
+                    disabled={panelIsLocked}
+                    className={cn(textStyleInput)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+              <Label htmlFor="grapple-mod-display" className={textStyleCardTitle}>{UI_STRINGS.combatPanelGrappleModifierLabel || "Grapple Modifier"}</Label>
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                <p id="grapple-mod-display" className={textStyleValueBig}>
+                  {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
+                </p>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleGrappleModifierInfo}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenGrappleCheckRoll} aria-label={UI_STRINGS.rollDialogGrappleCheckAriaLabel || "Roll Grapple Check"} disabled={panelIsLocked}><Dices /></Button>
+              </div>
+              <div className={cn("mt-auto flex flex-col items-center", panelFieldVerticalGap)}>
+                <Label htmlFor="grapple-custom-mod" className={textStyleSubLabel}>{UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier"}</Label>
+                <div className={cn("flex justify-center", inputWidthStandard)}>
+                  <Input
+                    id="grapple-custom-mod"
+                    type="number"
+                    value={localGrappleMiscModifier}
+                    onChange={(e) => setLocalGrappleMiscModifier(parseInt(e.target.value, 10) || 0)}
+                    disabled={panelIsLocked}
+                    className={cn(textStyleInput)}
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        <Separator className="my-4" />
-
-        {(hasPowerAttackFeat || hasCombatExpertiseFeat) && (
-          <>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Power Attack / Combat Expertise Section */}
+          {(hasPowerAttackFeat || hasCombatExpertiseFeat) && (
+            <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
               {hasPowerAttackFeat && (
-                <div className="p-3 border rounded-md bg-card space-y-1 text-center">
-                  <Label htmlFor="power-attack-value" className="text-sm font-medium flex items-center justify-center">
-                    <Activity className="mr-1.5 h-4 w-4 text-destructive/80"/>
+                <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+                  <Label htmlFor="power-attack-value" className={cn("flex items-center", textStyleLabel, panelFieldHorizontalGap)}>
+                    <Activity className="text-destructive/80"/>
                     {UI_STRINGS.powerAttackValueLabel || "Power Attack"}
                   </Label>
-                  <NumberSpinnerInput
-                    id="power-attack-value"
-                    value={localPowerAttackValue}
-                    onChange={setLocalPowerAttackValue}
-                    min={0}
-                    max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
-                    inputClassName="h-8 text-sm w-20"
-                    buttonClassName="h-8 w-8"
-                    disabled={isLocked || !onCharacterUpdate}
-                  />
-                  <p className="text-xs text-muted-foreground">{UI_STRINGS.powerAttackDescription || "Set penalty to attack for damage bonus."}</p>
+                   <p className={textStyleDescription}>{UI_STRINGS.powerAttackDescription || "Set penalty to attack for damage bonus."}</p>
+                   <div className={cn("flex justify-center", inputWidthStandard)}>
+                    <Input
+                      id="power-attack-value"
+                      type="number"
+                      value={localPowerAttackValue}
+                      onChange={(e) => setLocalPowerAttackValue(parseInt(e.target.value, 10) || 0)}
+                      min={0}
+                      max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
+                      disabled={panelIsLocked}
+                      className={cn(textStyleInput)}
+                    />
+                   </div>
                 </div>
               )}
               {hasCombatExpertiseFeat && (
-                <div className="p-3 border rounded-md bg-card space-y-1 text-center">
-                  <Label htmlFor="combat-expertise-value" className="text-sm font-medium flex items-center justify-center">
-                    <ShieldIcon className="mr-1.5 h-4 w-4 text-blue-500/80"/>
+                <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
+                  <Label htmlFor="combat-expertise-value" className={cn("flex items-center", textStyleLabel, panelFieldHorizontalGap)}>
+                    <ShieldIcon className="text-blue-500/80"/>
                     {UI_STRINGS.combatExpertiseValueLabel || "Combat Expertise"}
                   </Label>
-                  <NumberSpinnerInput
-                    id="combat-expertise-value"
-                    value={localCombatExpertiseValue}
-                    onChange={setLocalCombatExpertiseValue}
-                    min={0}
-                    max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
-                    inputClassName="h-8 text-sm w-20"
-                    buttonClassName="h-8 w-8"
-                    disabled={isLocked || !onCharacterUpdate}
-                  />
-                  <p className="text-xs text-muted-foreground">{UI_STRINGS.combatExpertiseDescription || "Set penalty to attack for AC bonus."}</p>
+                  <p className={textStyleDescription}>{UI_STRINGS.combatExpertiseDescription || "Set penalty to attack for AC bonus."}</p>
+                  <div className={cn("flex justify-center", inputWidthStandard)}>
+                    <Input
+                      id="combat-expertise-value"
+                      type="number"
+                      value={localCombatExpertiseValue}
+                      onChange={(e) => setLocalCombatExpertiseValue(parseInt(e.target.value, 10) || 0)}
+                      min={0}
+                      max={maxBabForSpinners > 0 ? maxBabForSpinners : 0}
+                      disabled={panelIsLocked}
+                      className={cn(textStyleInput)}
+                    />
+                   </div>
                 </div>
               )}
             </div>
-            <Separator className="my-4" />
-          </>
-        )}
+          )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Melee Attacks Card */}
-          <div className="p-3 border rounded-md bg-muted/20 space-y-3">
-            <h4 className="text-lg font-semibold text-foreground/90 flex items-center"><Hand className="mr-2 h-5 w-5 text-primary/70"/>{UI_STRINGS.attacksPanelMeleeTitle || "Melee Attacks"}</h4>
-            <div className="space-y-1">
-              <Label htmlFor="melee-weapon-select">{UI_STRINGS.attacksPanelMeleeWeaponLabel || "Melee Weapon"}</Label>
-              <Select value={selectedMeleeWeaponInstanceId} onValueChange={setSelectedMeleeWeaponInstanceId} disabled={isLocked}>
-                <SelectTrigger id="melee-weapon-select"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {meleeWeaponInstances.map(wInst => <SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}</SelectItem>)}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-            {selectedMeleeWeaponDefinition && (
-              <div className="p-2 border rounded-md bg-background text-xs space-y-0.5">
-                <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel || "Damage"}:</strong> {selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition.damage || 'N/A'}</p>
-                <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel || "Critical"}:</strong> {selectedMeleeWeaponDefinition.criticalRange || 'N/A'} {selectedMeleeWeaponDefinition.criticalMultiplier || ''}</p>
-                {selectedMeleeWeaponDefinition.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel || "Type"}:</strong> {getLocalizedString(selectedMeleeWeaponDefinition.damageType, currentLang, DEFAULT_LANGUAGE)}</p>}
+          {/* Attack Sections */}
+          <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
+            <div className={cn("border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+              <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.attacksPanelMeleeTitle || "Melee Attacks"}</h4>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="melee-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelMeleeWeaponLabel || "Melee Weapon"}</Label>
+                <Select value={selectedMeleeWeaponInstanceId} onValueChange={setSelectedMeleeWeaponInstanceId} disabled={panelIsLocked}>
+                  <SelectTrigger id="melee-weapon-select"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {meleeWeaponInstances.map(wInst => <SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}</SelectItem>)}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
-            )}
-            <div className="flex justify-around items-center mt-2">
-              <div className="text-center">
-                <Label className="text-xs font-medium block">{UI_STRINGS.attacksPanelAttackBonusLabel || "Attack Bonus"}</Label>
-                <div className="flex items-center justify-center">
-                    <p className="text-base font-bold text-accent">{calculatedMeleeAttackBonus >= 0 ? '+' : ''}{calculatedMeleeAttackBonus}</p>
-                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleOpenMeleeAttackInfo} disabled={isLocked}><Info className="h-3.5 w-3.5" /></Button>
-                    <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenMeleeAttackRollDialog} aria-label={(UI_STRINGS.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : 'Unarmed')} disabled={isLocked}><Dices className="h-3.5 w-3.5" /></Button>
+              {selectedMeleeWeaponDefinition && (
+                <div className="p-2 border rounded-md bg-background text-xs flex flex-col gap-0.5">
+                  <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel || "Damage"}:</strong> {selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition.damage || 'N/A'}</p>
+                  <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel || "Critical"}:</strong> {selectedMeleeWeaponDefinition.criticalRange || 'N/A'} {selectedMeleeWeaponDefinition.criticalMultiplier || ''}</p>
+                  {selectedMeleeWeaponDefinition.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel || "Type"}:</strong> {getLocalizedString(selectedMeleeWeaponDefinition.damageType, currentLang, DEFAULT_LANGUAGE)}</p>}
                 </div>
-              </div>
-              <div className="text-center">
-                <Label className="text-xs font-medium block">{UI_STRINGS.attacksPanelDamageBonusLabel || "Damage Bonus"}</Label>
-                <div className="flex items-center justify-center">
-                  <p className="text-base font-bold text-accent">{renderModifierValue(calculatedMeleeNumericalDamageBonus)}</p>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={handleOpenMeleeDamageInfo} disabled={isLocked}><Info className="h-3.5 w-3.5" /></Button>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenMeleeDamageRollDialog} disabled={isLocked || (!selectedMeleeWeaponDefinition && selectedMeleeWeaponInstanceId !== 'unarmed')} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed")}><Dices className="h-3.5 w-3.5" /></Button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Ranged Attacks Card */}
-          <div className="p-3 border rounded-md bg-muted/20 space-y-3">
-            <h4 className="text-lg font-semibold text-foreground/90 flex items-center"><ArrowRightLeft className="mr-2 h-5 w-5 text-primary/70"/>{UI_STRINGS.attacksPanelRangedTitle || "Ranged Attacks"}</h4>
-            <div className="space-y-1">
-              <Label htmlFor="ranged-weapon-select">{UI_STRINGS.attacksPanelRangedWeaponLabel || "Ranged Weapon"}</Label>
-              <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={isLocked || rangedWeaponInstances.length === 0}>
-                <SelectTrigger id="ranged-weapon-select">
-                  <SelectValue placeholder={rangedWeaponInstances.length === 0 ? (UI_STRINGS.attacksPanelNoRangedWeapons || "No ranged weapons") : (UI_STRINGS.attacksPanelSelectRangedWeapon || "Select ranged weapon...")} />
-                </SelectTrigger>
-                <SelectContent>
-                   <SelectGroup>
-                    {rangedWeaponInstances.length === 0 ?
-                      <SelectItem value="none" disabled>{UI_STRINGS.attacksPanelNoRangedWeapons || "No ranged weapons"}</SelectItem>
-                      :
-                      rangedWeaponInstances.map(wInst => <SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}</SelectItem>)
-                    }
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-             {selectedRangedWeaponDefinition && (
-              <div className="p-2 border rounded-md bg-background text-xs space-y-0.5">
-                <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel || "Damage"}:</strong> {selectedRangedWeaponDefinition.damage || 'N/A'}</p>
-                <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel || "Critical"}:</strong> {selectedRangedWeaponDefinition.criticalRange || 'N/A'} {selectedRangedWeaponDefinition.criticalMultiplier || ''}</p>
-                {selectedRangedWeaponDefinition.rangeIncrement && <p><strong>{UI_STRINGS.attacksPanelWeaponRangeLabel || "Range"}:</strong> {selectedRangedWeaponDefinition.rangeIncrement} {UI_STRINGS.speedUnit || "ft."}</p>}
-                {selectedRangedWeaponDefinition.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel || "Type"}:</strong> {getLocalizedString(selectedRangedWeaponDefinition.damageType, currentLang, DEFAULT_LANGUAGE)}</p>}
-              </div>
-            )}
-            <div className="flex justify-around items-center mt-2">
-              <div className="text-center">
-                <Label className="text-xs font-medium block">{UI_STRINGS.attacksPanelAttackBonusLabel || "Attack Bonus"}</Label>
-                <div className="flex items-center justify-center">
-                  <p className="text-base font-bold text-accent">{selectedRangedWeaponDefinition ? (calculatedRangedAttackBonus >= 0 ? '+' : '') + calculatedRangedAttackBonus : 'N/A'}</p>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-foreground" onClick={handleOpenRangedAttackInfo} disabled={isLocked || !selectedRangedWeaponDefinition}><Info className="h-3.5 w-3.5" /></Button>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenRangedAttackRollDialog} disabled={isLocked || !selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices className="h-3.5 w-3.5" /></Button>
+              )}
+              <div className="flex justify-around items-center">
+                <div className="text-center">
+                  <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel || "Attack Bonus"}</Label>
+                  <div className="flex items-center justify-center">
+                    <p className={textStyleModifier}>{calculatedMeleeAttackBonus >= 0 ? '+' : ''}{calculatedMeleeAttackBonus}</p>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenMeleeAttackInfo} disabled={panelIsLocked}><Info /></Button>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenMeleeAttackRollDialog} aria-label={(UI_STRINGS.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : 'Unarmed')} disabled={panelIsLocked}><Dices /></Button>
                   </div>
+                </div>
+                <div className="text-center">
+                  <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel || "Damage Bonus"}</Label>
+                  <div className="flex items-center justify-center">
+                    <p className={textStyleModifier}>{renderModifierValue(calculatedMeleeNumericalDamageBonus)}</p>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenMeleeDamageInfo} disabled={panelIsLocked}><Info /></Button>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenMeleeDamageRollDialog} disabled={panelIsLocked || (!selectedMeleeWeaponDefinition && selectedMeleeWeaponInstanceId !== 'unarmed')} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedMeleeWeaponDefinition?.label ? getLocalizedString(selectedMeleeWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : UI_STRINGS.attacksPanelUnarmedOption || "Unarmed")}><Dices /></Button>
+                  </div>
+                </div>
               </div>
-              <div className="text-center">
-                <Label className="text-xs font-medium block">{UI_STRINGS.attacksPanelDamageBonusLabel || "Damage Bonus"}</Label>
-                <div className="flex items-center justify-center">
-                  <p className="text-base font-bold text-accent">{selectedRangedWeaponDefinition ? renderModifierValue(calculatedRangedNumericalDamageBonus) : 'N/A'}</p>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-1 text-muted-foreground hover:text-foreground" onClick={handleOpenRangedDamageInfo} disabled={isLocked || !selectedRangedWeaponDefinition}><Info className="h-3.5 w-3.5" /></Button>
-                  <Button type="button" variant="ghost" size="icon" className="h-6 w-6 ml-0.5 text-muted-foreground hover:text-primary" onClick={handleOpenRangedDamageRollDialog} disabled={isLocked || !selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices className="h-3.5 w-3.5" /></Button>
+            </div>
+
+            <div className={cn("border rounded-md bg-card", panelContentPadding, panelFieldVerticalGap)}>
+              <h4 className={textStylePanelSectionHeader}>{UI_STRINGS.attacksPanelRangedTitle || "Ranged Attacks"}</h4>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel || "Ranged Weapon"}</Label>
+                <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked || rangedWeaponInstances.length === 0}>
+                  <SelectTrigger id="ranged-weapon-select">
+                    <SelectValue placeholder={rangedWeaponInstances.length === 0 ? (UI_STRINGS.attacksPanelNoRangedWeapons || "No ranged weapons") : (UI_STRINGS.attacksPanelSelectRangedWeapon || "Select ranged weapon...")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {rangedWeaponInstances.length === 0 ?
+                        <SelectItem value="none" disabled>{UI_STRINGS.attacksPanelNoRangedWeapons || "No ranged weapons"}</SelectItem>
+                        :
+                        rangedWeaponInstances.map(wInst => <SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}</SelectItem>)
+                      }
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </div>
+              {selectedRangedWeaponDefinition && (
+                <div className="p-2 border rounded-md bg-background text-xs flex flex-col gap-0.5">
+                  <p><strong>{UI_STRINGS.attacksPanelWeaponDamageLabel || "Damage"}:</strong> {selectedRangedWeaponDefinition.damage || 'N/A'}</p>
+                  <p><strong>{UI_STRINGS.attacksPanelWeaponCriticalLabel || "Critical"}:</strong> {selectedRangedWeaponDefinition.criticalRange || 'N/A'} {selectedRangedWeaponDefinition.criticalMultiplier || ''}</p>
+                  {selectedRangedWeaponDefinition.rangeIncrement && <p><strong>{UI_STRINGS.attacksPanelWeaponRangeLabel || "Range"}:</strong> {selectedRangedWeaponDefinition.rangeIncrement} {UI_STRINGS.speedUnit || "ft."}</p>}
+                  {selectedRangedWeaponDefinition.damageType && <p><strong>{UI_STRINGS.attacksPanelWeaponDamageTypeLabel || "Type"}:</strong> {getLocalizedString(selectedRangedWeaponDefinition.damageType, currentLang, DEFAULT_LANGUAGE)}</p>}
+                </div>
+              )}
+              <div className="flex justify-around items-center">
+                <div className="text-center">
+                  <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel || "Attack Bonus"}</Label>
+                  <div className="flex items-center justify-center">
+                    <p className={textStyleModifier}>{selectedRangedWeaponDefinition ? (calculatedRangedAttackBonus >= 0 ? '+' : '') + calculatedRangedAttackBonus : 'N/A'}</p>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenRangedAttackInfo} disabled={panelIsLocked || !selectedRangedWeaponDefinition}><Info /></Button>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenRangedAttackRollDialog} disabled={panelIsLocked || !selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel || "Damage Bonus"}</Label>
+                  <div className="flex items-center justify-center">
+                    <p className={textStyleModifier}>{selectedRangedWeaponDefinition ? renderModifierValue(calculatedRangedNumericalDamageBonus) : 'N/A'}</p>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenRangedDamageInfo} disabled={panelIsLocked || !selectedRangedWeaponDefinition}><Info /></Button>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenRangedDamageRollDialog} disabled={panelIsLocked || !selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      )}
+    </LockablePanelWrapper>
   );
 };
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
+
+    
