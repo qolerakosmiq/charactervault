@@ -578,7 +578,7 @@ const CombatPanelComponent = ({
   const mainHandWeaponDisplay = React.useMemo(() => {
     if (!selectedMainHandMeleeWeaponDefinition || !UI_STRINGS) return null;
     return (
-      <div className={cn("flex w-full items-center justify-start mt-1", panelBadgeGroupGap)}>
+      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
         <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMainHandMeleeWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
         <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedMainHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedMainHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
       </div>
@@ -588,7 +588,7 @@ const CombatPanelComponent = ({
   const offHandWeaponDisplay = React.useMemo(() => {
     if (!selectedOffHandMeleeWeaponDefinition || !UI_STRINGS) return null;
     return (
-      <div className={cn("flex w-full items-center justify-start mt-1", panelBadgeGroupGap)}>
+      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
         <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedOffHandMeleeWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
         <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedOffHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedOffHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
       </div>
@@ -598,7 +598,7 @@ const CombatPanelComponent = ({
   const rangedWeaponDisplay = React.useMemo(() => {
     if (!selectedRangedWeaponDefinition || !UI_STRINGS) return null;
     return (
-      <div className={cn("flex w-full items-center justify-start mt-1", panelBadgeGroupGap)}>
+      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
         <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedRangedWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
         <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
       </div>
