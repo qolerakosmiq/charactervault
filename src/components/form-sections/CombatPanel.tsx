@@ -51,6 +51,7 @@ import {
   textStylePanelSectionHeader,
   textStyleSubLabel,
   textStyleBadgeSmall,
+  textStyleBadgeMedium,
 } from '@/config/layout';
 
 export type CombatFieldKey = keyof Pick<Character,
@@ -239,59 +240,69 @@ const CombatPanelComponent = ({
       .filter(item => item.definition && (item.definition.weaponType === 'ranged' || item.definition.weaponType === 'melee-or-ranged'));
   }, [inventory, getWeaponDefinition]);
   
+  const mainHandId = equippedGear?.['main-hand'];
+  const offHandId = equippedGear?.['off-hand'];
+  const twoHandId = equippedGear?.['two-hand'];
+
   React.useEffect(() => {
-    const mainHandInstanceId = equippedGear?.['main-hand'];
-    const twoHandInstanceId = equippedGear?.['two-hand'];
     let finalMainHandId = 'unarmed'; 
 
-    if (mainHandInstanceId) {
-        const mainHandItem = inventory?.find(i => i.instanceId === mainHandInstanceId);
+    if (mainHandId) {
+        const mainHandItem = inventory?.find(i => i.instanceId === mainHandId);
         const mainHandDef = getWeaponDefinition(mainHandItem?.definitionId);
-        if (mainHandDef && (mainHandDef.itemType === 'weapon' || mainHandDef.itemType === 'shield') && (mainHandDef.weaponType === 'melee' || mainHandDef.weaponType === 'melee-or-ranged')) {
-            finalMainHandId = mainHandInstanceId;
+        if (mainHandDef && (mainHandDef.itemType === 'weapon' || (mainHandDef.itemType === 'shield' && mainHandDef.damage)) && (mainHandDef.weaponType === 'melee' || mainHandDef.weaponType === 'melee-or-ranged')) {
+            finalMainHandId = mainHandId;
         }
-    } else if (twoHandInstanceId) {
-        const twoHandItem = inventory?.find(i => i.instanceId === twoHandInstanceId);
+    } else if (twoHandId) {
+        const twoHandItem = inventory?.find(i => i.instanceId === twoHandId);
         const twoHandDef = getWeaponDefinition(twoHandItem?.definitionId);
-        if (twoHandDef && (twoHandDef.itemType === 'weapon' || twoHandDef.itemType === 'shield') && (twoHandDef.weaponType === 'melee' || twoHandDef.weaponType === 'melee-or-ranged')) {
-            finalMainHandId = twoHandInstanceId;
-        }
+         if (twoHandDef && (twoHandDef.itemType === 'weapon' || (twoHandDef.itemType === 'shield' && twoHandDef.damage)) && (twoHandDef.weaponType === 'melee' || twoHandDef.weaponType === 'melee-or-ranged')) {
+           finalMainHandId = twoHandId;
+         }
     }
     setSelectedMainHandMeleeWeaponInstanceId(finalMainHandId);
 
-    const offHandInstanceId = equippedGear?.['off-hand'];
     let finalOffHandId = 'none';
-
-    if (offHandInstanceId) {
-        const offHandItem = inventory?.find(i => i.instanceId === offHandInstanceId);
+    if (offHandId) {
+        const offHandItem = inventory?.find(i => i.instanceId === offHandId);
         const offHandDef = getWeaponDefinition(offHandItem?.definitionId);
-        if (offHandDef && (offHandDef.itemType === 'weapon' || offHandDef.itemType === 'shield') && (offHandDef.weaponType === 'melee' || offHandDef.weaponType === 'melee-or-ranged')) {
-            finalOffHandId = offHandInstanceId;
+        if (offHandDef && (offHandDef.itemType === 'weapon' || (offHandDef.itemType === 'shield' && offHandDef.damage)) && (offHandDef.weaponType === 'melee' || offHandDef.weaponType === 'melee-or-ranged')) {
+            finalOffHandId = offHandId;
         }
     }
     setSelectedOffHandMeleeWeaponInstanceId(finalOffHandId);
 
     let rangedEquipped = false;
-    if (mainHandInstanceId) {
-      const mainHandItem = inventory?.find(i => i.instanceId === mainHandInstanceId);
+    let finalRangedWeaponInstanceId = 'none';
+    if (mainHandId) {
+      const mainHandItem = inventory?.find(i => i.instanceId === mainHandId);
       const mainHandDef = getWeaponDefinition(mainHandItem?.definitionId);
       if (mainHandDef?.itemType === 'weapon' && (mainHandDef.weaponType === 'ranged' || mainHandDef.weaponType === 'melee-or-ranged')) {
-        setSelectedRangedWeaponInstanceId(mainHandInstanceId);
+        finalRangedWeaponInstanceId = mainHandId;
         rangedEquipped = true;
       }
     }
-    if (!rangedEquipped && twoHandInstanceId) {
-      const twoHandItem = inventory?.find(i => i.instanceId === twoHandInstanceId);
+    if (!rangedEquipped && twoHandId) {
+      const twoHandItem = inventory?.find(i => i.instanceId === twoHandId);
       const twoHandDef = getWeaponDefinition(twoHandItem?.definitionId);
        if (twoHandDef?.itemType === 'weapon' && (twoHandDef.weaponType === 'ranged' || twoHandDef.weaponType === 'melee-or-ranged')) {
-         setSelectedRangedWeaponInstanceId(twoHandInstanceId);
+         finalRangedWeaponInstanceId = twoHandId;
          rangedEquipped = true;
        }
     }
-    if (!rangedEquipped) {
-        setSelectedRangedWeaponInstanceId('none');
-    }
-  }, [equippedGear, inventory, getWeaponDefinition]);
+    setSelectedRangedWeaponInstanceId(finalRangedWeaponInstanceId);
+  }, [mainHandId, offHandId, twoHandId, inventory, getWeaponDefinition]);
+  
+  const selectedMainHandMeleeWeaponInstance = React.useMemo(() => meleeWeaponInstances.find(w => w.instanceId === selectedMainHandMeleeWeaponInstanceId), [meleeWeaponInstances, selectedMainHandMeleeWeaponInstanceId]);
+  const selectedMainHandMeleeWeaponDefinition = selectedMainHandMeleeWeaponInstance?.definition;
+  
+  const selectedOffHandMeleeWeaponInstance = React.useMemo(() => meleeWeaponInstances.find(w => w.instanceId === selectedOffHandMeleeWeaponInstanceId), [meleeWeaponInstances, selectedOffHandMeleeWeaponInstanceId]);
+  const selectedOffHandMeleeWeaponDefinition = selectedOffHandMeleeWeaponInstance?.definition;
+  
+  const selectedRangedWeaponInstance = React.useMemo(() => rangedWeaponInstances.find(w => w.instanceId === selectedRangedWeaponInstanceId), [rangedWeaponInstances, selectedRangedWeaponInstanceId]);
+  const selectedRangedWeaponDefinition = selectedRangedWeaponInstance?.definition;
+  
+  const meleeAbilityModForAttack = React.useMemo(() => selectedMainHandMeleeWeaponDefinition?.isFinesseWeapon && dexModifier > strModifier ? dexModifier : strModifier, [selectedMainHandMeleeWeaponDefinition, dexModifier, strModifier]);
   
   const calculateFinalAttackBonus = React.useCallback((baseBab: number, abilityMod: number, sizeMod: number, weaponType: 'melee' | 'ranged' | 'unarmed', selectedWeaponDefinition?: ItemDefinition | null, powerAttackVal: number = 0, combatExpertiseVal: number = 0): number => {
     let totalBonus = baseBab + abilityMod + sizeMod;
@@ -325,17 +336,6 @@ const CombatPanelComponent = ({
     }
     return totalBonus;
   }, [getActiveDamageBonuses, getWeaponEnhancementBonus]);
-  
-  const selectedMainHandMeleeWeaponInstance = React.useMemo(() => meleeWeaponInstances.find(w => w.instanceId === selectedMainHandMeleeWeaponInstanceId), [meleeWeaponInstances, selectedMainHandMeleeWeaponInstanceId]);
-  const selectedMainHandMeleeWeaponDefinition = selectedMainHandMeleeWeaponInstance?.definition;
-  
-  const selectedOffHandMeleeWeaponInstance = React.useMemo(() => meleeWeaponInstances.find(w => w.instanceId === selectedOffHandMeleeWeaponInstanceId), [meleeWeaponInstances, selectedOffHandMeleeWeaponInstanceId]);
-  const selectedOffHandMeleeWeaponDefinition = selectedOffHandMeleeWeaponInstance?.definition;
-  
-  const selectedRangedWeaponInstance = React.useMemo(() => rangedWeaponInstances.find(w => w.instanceId === selectedRangedWeaponInstanceId), [rangedWeaponInstances, selectedRangedWeaponInstanceId]);
-  const selectedRangedWeaponDefinition = selectedRangedWeaponInstance?.definition;
-  
-  const meleeAbilityModForAttack = React.useMemo(() => selectedMainHandMeleeWeaponDefinition?.isFinesseWeapon && dexModifier > strModifier ? dexModifier : strModifier, [selectedMainHandMeleeWeaponDefinition, dexModifier, strModifier]);
   
   const calculatedMeleeAttackBonus = React.useMemo(() => calculateFinalAttackBonus(totalBabWithModifier[0], meleeAbilityModForAttack, sizeModifierAttack || 0, 'melee', selectedMainHandMeleeWeaponDefinition, localPowerAttackValue, localCombatExpertiseValue), [calculateFinalAttackBonus, totalBabWithModifier, meleeAbilityModForAttack, sizeModifierAttack, selectedMainHandMeleeWeaponDefinition, localPowerAttackValue, localCombatExpertiseValue]);
   const calculatedMeleeNumericalDamageBonus = React.useMemo(() => calculateFinalNumericalDamageBonus(strModifier, 'melee', selectedMainHandMeleeWeaponDefinition, localPowerAttackValue), [calculateFinalNumericalDamageBonus, strModifier, selectedMainHandMeleeWeaponDefinition, localPowerAttackValue]);
@@ -426,7 +426,7 @@ const CombatPanelComponent = ({
       components
     });
   }, [UI_STRINGS, getDamageBreakdown, onOpenCombatStatInfoDialog]);
-  
+
   const handleRollAction = React.useCallback((rollType: 'initiative' | 'grapple' | 'melee-attack' | 'melee-damage' | 'ranged-attack' | 'ranged-damage') => {
     if (!UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS || !abilityScores || !aggregatedFeatEffects) return;
     
@@ -504,6 +504,36 @@ const CombatPanelComponent = ({
     });
   }, [UI_STRINGS, DND_CLASSES, SIZES, ABILITY_LABELS, abilityScores, classes, size, aggregatedFeatEffects, onOpenRollDialog, rerollTwentiesForChecks, currentLang, baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, localInitiativeMiscModifier, localGrappleMiscModifier, calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus, localPowerAttackValue, localCombatExpertiseValue, meleeAbilityModForAttack, sizeModifierAttack, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, parseCritMultiplier, totalBabWithModifier, getAttackBreakdown, getDamageBreakdown, strModifier, dexModifier]);
   
+  const mainHandWeaponDisplay = React.useMemo(() => {
+    if (!selectedMainHandMeleeWeaponDefinition || !UI_STRINGS) return null;
+    return (
+      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
+        <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMainHandMeleeWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
+        <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedMainHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedMainHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
+      </div>
+    );
+  }, [selectedMainHandMeleeWeaponDefinition, selectedMainHandMeleeWeaponInstanceId, unarmedBaseDamageFromFeat, UI_STRINGS]);
+
+  const offHandWeaponDisplay = React.useMemo(() => {
+    if (!selectedOffHandMeleeWeaponDefinition || !UI_STRINGS) return null;
+    return (
+      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
+        <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedOffHandMeleeWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
+        <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedOffHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedOffHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
+      </div>
+    );
+  }, [selectedOffHandMeleeWeaponDefinition, UI_STRINGS]);
+
+  const rangedWeaponDisplay = React.useMemo(() => {
+    if (!selectedRangedWeaponDefinition || !UI_STRINGS) return null;
+    return (
+      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
+        <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedRangedWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
+        <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
+      </div>
+    );
+  }, [selectedRangedWeaponDefinition, UI_STRINGS]);
+
   if (translationsLoading || !UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS || !aggregatedFeatEffects) {
     return null;
   }
@@ -637,7 +667,7 @@ const CombatPanelComponent = ({
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <Card className={cn("flex flex-col justify-start", panelContentPadding, panelGridGap)}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
-                 <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4">
                     <div className="text-center flex flex-col gap-1">
                       <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                       <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
@@ -671,12 +701,7 @@ const CombatPanelComponent = ({
                           </SelectGroup>
                         </SelectContent>
                       </Select>
-                      {selectedMainHandMeleeWeaponDefinition && (
-                        <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
-                          <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMainHandMeleeWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
-                          <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedMainHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedMainHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
-                        </div>
-                      )}
+                      {mainHandWeaponDisplay}
                     </div>
                     <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                       <Label htmlFor="off-hand-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel}</Label>
@@ -694,16 +719,11 @@ const CombatPanelComponent = ({
                           </SelectGroup>
                         </SelectContent>
                       </Select>
-                      {selectedOffHandMeleeWeaponDefinition && (
-                        <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
-                          <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedOffHandMeleeWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
-                          <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedOffHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedOffHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
-                        </div>
-                      )}
+                      {offHandWeaponDisplay}
                     </div>
                 </div>
             </Card>
-            <Card className={cn("flex flex-col justify-start mt-4 md:mt-0", panelContentPadding, panelGridGap)}>
+            <Card className={cn("flex flex-col justify-start", panelContentPadding, panelGridGap)}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center flex flex-col gap-1">
@@ -736,12 +756,7 @@ const CombatPanelComponent = ({
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  {selectedRangedWeaponDefinition && (
-                    <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
-                      <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedRangedWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
-                      <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
-                    </div>
-                  )}
+                  {rangedWeaponDisplay}
                 </div>
             </Card>
           </div>
