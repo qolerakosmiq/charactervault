@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -215,32 +214,35 @@ const CombatPanelComponent = ({
       : UI_STRINGS.unarmedDamageDefault;
   }, [modifiedMechanics, UI_STRINGS]);
 
+  const unarmedStrikeDefinition = React.useMemo(() => {
+    if (!UI_STRINGS) return null;
+    return {
+        definitionId: 'unarmed-placeholder',
+        label: { en: 'Unarmed', fr: 'À mains nues' },
+        itemType: 'weapon' as const,
+        weaponType: 'melee' as const,
+        damage: unarmedBaseDamageFromFeat,
+        criticalRange: '20',
+        criticalMultiplier: '×2'
+    } as ItemDefinition;
+  }, [UI_STRINGS, unarmedBaseDamageFromFeat]);
+
   const meleeWeaponInstances = React.useMemo(() => {
-    if (!UI_STRINGS || !inventory) return [];
+    if (!inventory || !unarmedStrikeDefinition) return [];
     const inventoryItems = inventory.filter(itemInst => {
         const itemDef = getWeaponDefinition(itemInst.definitionId);
         return itemDef && (itemDef.itemType === 'weapon' || (itemDef.itemType === 'shield' && !!itemDef.damage));
     });
-  
-    const unarmedDef: ItemDefinition = {
-      definitionId: 'unarmed-placeholder',
-      label: { en: 'Unarmed', fr: 'À mains nues' },
-      itemType: 'weapon' as const,
-      weaponType: 'melee' as const,
-      damage: unarmedBaseDamageFromFeat,
-      criticalRange: '20',
-      criticalMultiplier: '×2'
-    };
   
     const meleeInventoryItems = inventoryItems
       .map(inst => ({ ...inst, definition: getWeaponDefinition(inst.definitionId)! }))
       .filter(item => item.definition && (item.definition.weaponType === 'melee' || item.definition.weaponType === 'melee-or-ranged'));
       
     return [
-      { instanceId: 'unarmed', definitionId: 'unarmed-placeholder', quantity: 1, definition: unarmedDef },
+      { instanceId: 'unarmed', definitionId: 'unarmed-placeholder', quantity: 1, definition: unarmedStrikeDefinition },
       ...meleeInventoryItems,
     ];
-  }, [UI_STRINGS, inventory, getWeaponDefinition, unarmedBaseDamageFromFeat]);
+  }, [inventory, getWeaponDefinition, unarmedStrikeDefinition]);
   
   const rangedWeaponInstances = React.useMemo(() => {
     if (!inventory) return [];
@@ -252,54 +254,53 @@ const CombatPanelComponent = ({
   const mainHandId = equippedGear?.['main-hand'];
   const offHandId = equippedGear?.['off-hand'];
   const twoHandId = equippedGear?.['two-hand'];
+  const mainHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === mainHandId), [inventory, mainHandId]);
+  const offHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === offHandId), [inventory, offHandId]);
+  const twoHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === twoHandId), [inventory, twoHandId]);
+
 
   React.useEffect(() => {
     let finalMainHandId = 'unarmed'; 
-    if (mainHandId) {
-        const mainHandItem = inventory?.find(i => i.instanceId === mainHandId);
-        const mainHandDef = getWeaponDefinition(mainHandItem?.definitionId);
+    if (mainHandItem) {
+        const mainHandDef = getWeaponDefinition(mainHandItem.definitionId);
         if (mainHandDef && (mainHandDef.itemType === 'weapon' || (mainHandDef.itemType === 'shield' && mainHandDef.damage)) && (mainHandDef.weaponType === 'melee' || mainHandDef.weaponType === 'melee-or-ranged')) {
-            finalMainHandId = mainHandId;
+            finalMainHandId = mainHandItem.instanceId;
         }
-    } else if (twoHandId) {
-        const twoHandItem = inventory?.find(i => i.instanceId === twoHandId);
-        const twoHandDef = getWeaponDefinition(twoHandItem?.definitionId);
+    } else if (twoHandItem) {
+        const twoHandDef = getWeaponDefinition(twoHandItem.definitionId);
          if (twoHandDef && (twoHandDef.itemType === 'weapon' || (twoHandDef.itemType === 'shield' && twoHandDef.damage)) && (twoHandDef.weaponType === 'melee' || twoHandDef.weaponType === 'melee-or-ranged')) {
-           finalMainHandId = twoHandId;
+           finalMainHandId = twoHandItem.instanceId;
          }
     }
     setSelectedMainHandMeleeWeaponInstanceId(finalMainHandId);
 
     let finalOffHandId = 'none';
-    if (offHandId) {
-        const offHandItem = inventory?.find(i => i.instanceId === offHandId);
-        const offHandDef = getWeaponDefinition(offHandItem?.definitionId);
+    if (offHandItem) {
+        const offHandDef = getWeaponDefinition(offHandItem.definitionId);
         if (offHandDef && (offHandDef.itemType === 'weapon' || (offHandDef.itemType === 'shield' && offHandDef.damage)) && (offHandDef.weaponType === 'melee' || offHandDef.weaponType === 'melee-or-ranged')) {
-            finalOffHandId = offHandId;
+            finalOffHandId = offHandItem.instanceId;
         }
     }
     setSelectedOffHandMeleeWeaponInstanceId(finalOffHandId);
 
     let rangedEquipped = false;
     let finalRangedWeaponInstanceId = 'none';
-    if (mainHandId) {
-      const mainHandItem = inventory?.find(i => i.instanceId === mainHandId);
-      const mainHandDef = getWeaponDefinition(mainHandItem?.definitionId);
+    if (mainHandItem) {
+      const mainHandDef = getWeaponDefinition(mainHandItem.definitionId);
       if (mainHandDef?.itemType === 'weapon' && (mainHandDef.weaponType === 'ranged' || mainHandDef.weaponType === 'melee-or-ranged')) {
-        finalRangedWeaponInstanceId = mainHandId;
+        finalRangedWeaponInstanceId = mainHandItem.instanceId;
         rangedEquipped = true;
       }
     }
-    if (!rangedEquipped && twoHandId) {
-      const twoHandItem = inventory?.find(i => i.instanceId === twoHandId);
-      const twoHandDef = getWeaponDefinition(twoHandItem?.definitionId);
+    if (!rangedEquipped && twoHandItem) {
+      const twoHandDef = getWeaponDefinition(twoHandItem.definitionId);
        if (twoHandDef?.itemType === 'weapon' && (twoHandDef.weaponType === 'ranged' || twoHandDef.weaponType === 'melee-or-ranged')) {
-         finalRangedWeaponInstanceId = twoHandId;
+         finalRangedWeaponInstanceId = twoHandItem.instanceId;
          rangedEquipped = true;
        }
     }
     setSelectedRangedWeaponInstanceId(finalRangedWeaponInstanceId);
-  }, [mainHandId, offHandId, twoHandId, inventory, getWeaponDefinition]);
+  }, [mainHandItem, offHandItem, twoHandItem, getWeaponDefinition]);
   
   const selectedMainHandMeleeWeaponInstance = React.useMemo(() => meleeWeaponInstances.find(w => w.instanceId === selectedMainHandMeleeWeaponInstanceId), [meleeWeaponInstances, selectedMainHandMeleeWeaponInstanceId]);
   const selectedMainHandMeleeWeaponDefinition = selectedMainHandMeleeWeaponInstance?.definition;
@@ -380,27 +381,29 @@ const CombatPanelComponent = ({
   );
 
   const initiativeBreakdown = React.useMemo(() => {
-    if (!UI_STRINGS) return [];
-    const breakdown: GenericBreakdownItem[] = [];
-    if (dexModifier !== 0) breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || 'Ability Mod ({abilityAbbr})').replace("{abilityAbbr}", 'DEX'), value: dexModifier });
-    if ((initiativeBonus || 0) !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: initiativeBonus || 0 });
-    if (localInitiativeMiscModifier !== 0) breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localInitiativeMiscModifier || 0 });
-    return breakdown;
-  }, [UI_STRINGS, dexModifier, initiativeBonus, localInitiativeMiscModifier]);
+    if (!UI_STRINGS || !ABILITY_LABELS) return [];
+    const components: GenericBreakdownItem[] = [];
+    const dexAbbr = ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr || "DEX";
+    components.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", dexAbbr), value: dexModifier });
+    if(initiativeBonus && initiativeBonus !== 0) components.push({ label: UI_STRINGS.infoDialogFeatBonusLabel, value: initiativeBonus });
+    if(localInitiativeMiscModifier && localInitiativeMiscModifier !== 0) components.push({ label: UI_STRINGS.infoDialogCustomModifierLabel, value: localInitiativeMiscModifier });
+    return components;
+  }, [UI_STRINGS, ABILITY_LABELS, dexModifier, initiativeBonus, localInitiativeMiscModifier]);
 
   const grappleBreakdown = React.useMemo(() => {
-      if (!UI_STRINGS || !SIZES || !DND_CLASSES || !attackRollBonuses) return [];
-      const breakdown: GenericBreakdownItem[] = [];
+      if (!UI_STRINGS || !SIZES || !DND_CLASSES || !attackRollBonuses || !ABILITY_LABELS) return [];
+      const components: GenericBreakdownItem[] = [];
       const featGrappleBonus = (attackRollBonuses.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0);
+      const strAbbr = ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || "STR";
 
-      if(totalBabWithModifier[0]) breakdown.push({ label: UI_STRINGS.attacksPanelBabLabel || 'Base Attack Bonus', value: totalBabWithModifier[0] });
-      if(strModifier) breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || 'Ability Mod ({abilityAbbr})').replace("{abilityAbbr}", 'STR'), value: strModifier });
+      if(totalBabWithModifier[0]) components.push({ label: UI_STRINGS.attacksPanelBabLabel || 'Base Attack Bonus', value: totalBabWithModifier[0] });
+      if(strModifier) components.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", strAbbr), value: strModifier });
       const sizeModGrapple = getSizeModifierGrapple(size, SIZES || []);
-      if(sizeModGrapple) breakdown.push({ label: UI_STRINGS.attacksPanelSizeModLabel || 'Size Mod (Attack)', value: sizeModGrapple });
-      if(featGrappleBonus) breakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: featGrappleBonus });
-      if(localGrappleMiscModifier) breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localGrappleMiscModifier || 0 });
-      return breakdown;
-  }, [UI_STRINGS, SIZES, DND_CLASSES, size, strModifier, localGrappleMiscModifier, attackRollBonuses, totalBabWithModifier]);
+      if(sizeModGrapple) components.push({ label: UI_STRINGS.attacksPanelSizeModLabel || 'Size Mod (Attack)', value: sizeModGrapple });
+      if(featGrappleBonus) components.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: featGrappleBonus });
+      if(localGrappleMiscModifier) components.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localGrappleMiscModifier || 0 });
+      return components;
+  }, [UI_STRINGS, SIZES, DND_CLASSES, size, strModifier, localGrappleMiscModifier, attackRollBonuses, totalBabWithModifier, ABILITY_LABELS]);
 
   const meleeAttackBreakdown = React.useMemo(() => {
     if (!UI_STRINGS || !ABILITY_LABELS || !selectedMainHandMeleeWeaponDefinition && selectedMainHandMeleeWeaponInstanceId !== 'unarmed') return [];
@@ -414,7 +417,7 @@ const CombatPanelComponent = ({
     const featBonus = getActiveAttackBonuses('melee', selectedMainHandMeleeWeaponDefinition).reduce((sum, eff) => sum + ((eff.value as number) || 0), 0);
     
     components.push({ label: UI_STRINGS.attacksPanelBabLabel, value: bab });
-    components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+    components.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
     if(sizeMod !== 0) components.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
     if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
     if(featBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonus });
@@ -433,7 +436,7 @@ const CombatPanelComponent = ({
 
     const abilityMod = strModifier;
     const abilityAbbr = ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || 'STR';
-    if (abilityMod !== 0) components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+    if (abilityMod !== 0) components.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
 
     const enhBonus = getWeaponEnhancementBonus(selectedMainHandMeleeWeaponDefinition).damage;
     if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
@@ -461,7 +464,7 @@ const CombatPanelComponent = ({
     const featBonus = getActiveAttackBonuses('ranged', selectedRangedWeaponDefinition).reduce((sum, eff) => sum + ((eff.value as number) || 0), 0);
     
     components.push({ label: UI_STRINGS.attacksPanelBabLabel, value: bab });
-    components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+    components.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
     if(sizeMod !== 0) components.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
     if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
     if(featBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonus });
@@ -562,13 +565,13 @@ const CombatPanelComponent = ({
   const handleOpenAttackBreakdown = React.useCallback((isMelee: boolean) => {
     if (!UI_STRINGS) return;
     const components = isMelee ? meleeAttackBreakdown : rangedAttackBreakdown;
-    onOpenCombatStatInfoDialog({ type: isMelee ? 'meleeAttackBreakdown' : 'rangedAttackBreakdown', components });
+    onOpenCombatStatInfoDialog({ type: 'genericNumericalBreakdown', titleKey: isMelee ? 'infoDialogTitleMeleeAttackBreakdown' : 'infoDialogTitleRangedAttackBreakdown', components });
   }, [UI_STRINGS, onOpenCombatStatInfoDialog, meleeAttackBreakdown, rangedAttackBreakdown]);
 
   const handleOpenDamageBreakdown = React.useCallback((isMelee: boolean) => {
     if (!UI_STRINGS) return;
     const components = isMelee ? meleeDamageBreakdown : rangedDamageBreakdown;
-    onOpenCombatStatInfoDialog({ type: isMelee ? 'meleeDamageBreakdown' : 'rangedDamageBreakdown', components });
+    onOpenCombatStatInfoDialog({ type: 'genericNumericalBreakdown', titleKey: isMelee ? 'infoDialogTitleMeleeDamageBreakdown' : 'infoDialogTitleRangedDamageBreakdown', components });
   }, [UI_STRINGS, onOpenCombatStatInfoDialog, meleeDamageBreakdown, rangedDamageBreakdown]);
 
   const handleBabInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'babBreakdown' }), [onOpenCombatStatInfoDialog]);
