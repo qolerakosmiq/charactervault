@@ -666,59 +666,61 @@ const CombatPanelComponent = ({
                 </div>
               </CardContent>
             </Card>
-            <div className={cn("flex flex-col", "gap-4")}>
-                <Card>
-                    <CardContent className={cn("flex flex-col", panelContentPadding, "gap-4")}>
-                        <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
-                        <div className={cn("grid grid-cols-2", panelGridGap)}>
-                          <div className="text-center flex flex-col gap-1">
-                            <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
-                              {selectedRangedWeaponDefinition && (
-                                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                                <p className={cn(textStyleValueBig, "text-accent")}>
-                                  {`${calculatedRangedAttackBonus >= 0 ? '+' : ''}${calculatedRangedAttackBonus}`}
-                                </p>
-                                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(false)}><Info /></Button>
-                                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-attack')} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
-                              </div>
-                              )}
-                          </div>
-                          <div className="text-center flex flex-col gap-1">
-                            <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel}</Label>
-                              {selectedRangedWeaponDefinition && (
-                                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                                  <p className={cn(textStyleValueBig, "text-accent")}>
-                                    {`${calculatedRangedNumericalDamageBonus >= 0 ? '+' : ''}${calculatedRangedNumericalDamageBonus}`}
-                                  </p>
-                                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenDamageBreakdown(false)}><Info /></Button>
-                                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-damage')} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
-                                </div>
-                              )}
-                          </div>
-                        </div>
-                        <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                          <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel}</Label>
-                          <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked}>
-                            <SelectTrigger id="ranged-weapon-select">
-                              <SelectValue placeholder={UI_STRINGS.deityNoneOption} />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectGroup>
-                                <SelectItem value="none">{UI_STRINGS.deityNoneOption}</SelectItem>
-                                {rangedWeaponInstances.map((wInst) => (<SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)} (x{wInst.quantity})</SelectItem>))}
-                              </SelectGroup>
-                            </SelectContent>
-                          </Select>
-                          {selectedRangedWeaponDefinition && (
-                            <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap)}>
-                              <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedRangedWeaponDefinition.damage || 'N/A'} className={textStyleBadgeSmall} />
-                              <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
-                            </div>
-                          )}
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
+            <Card>
+              <CardContent className={cn("flex flex-col", panelContentPadding, "gap-4")}>
+                <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
+                <div className={cn("grid grid-cols-2", panelGridGap)}>
+                  <div className="text-center flex flex-col gap-1">
+                    <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
+                    <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                      <p className={cn(textStyleValueBig, "text-accent")}>
+                        {selectedRangedWeaponDefinition ? `${calculatedRangedAttackBonus >= 0 ? '+' : ''}${calculatedRangedAttackBonus}` : '—'}
+                      </p>
+                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(false)} disabled={!selectedRangedWeaponDefinition}>
+                        <Info />
+                      </Button>
+                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-attack')} disabled={!selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}>
+                        <Dices />
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="text-center flex flex-col gap-1">
+                    <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel}</Label>
+                    <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                      <p className={cn(textStyleValueBig, "text-accent")}>
+                        {selectedRangedWeaponDefinition ? `${calculatedRangedNumericalDamageBonus >= 0 ? '+' : ''}${calculatedRangedNumericalDamageBonus}` : '—'}
+                      </p>
+                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenDamageBreakdown(false)} disabled={!selectedRangedWeaponDefinition}>
+                        <Info />
+                      </Button>
+                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-damage')} disabled={!selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}>
+                        <Dices />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                  <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel}</Label>
+                  <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked}>
+                    <SelectTrigger id="ranged-weapon-select">
+                      <SelectValue placeholder={UI_STRINGS.deityNoneOption} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        <SelectGroup>
+                        <SelectItem value="none">{UI_STRINGS.deityNoneOption}</SelectItem>
+                        {rangedWeaponInstances.map((wInst) => (<SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)} (x{wInst.quantity})</SelectItem>))}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                  {selectedRangedWeaponDefinition && (
+                    <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap)}>
+                      <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedRangedWeaponDefinition.damage || 'N/A'} className={textStyleBadgeSmall} />
+                      <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       )}
