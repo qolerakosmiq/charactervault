@@ -110,7 +110,7 @@ export const AttackCard = React.memo(({
           </div>
         </div>
       </div>
-      <div className={cn("flex flex-col mt-auto", panelGridGap)}>
+      <div className={cn("flex flex-col", panelGridGap)}>
         <div className={cn("flex flex-col", panelFieldVerticalGap)}>
           <Label htmlFor={`${attackType}-weapon-select`} className={textStyleLabel}>
             {attackType === 'melee' ? uiStrings.attacksPanelMainHandMeleeWeaponLabel : uiStrings.attacksPanelRangedWeaponLabel}
