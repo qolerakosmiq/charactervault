@@ -1,6 +1,6 @@
 
 {
-  "combatPanelTitle": { "en": "Combat Stats", "fr": "Statistiques de Combat" },
+  "combatPanelTitle": { "en": "Combat", "fr": "Combat" },
   "combatPanelDescription": { "en": "Key offensive and grappling statistics.", "fr": "Statistiques offensives et de lutte clés." },
   "combatPanelCombatVitalsTitle": { "en": "Combat Vitals", "fr": "Signes Vitaux de Combat" },
   "combatPanelBabLabel": { "en": "Base Attack Bonus", "fr": "Bonus d'Attaque de Base" },
