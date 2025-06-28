@@ -13,7 +13,7 @@ import type {
   SpeedDetails, SpeedType, CharacterAlignment, ProcessedSiteData, SpeedPanelCharacterData, CombatPanelCharacterData, LanguageId,
   AggregatedFeatEffects, ExperiencePanelData, ComboboxOption, MagicSchoolId, Item, GenericBreakdownItem, DamageReductionFeatEffect,
   CharacterFavoredEnemy, CharacterAnimalCompanion, DomainDefinition, DndDeityOption,
-  GearSlot, GearSlotId, ItemDefinition, ItemDefinitionId, ItemBaseType, CharacterClassSpecificChoice
+  GearSlot, GearSlotId, ItemDefinition, ItemDefinitionId, ItemBaseType, CharacterClassSpecificChoice, ItemInstance
 } from '@/types/character';
 import {
   getNetAgingEffects,
@@ -81,7 +81,8 @@ function createBaseCharacterData(
     const {
       DEFAULT_ABILITIES, DEFAULT_SAVING_THROWS, DEFAULT_RESISTANCE_VALUE,
       DEFAULT_SPEED_DETAILS, DEFAULT_SPEED_PENALTIES, DND_RACES, DND_CLASSES,
-      SIZES, SKILL_DEFINITIONS, CLASS_SKILLS, DND_RACE_ABILITY_MODIFIERS_DATA, UI_STRINGS
+      SIZES, SKILL_DEFINITIONS, CLASS_SKILLS, DND_RACE_ABILITY_MODIFIERS_DATA, UI_STRINGS,
+      ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_ARMOR, ITEM_DEFINITIONS_SHIELDS, ITEM_DEFINITIONS_MAGIC_ITEMS,
     } = translations;
 
     const defaultHumanRace = DND_RACES.find(r => r.id === 'human');
@@ -115,6 +116,19 @@ function createBaseCharacterData(
       return nameA.localeCompare(nameB);
     });
 
+    const allItemDefinitions = [
+        ...(ITEM_DEFINITIONS_WEAPONS || []),
+        ...(ITEM_DEFINITIONS_ARMOR || []),
+        ...(ITEM_DEFINITIONS_SHIELDS || []),
+        ...(ITEM_DEFINITIONS_MAGIC_ITEMS || []),
+    ];
+
+    const initialInventory: ItemInstance[] = allItemDefinitions.map(def => ({
+        instanceId: crypto.randomUUID(),
+        definitionId: def.definitionId,
+        quantity: 1,
+    }));
+
 
     const defaultClassDef = DND_CLASSES.find(c => c.id === defaultClassNameValue);
     let initialBaseMaxHp = 10;
@@ -146,7 +160,7 @@ function createBaseCharacterData(
       classes: defaultClasses,
       skills: initialSkillInstances,
       feats: [],
-      inventory: [],
+      inventory: initialInventory,
       equippedGear: {},
       personalStory: '', portraitDataUrl: undefined,
       fireResistance: { ...DEFAULT_RESISTANCE_VALUE }, coldResistance: { ...DEFAULT_RESISTANCE_VALUE }, acidResistance: { ...DEFAULT_RESISTANCE_VALUE }, electricityResistance: { ...DEFAULT_RESISTANCE_VALUE }, sonicResistance: { ...DEFAULT_RESISTANCE_VALUE },
@@ -985,8 +999,9 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
       alignment: character.alignment,
       experiencePoints: character.experiencePoints,
       deity: character.deity,
+      classSpecificChoices: character.classSpecificChoices
     };
-  }, [character?.race, character?.classes, character?.feats, character?.age, character?.alignment, character?.experiencePoints, character?.deity]);
+  }, [character?.race, character?.classes, character?.feats, character?.age, character?.alignment, character?.experiencePoints, character?.deity, character?.classSpecificChoices]);
 
   const savingThrowsData = React.useMemo<SavingThrowsPanelProps['savingThrowsData'] | undefined>(() => {
     if(!character) return undefined;
