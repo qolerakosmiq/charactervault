@@ -6,10 +6,6 @@
   "combatPanelBabLabel": { "en": "Base Attack Bonus", "fr": "Bonus d'Attaque de Base" },
   "combatPanelInitiativeLabel": { "en": "Initiative", "fr": "Initiative" },
   "combatPanelGrappleModifierLabel": { "en": "Grapple Modifier", "fr": "Modificateur de Lutte" },
-  "combatPanelFlurryOfBlowsLabel": { "en": "Flurry of Blows", "fr": "Déluge de Coups" },
-  "combatPanelGrappleDamageLabel": { "en": "Grapple Damage", "fr": "Dégâts de Lutte" },
-  "combatPanelGrappleWeaponLabel": { "en": "Weapon", "fr": "Arme" },
-  "infoDialogGrappleDmgUnarmedLabel": { "en": "Unarmed", "fr": "À mains nues" },
   "powerAttackValueLabel": { "en": "Power Attack", "fr": "Attaque en Puissance" },
   "powerAttackDescription": { "en": "Set penalty to attack for damage bonus.", "fr": "Définir la pénalité à l'attaque pour un bonus aux dégâts." },
   "combatExpertiseValueLabel": { "en": "Combat Expertise", "fr": "Expertise du Combat" },
@@ -48,6 +44,10 @@
   "powerAttackPenaltyLabel": { "en": "Power Attack Penalty", "fr": "Pénalité d'Attaque en Puissance" },
   "combatExpertisePenaltyLabel": { "en": "Combat Expertise Penalty", "fr": "Pénalité d'Expertise du Combat" },
   "powerAttackDamageBonusLabel": { "en": "Power Attack Damage", "fr": "Dégâts d'Attaque en Puissance" },
-  "attacksPanelAbilityModLabel": { "en": "Ability Mod ({abilityAbbr})", "fr": "Mod. Carac. ({abilityAbbr})" }
+  "attacksPanelAbilityModLabel": { "en": "Ability Mod ({abilityAbbr})", "fr": "Mod. Carac. ({abilityAbbr})" },
+  "infoDialogTitleMeleeAttackBreakdown": { "en": "Melee Attack Breakdown", "fr": "Détail de l'Attaque au Corps à Corps" },
+  "infoDialogTitleMeleeDamageBreakdown": { "en": "Melee Damage Breakdown", "fr": "Détail des Dégâts au Corps à Corps" },
+  "infoDialogTitleRangedAttackBreakdown": { "en": "Ranged Attack Breakdown", "fr": "Détail de l'Attaque à Distance" },
+  "infoDialogTitleRangedDamageBreakdown": { "en": "Ranged Damage Breakdown", "fr": "Détail des Dégâts à Distance" }
 }
     
