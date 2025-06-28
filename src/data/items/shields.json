@@ -11,7 +11,13 @@
       "shieldBonus": 1,
       "maxDexBonus": null,
       "armorCheckPenalty": -1,
-      "spellFailureChance": 5
+      "spellFailureChance": 5,
+      "damage": "1d3",
+      "criticalRange": "20",
+      "criticalMultiplier": "x2",
+      "damageType": { "en": "Bludgeoning", "fr": "Contondant" },
+      "weaponType": "melee",
+      "isLightWeapon": true
     },
     {
       "definitionId": "light-wooden-shield",
@@ -23,7 +29,13 @@
       "shieldBonus": 1,
       "maxDexBonus": null,
       "armorCheckPenalty": -1,
-      "spellFailureChance": 5
+      "spellFailureChance": 5,
+      "damage": "1d3",
+      "criticalRange": "20",
+      "criticalMultiplier": "x2",
+      "damageType": { "en": "Bludgeoning", "fr": "Contondant" },
+      "weaponType": "melee",
+      "isLightWeapon": true
     },
     {
       "definitionId": "light-steel-shield",
@@ -35,7 +47,13 @@
       "shieldBonus": 1,
       "maxDexBonus": null,
       "armorCheckPenalty": -1,
-      "spellFailureChance": 5
+      "spellFailureChance": 5,
+      "damage": "1d3",
+      "criticalRange": "20",
+      "criticalMultiplier": "x2",
+      "damageType": { "en": "Bludgeoning", "fr": "Contondant" },
+      "weaponType": "melee",
+      "isLightWeapon": true
     },
     {
       "definitionId": "heavy-wooden-shield",
@@ -47,7 +65,12 @@
       "shieldBonus": 2,
       "maxDexBonus": null,
       "armorCheckPenalty": -2,
-      "spellFailureChance": 15
+      "spellFailureChance": 15,
+      "damage": "1d4",
+      "criticalRange": "20",
+      "criticalMultiplier": "x2",
+      "damageType": { "en": "Bludgeoning", "fr": "Contondant" },
+      "weaponType": "melee"
     },
     {
       "definitionId": "heavy-steel-shield",
@@ -59,12 +82,17 @@
       "shieldBonus": 2,
       "maxDexBonus": null,
       "armorCheckPenalty": -2,
-      "spellFailureChance": 15
+      "spellFailureChance": 15,
+      "damage": "1d4",
+      "criticalRange": "20",
+      "criticalMultiplier": "x2",
+      "damageType": { "en": "Bludgeoning", "fr": "Contondant" },
+      "weaponType": "melee"
     },
     {
       "definitionId": "tower-shield",
       "label": { "en": "Tower Shield", "fr": "Pavois" },
-      "description": { "en": "A massive shield that provides significant cover but is cumbersome.", "fr": "Un bouclier massif qui offre une couverture importante mais est encombrant." },
+      "description": { "en": "A massive shield that provides significant cover but is cumbersome. Cannot be used for bashing.", "fr": "Un bouclier massif qui offre une couverture importante mais est encombrant. Ne peut pas être utilisé pour frapper." },
       "itemType": "shield",
       "armorType": "shield",
       "weight": 45,
