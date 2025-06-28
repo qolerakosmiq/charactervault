@@ -413,7 +413,7 @@ const CombatPanelComponent = ({
     components.push({ label: UI_STRINGS.infoDialogTotalLabel, value: total, isBold: true });
 
     onOpenCombatStatInfoDialog({
-      type: 'meleeAttackBreakdown',
+      type: isMelee ? 'meleeAttackBreakdown' : 'rangedAttackBreakdown',
       components
     });
   }, [UI_STRINGS, getAttackBreakdown, onOpenCombatStatInfoDialog]);
@@ -422,7 +422,7 @@ const CombatPanelComponent = ({
     if (!UI_STRINGS) return;
     const components = getDamageBreakdown(isMelee);
     onOpenCombatStatInfoDialog({
-      type: 'meleeDamageBreakdown',
+      type: isMelee ? 'meleeDamageBreakdown' : 'rangedDamageBreakdown',
       components
     });
   }, [UI_STRINGS, getDamageBreakdown, onOpenCombatStatInfoDialog]);
