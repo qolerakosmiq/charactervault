@@ -18,6 +18,7 @@
   "attacksPanelMeleeWeaponLabel": { "en": "Melee Weapon", "fr": "Arme de Corps à Corps" },
   "attacksPanelWeaponDamageLabel": { "en": "Damage", "fr": "Dégâts" },
   "attacksPanelWeaponCriticalLabel": { "en": "Critical", "fr": "Critique" },
+  "attacksPanelCriticalOnLabel": { "en": "Critical on {range}", "fr": "Critique sur {range}" },
   "attacksPanelWeaponDamageTypeLabel": { "en": "Type", "fr": "Type" },
   "attacksPanelAttackBonusLabel": { "en": "Attack Bonus", "fr": "Bonus d'Attaque" },
   "attacksPanelDamageBonusLabel": { "en": "Damage Bonus", "fr": "Bonus de Dégâts" },
