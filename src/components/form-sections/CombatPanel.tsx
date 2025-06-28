@@ -167,11 +167,11 @@ const CombatPanelComponent = ({
     let damageBonus = 0;
     if (itemDef?.effects) {
       itemDef.effects.forEach(effect => {
-        if (effect.type === 'attackRoll' && effect.bonusType === 'enhancement' && typeof effect.value === 'number') {
-          attackBonus += effect.value;
+        if (effect.type === 'attackRoll' && (effect as any).bonusType === 'enhancement' && typeof (effect as any).value === 'number') {
+          attackBonus += (effect as any).value;
         }
-        if (effect.type === 'damageRoll' && effect.bonusType === 'enhancement' && typeof effect.value === 'number') {
-          damageBonus += effect.value;
+        if (effect.type === 'damageRoll' && (effect as any).bonusType === 'enhancement' && typeof (effect as any).value === 'number') {
+          damageBonus += (effect as any).value;
         }
       });
     }
@@ -453,10 +453,10 @@ const CombatPanelComponent = ({
   const calculatedRangedAttackBonus = selectedRangedWeaponDefinition ? calculateFinalAttackBonus(totalBabWithModifier[0], dexModifier, combatData.sizeModifierAttack || 0, 'ranged', selectedRangedWeaponDefinition) : 0;
   const calculatedRangedNumericalDamageBonus = selectedRangedWeaponDefinition ? calculateFinalNumericalDamageBonus(0, 'ranged', selectedRangedWeaponDefinition) : 0;
   
+  const characterFeats = combatData.feats;
   const hasPowerAttackFeat = allFeatDefinitions.some(f => f.id === 'power-attack' && characterFeats.some(cf => cf.definitionId === f.id));
   const hasCombatExpertiseFeat = allFeatDefinitions.some(f => f.id === 'combat-expertise' && characterFeats.some(cf => cf.definitionId === f.id));
   const maxBabForSpinners = getBab(combatData.classes || [], DND_CLASSES)[0] || 0;
-  const characterFeats = combatData.feats;
   
   const unarmedBaseDamageFromFeat = aggregatedFeatEffects.modifiedMechanics?.unarmedDamage?.isActive && typeof aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value === 'string' ? aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value : (UI_STRINGS.unarmedDamageDefault);
 
@@ -521,13 +521,13 @@ const CombatPanelComponent = ({
             </div>
             <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
               <Label htmlFor="grapple-mod-display" className={textStyleCardTitle}>{UI_STRINGS.combatPanelGrappleModifierLabel}</Label>
-              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                <p id="grapple-mod-display" className={cn(textStyleValueBig, "text-accent")}>
-                  {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
-                </p>
-                <Button type="button" variant="ghost" size="icon-xs" onClick={handleGrappleModifierInfo}><Info /></Button>
-                <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('grapple')} aria-label={UI_STRINGS.rollDialogGrappleCheckAriaLabel}><Dices /></Button>
-              </div>
+                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                    <p id="grapple-mod-display" className={cn(textStyleValueBig, "text-accent")}>
+                      {totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}
+                    </p>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={handleGrappleModifierInfo}><Info /></Button>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('grapple')} aria-label={UI_STRINGS.rollDialogGrappleCheckAriaLabel}><Dices /></Button>
+                 </div>
               {!panelIsLocked && (
                 <div className={cn("mt-auto flex flex-col items-center", panelFieldVerticalGap)}>
                   <Label htmlFor="grapple-custom-mod" className={cn(textStyleLabel)}>{UI_STRINGS.infoDialogCustomModifierLabel}</Label>
@@ -615,15 +615,15 @@ const CombatPanelComponent = ({
                 </div>
                 <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                   <Label htmlFor="melee-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelMeleeWeaponLabel}</Label>
-                  <Select value={selectedMeleeWeaponInstanceId} onValueChange={setSelectedMeleeWeaponInstanceId}>
+                  <Select value={selectedMeleeWeaponInstanceId} onValueChange={setSelectedMeleeWeaponInstanceId} disabled={panelIsLocked}>
                     <SelectTrigger id="melee-weapon-select"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {meleeWeaponInstances.map(wInst => <SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}</SelectItem>)}
+                        {meleeWeaponInstances.map(wInst => <SelectItem key={wInst.instanceId} value={wInst.instanceId}>{wInst.name}</SelectItem>)}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
-                  <div className={cn("flex w-full items-center justify-between", panelFieldHorizontalGap)}>
+                  <div className={cn("flex w-full items-center justify-between", panelFieldVerticalGap)}>
                     <DualBadge
                       color="primary"
                       leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel}
@@ -641,7 +641,7 @@ const CombatPanelComponent = ({
               </CardContent>
             </Card>
             <Card>
-              <CardContent className={cn("flex flex-col", panelContentPadding, panelGridGap)}>
+              <CardContent className={cn("flex flex-col h-full", panelContentPadding, panelGridGap)}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
                 <div className={cn("grid grid-cols-2", panelGridGap)}>
                   <div className="text-center flex flex-col gap-1">
@@ -661,9 +661,9 @@ const CombatPanelComponent = ({
                     </div>
                   </div>
                 </div>
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                <div className={cn("flex flex-col mt-auto", panelFieldVerticalGap)}>
                   <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel}</Label>
-                  <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId}>
+                  <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked || rangedWeaponInstances.length === 0}>
                     <SelectTrigger id="ranged-weapon-select"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
@@ -673,7 +673,7 @@ const CombatPanelComponent = ({
                     </SelectContent>
                   </Select>
                   {selectedRangedWeaponDefinition && (
-                    <div className={cn("flex w-full items-center justify-between", panelFieldHorizontalGap)}>
+                    <div className={cn("flex w-full items-center justify-between", panelFieldVerticalGap)}>
                       <DualBadge
                         color="primary"
                         leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel}
