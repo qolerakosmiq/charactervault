@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -251,12 +252,9 @@ const CombatPanelComponent = ({
       .filter(item => item.definition && (item.definition.weaponType === 'ranged' || item.definition.weaponType === 'melee-or-ranged'));
   }, [inventory, getWeaponDefinition]);
   
-  const mainHandId = equippedGear?.['main-hand'];
-  const offHandId = equippedGear?.['off-hand'];
-  const twoHandId = equippedGear?.['two-hand'];
-  const mainHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === mainHandId), [inventory, mainHandId]);
-  const offHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === offHandId), [inventory, offHandId]);
-  const twoHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === twoHandId), [inventory, twoHandId]);
+  const mainHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === equippedGear?.['main-hand']), [inventory, equippedGear]);
+  const offHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === equippedGear?.['off-hand']), [inventory, equippedGear]);
+  const twoHandItem = React.useMemo(() => inventory?.find(i => i.instanceId === equippedGear?.['two-hand']), [inventory, equippedGear]);
 
 
   React.useEffect(() => {
@@ -581,32 +579,32 @@ const CombatPanelComponent = ({
   const mainHandWeaponDisplay = React.useMemo(() => {
     if (!selectedMainHandMeleeWeaponDefinition || !UI_STRINGS) return null;
     return (
-      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
+      <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap)}>
         <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMainHandMeleeWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
         <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedMainHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedMainHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
       </div>
     );
-  }, [selectedMainHandMeleeWeaponDefinition, selectedMainHandMeleeWeaponInstanceId, unarmedBaseDamageFromFeat, UI_STRINGS]);
+  }, [selectedMainHandMeleeWeaponDefinition, selectedMainHandMeleeWeaponInstanceId, unarmedBaseDamageFromFeat, UI_STRINGS, panelBadgeGroupGap, textStyleBadgeSmall]);
 
   const offHandWeaponDisplay = React.useMemo(() => {
     if (!selectedOffHandMeleeWeaponDefinition || !UI_STRINGS) return null;
     return (
-      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
+      <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap)}>
         <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedOffHandMeleeWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
         <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedOffHandMeleeWeaponDefinition.criticalRange || '20')} rightLabel={(selectedOffHandMeleeWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
       </div>
     );
-  }, [selectedOffHandMeleeWeaponDefinition, UI_STRINGS]);
+  }, [selectedOffHandMeleeWeaponDefinition, UI_STRINGS, panelBadgeGroupGap, textStyleBadgeSmall]);
 
   const rangedWeaponDisplay = React.useMemo(() => {
     if (!selectedRangedWeaponDefinition || !UI_STRINGS) return null;
     return (
-      <div className={cn("flex w-full items-center justify-between mt-1", panelBadgeGroupGap)}>
+      <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap)}>
         <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedRangedWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
         <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
       </div>
     );
-  }, [selectedRangedWeaponDefinition, UI_STRINGS]);
+  }, [selectedRangedWeaponDefinition, UI_STRINGS, panelBadgeGroupGap, textStyleBadgeSmall]);
   
   const formattedBab = React.useMemo(() => totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/'), [totalBabWithModifier]);
   const formattedInitiative = React.useMemo(() => `${baseInitiative >= 0 ? '+' : ''}${baseInitiative}`, [baseInitiative]);

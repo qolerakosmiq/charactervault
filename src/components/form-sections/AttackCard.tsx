@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -14,7 +15,6 @@ import {
   panelContentPadding,
   panelFieldHorizontalGap,
   panelFieldVerticalGap,
-  panelGridGap,
   textStyleCardTitle,
   textStyleLabel,
   textStyleValueBig,
@@ -89,9 +89,9 @@ export const AttackCard = React.memo(({
   }, [attackType, weaponInstances, selectedWeaponInstanceId, isRangedCardAndNoWeapons]);
 
   return (
-    <Card className={cn("flex flex-col justify-start", panelContentPadding, panelGridGap)}>
+    <Card className={cn("flex flex-col justify-start", panelContentPadding, panelFieldVerticalGap)}>
       <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><Icon />{title}</CardTitle>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-2 gap-2">
         <div className="text-center flex flex-col gap-1">
           <Label className={textStyleLabel}>{uiStrings.attacksPanelAttackBonusLabel}</Label>
           <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
@@ -109,7 +109,7 @@ export const AttackCard = React.memo(({
           </div>
         </div>
       </div>
-      <div className={cn("flex flex-col", panelGridGap)}>
+      <div className={cn("flex flex-col", panelFieldVerticalGap)}>
         <div className={cn("flex flex-col", panelFieldVerticalGap)}>
           <Label htmlFor={`${attackType}-weapon-select`} className={textStyleLabel}>
             {attackType === 'melee' ? uiStrings.attacksPanelMainHandMeleeWeaponLabel : uiStrings.attacksPanelRangedWeaponLabel}
