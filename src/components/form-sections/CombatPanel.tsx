@@ -107,13 +107,6 @@ const CombatPanelComponent = ({
     return null;
   }
   
-  const characterFeats = combatData.feats;
-
-  const totalBabWithModifier = React.useMemo(() => {
-    const babArray = getBab(combatData.classes || [], DND_CLASSES);
-    return babArray.map(bab => bab + (localBabMiscModifier || 0));
-  }, [combatData.classes, DND_CLASSES, localBabMiscModifier]);
-
   const allWeaponAndShieldDefinitions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
     const weapons = translations.ITEM_DEFINITIONS_WEAPONS || [];
@@ -125,6 +118,46 @@ const CombatPanelComponent = ({
     if (!definitionId) return undefined;
     return allWeaponAndShieldDefinitions.find(def => def.definitionId === definitionId);
   }, [allWeaponAndShieldDefinitions]);
+  
+  const totalBabWithModifier = React.useMemo(() => {
+    const babArray = getBab(combatData.classes || [], DND_CLASSES);
+    return babArray.map(bab => bab + (localBabMiscModifier || 0));
+  }, [combatData.classes, DND_CLASSES, localBabMiscModifier]);
+
+  const meleeWeaponInstances = React.useMemo(() => {
+    if (!translations) return [];
+    const inventoryItems = combatData.inventory?.filter(itemInst => {
+        const itemDef = getWeaponDefinition(itemInst.definitionId);
+        return itemDef && (itemDef.itemType === 'weapon' || (itemDef.itemType === 'shield' && !!itemDef.damage));
+    }) || [];
+  
+    const unarmedDef: ItemDefinition = {
+      definitionId: 'unarmed-placeholder',
+      label: { en: 'Unarmed', fr: 'À mains nues' },
+      itemType: 'weapon' as const,
+      weaponType: 'melee' as const,
+      damage: (aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage?.isActive && typeof aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value === 'string' ? aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value : (translations.UI_STRINGS.unarmedDamageDefault)),
+      criticalRange: '20',
+      criticalMultiplier: '×2'
+    };
+  
+    const meleeInventoryItems = inventoryItems
+      .map(inst => ({ ...inst, definition: getWeaponDefinition(inst.definitionId)! }))
+      .filter(item => item.definition && (item.definition.weaponType === 'melee' || item.definition.weaponType === 'melee-or-ranged'));
+      
+    return [
+      { instanceId: 'unarmed', definitionId: 'unarmed-placeholder', quantity: 1, definition: unarmedDef },
+      ...meleeInventoryItems,
+    ];
+  }, [combatData.inventory, translations, getWeaponDefinition, aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage]);
+  
+  const rangedWeaponInstances = React.useMemo(() => {
+    if (!combatData.inventory) return [];
+    return combatData.inventory
+      .map(inst => ({ ...inst, definition: getWeaponDefinition(inst.definitionId)! }))
+      .filter(item => item.definition && (item.definition.weaponType === 'ranged' || item.definition.weaponType === 'melee-or-ranged'));
+  }, [combatData.inventory, getWeaponDefinition]);
+
 
   React.useEffect(() => {
     const mainHandInstanceId = combatData.equippedGear?.['main-hand'];
@@ -262,40 +295,6 @@ const CombatPanelComponent = ({
     return totalBonus;
   }, [getActiveDamageBonuses, getWeaponEnhancementBonus]);
   
-  const meleeWeaponInstances = React.useMemo(() => {
-    if (!translations) return [];
-    const inventoryItems = combatData.inventory?.filter(itemInst => {
-        const itemDef = getWeaponDefinition(itemInst.definitionId);
-        return itemDef && (itemDef.itemType === 'weapon' || (itemDef.itemType === 'shield' && !!itemDef.damage));
-    }) || [];
-  
-    const unarmedDef: ItemDefinition = {
-      definitionId: 'unarmed-placeholder',
-      label: { en: 'Unarmed', fr: 'À mains nues' },
-      itemType: 'weapon' as const,
-      weaponType: 'melee' as const,
-      damage: (aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage?.isActive && typeof aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value === 'string' ? aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value : (translations.UI_STRINGS.unarmedDamageDefault)),
-      criticalRange: '20',
-      criticalMultiplier: '×2'
-    };
-  
-    const meleeInventoryItems = inventoryItems
-      .map(inst => ({ ...inst, definition: getWeaponDefinition(inst.definitionId)! }))
-      .filter(item => item.definition && (item.definition.weaponType === 'melee' || item.definition.weaponType === 'melee-or-ranged'));
-      
-    return [
-      { instanceId: 'unarmed', definitionId: 'unarmed-placeholder', quantity: 1, definition: unarmedDef },
-      ...meleeInventoryItems,
-    ];
-  }, [combatData.inventory, translations, getWeaponDefinition, aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage]);
-  
-  const rangedWeaponInstances = React.useMemo(() => {
-    if (!combatData.inventory) return [];
-    return combatData.inventory
-      .map(inst => ({ ...inst, definition: getWeaponDefinition(inst.definitionId)! }))
-      .filter(item => item.definition && (item.definition.weaponType === 'ranged' || item.definition.weaponType === 'melee-or-ranged'));
-  }, [combatData.inventory, getWeaponDefinition]);
-
   const handleBabInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'babBreakdown' }), [onOpenCombatStatInfoDialog]);
   const handleInitiativeInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'initiativeBreakdown' }), [onOpenCombatStatInfoDialog]);
   const handleGrappleModifierInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' }), [onOpenCombatStatInfoDialog]);
@@ -462,6 +461,7 @@ const CombatPanelComponent = ({
   const calculatedRangedAttackBonus = React.useMemo(() => selectedRangedWeaponDefinition ? calculateFinalAttackBonus(totalBabWithModifier[0], dexModifier, combatData.sizeModifierAttack || 0, 'ranged', selectedRangedWeaponDefinition) : 0, [calculateFinalAttackBonus, selectedRangedWeaponDefinition, totalBabWithModifier, dexModifier, combatData.sizeModifierAttack]);
   const calculatedRangedNumericalDamageBonus = React.useMemo(() => selectedRangedWeaponDefinition ? calculateFinalNumericalDamageBonus(0, 'ranged', selectedRangedWeaponDefinition) : 0, [calculateFinalNumericalDamageBonus, selectedRangedWeaponDefinition]);
   
+  const characterFeats = combatData.feats;
   const hasPowerAttackFeat = React.useMemo(() => allFeatDefinitions.some(f => f.id === 'power-attack' && characterFeats.some(cf => cf.definitionId === f.id)), [allFeatDefinitions, characterFeats]);
   const hasCombatExpertiseFeat = React.useMemo(() => allFeatDefinitions.some(f => f.id === 'combat-expertise' && characterFeats.some(cf => cf.definitionId === f.id)), [allFeatDefinitions, characterFeats]);
   const maxBabForSpinners = React.useMemo(() => getBab(combatData.classes || [], DND_CLASSES)[0] || 0, [combatData.classes, DND_CLASSES]);
@@ -667,58 +667,46 @@ const CombatPanelComponent = ({
               </CardContent>
             </Card>
             <Card>
-              <CardContent className={cn("flex flex-col", panelContentPadding, "gap-4")}>
+              <CardContent className={cn("flex flex-col", panelContentPadding, panelGridGap)}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
-                <div className={cn("grid grid-cols-2", panelGridGap)}>
-                  <div className="text-center flex flex-col gap-1">
-                    <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
-                    <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                      <p className={cn(textStyleValueBig, "text-accent")}>
-                        {selectedRangedWeaponDefinition ? `${calculatedRangedAttackBonus >= 0 ? '+' : ''}${calculatedRangedAttackBonus}` : '—'}
-                      </p>
-                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(false)} disabled={!selectedRangedWeaponDefinition}>
-                        <Info />
-                      </Button>
-                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-attack')} disabled={!selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}>
-                        <Dices />
-                      </Button>
+                 <div className={cn("grid grid-cols-2", panelGridGap)}>
+                    <div className="text-center flex flex-col gap-1">
+                      <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
+                      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                         <p className={cn(textStyleValueBig, "text-accent")}>{selectedRangedWeaponDefinition ? `${calculatedRangedAttackBonus >= 0 ? '+' : ''}${calculatedRangedAttackBonus}` : '—'}</p>
+                         <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(false)} disabled={!selectedRangedWeaponDefinition}><Info /></Button>
+                         <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-attack')} disabled={!selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogRangedAttackAriaLabel || "Roll Ranged Attack with {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
+                      </div>
+                    </div>
+                    <div className="text-center flex flex-col gap-1">
+                      <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel}</Label>
+                      <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                        <p className={cn(textStyleValueBig, "text-accent")}>{selectedRangedWeaponDefinition ? `${calculatedRangedNumericalDamageBonus >= 0 ? '+' : ''}${calculatedRangedNumericalDamageBonus}` : '—'}</p>
+                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenDamageBreakdown(false)} disabled={!selectedRangedWeaponDefinition}><Info /></Button>
+                        <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-damage')} disabled={!selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}><Dices /></Button>
+                      </div>
                     </div>
                   </div>
-                  <div className="text-center flex flex-col gap-1">
-                    <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelDamageBonusLabel}</Label>
-                    <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                      <p className={cn(textStyleValueBig, "text-accent")}>
-                        {selectedRangedWeaponDefinition ? `${calculatedRangedNumericalDamageBonus >= 0 ? '+' : ''}${calculatedRangedNumericalDamageBonus}` : '—'}
-                      </p>
-                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenDamageBreakdown(false)} disabled={!selectedRangedWeaponDefinition}>
-                        <Info />
-                      </Button>
-                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRollAction('ranged-damage')} disabled={!selectedRangedWeaponDefinition} aria-label={(UI_STRINGS.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", selectedRangedWeaponDefinition?.label ? getLocalizedString(selectedRangedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : '')}>
-                        <Dices />
-                      </Button>
-                    </div>
+                  <div className={cn("flex flex-col mt-4", panelFieldVerticalGap)}>
+                      <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel}</Label>
+                      <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked}>
+                        <SelectTrigger id="ranged-weapon-select">
+                          <SelectValue placeholder={UI_STRINGS.deityNoneOption} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectGroup>
+                            <SelectItem value="none">{UI_STRINGS.deityNoneOption}</SelectItem>
+                            {rangedWeaponInstances.map((wInst) => (<SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)} (x{wInst.quantity})</SelectItem>))}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                      {selectedRangedWeaponDefinition && (
+                        <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap)}>
+                          <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedRangedWeaponDefinition.damage || 'N/A'} className={textStyleBadgeSmall} />
+                          <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
+                        </div>
+                      )}
                   </div>
-                </div>
-                <div className={cn("flex flex-col", panelFieldVerticalGap)}>
-                  <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel}</Label>
-                  <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked}>
-                    <SelectTrigger id="ranged-weapon-select">
-                      <SelectValue placeholder={UI_STRINGS.deityNoneOption} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectGroup>
-                        <SelectItem value="none">{UI_STRINGS.deityNoneOption}</SelectItem>
-                        {rangedWeaponInstances.map((wInst) => (<SelectItem key={wInst.instanceId} value={wInst.instanceId}>{getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)} (x{wInst.quantity})</SelectItem>))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
-                  {selectedRangedWeaponDefinition && (
-                    <div className={cn("flex w-full items-center justify-between", panelBadgeGroupGap)}>
-                      <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={selectedRangedWeaponDefinition.damage || 'N/A'} className={textStyleBadgeSmall} />
-                      <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel).replace("{range}", selectedRangedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedRangedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
-                    </div>
-                  )}
-                </div>
               </CardContent>
             </Card>
           </div>
