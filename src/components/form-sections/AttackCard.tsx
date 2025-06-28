@@ -1,6 +1,6 @@
 'use client';
 
-import * as React from 'react';
+import *as React from 'react';
 import type { ItemDefinition, ItemInstance } from '@/types/character-core';
 import { Card, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -67,13 +67,26 @@ export const AttackCard = React.memo(({
   offHandWeaponDisplay,
   isRangedCardAndNoWeapons,
 }: AttackCardProps) => {
-  const weaponName = weaponInstances.find(w => w.instanceId === selectedWeaponInstanceId)?.definition.label;
-  const rollAttackAriaLabel = (uiStrings.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", weaponName ? getLocalizedString(weaponName, currentLang, DEFAULT_LANGUAGE) : 'Unarmed');
-  const rollDamageAriaLabel = (uiStrings.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", weaponName ? getLocalizedString(weaponName, currentLang, DEFAULT_LANGUAGE) : 'Unarmed');
-  
-  const isDamageRollDisabled = attackType === 'melee' 
-    ? !weaponInstances.some(w => w.instanceId === selectedWeaponInstanceId)
-    : isRangedCardAndNoWeapons || !weaponInstances.some(w => w.instanceId === selectedWeaponInstanceId);
+
+  const weaponName = React.useMemo(() => {
+    return weaponInstances.find(w => w.instanceId === selectedWeaponInstanceId)?.definition.label;
+  }, [weaponInstances, selectedWeaponInstanceId]);
+
+  const rollAttackAriaLabel = React.useMemo(() => {
+    const name = weaponName ? getLocalizedString(weaponName, currentLang, DEFAULT_LANGUAGE) : (uiStrings.attacksPanelUnarmedOption || 'Unarmed');
+    return (uiStrings.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", name);
+  }, [weaponName, currentLang, uiStrings.rollDialogMeleeAttackAriaLabel, uiStrings.attacksPanelUnarmedOption]);
+
+  const rollDamageAriaLabel = React.useMemo(() => {
+    const name = weaponName ? getLocalizedString(weaponName, currentLang, DEFAULT_LANGUAGE) : (uiStrings.attacksPanelUnarmedOption || 'Unarmed');
+    return (uiStrings.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", name);
+  }, [weaponName, currentLang, uiStrings.rollDialogDamageAriaLabel, uiStrings.attacksPanelUnarmedOption]);
+
+  const isDamageRollDisabled = React.useMemo(() => {
+    return attackType === 'melee'
+      ? !weaponInstances.some(w => w.instanceId === selectedWeaponInstanceId)
+      : isRangedCardAndNoWeapons || !weaponInstances.some(w => w.instanceId === selectedWeaponInstanceId);
+  }, [attackType, weaponInstances, selectedWeaponInstanceId, isRangedCardAndNoWeapons]);
 
   return (
     <Card className={cn("flex flex-col justify-start", panelContentPadding, panelGridGap)}>
