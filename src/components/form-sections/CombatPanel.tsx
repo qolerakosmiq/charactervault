@@ -207,11 +207,11 @@ const CombatPanelComponent = ({
   }, [aggregatedFeatEffects, UI_STRINGS]);
 
   const meleeWeaponInstances = React.useMemo(() => {
-    if (!UI_STRINGS || !aggregatedFeatEffects) return [];
-    const inventoryItems = inventory?.filter(itemInst => {
+    if (!UI_STRINGS || !aggregatedFeatEffects || !inventory) return [];
+    const inventoryItems = inventory.filter(itemInst => {
         const itemDef = getWeaponDefinition(itemInst.definitionId);
         return itemDef && (itemDef.itemType === 'weapon' || (itemDef.itemType === 'shield' && !!itemDef.damage));
-    }) || [];
+    });
   
     const unarmedDef: ItemDefinition = {
       definitionId: 'unarmed-placeholder',
@@ -246,7 +246,6 @@ const CombatPanelComponent = ({
 
   React.useEffect(() => {
     let finalMainHandId = 'unarmed'; 
-
     if (mainHandId) {
         const mainHandItem = inventory?.find(i => i.instanceId === mainHandId);
         const mainHandDef = getWeaponDefinition(mainHandItem?.definitionId);
@@ -765,7 +764,7 @@ const CombatPanelComponent = ({
                     </div>
                   </div>
                 </div>
-                <div className={cn("flex flex-col mt-4", panelFieldVerticalGap)}>
+                <div className={cn("flex flex-col mt-auto", panelFieldVerticalGap)}>
                   <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel}</Label>
                   <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked}>
                     <SelectTrigger id="ranged-weapon-select">
