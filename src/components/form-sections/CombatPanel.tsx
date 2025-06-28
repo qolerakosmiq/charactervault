@@ -75,11 +75,6 @@ const CombatPanelComponent = ({
   onOpenCombatStatInfoDialog,
   onOpenRollDialog
 }: CombatPanelProps) => {
-  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
-  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
-    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
-  }));
-
   const {
     classes, abilityScores, size, inventory, equippedGear,
     feats: characterFeats, babMiscModifier, initiativeMiscModifier,
@@ -87,6 +82,11 @@ const CombatPanelComponent = ({
     combatExpertiseValue
   } = combatData;
   
+  const { translations, isLoading: translationsLoading, language: currentLang } = useI18n();
+  const { rerollTwentiesForChecks } = useDefinitionsStore(state => ({
+    rerollTwentiesForChecks: state.rerollTwentiesForChecks,
+  }));
+
   const { DND_CLASSES, SIZES, ABILITY_LABELS, UI_STRINGS, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_SHIELDS } = translations || {};
   
   const handleUpdateCallback = React.useCallback((fieldName: CombatFieldKey) => (value: any) => {
@@ -347,6 +347,12 @@ const CombatPanelComponent = ({
   const handleInitiativeInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'initiativeBreakdown' }), [onOpenCombatStatInfoDialog]);
   const handleGrappleModifierInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' }), [onOpenCombatStatInfoDialog]);
   
+  const parseCritMultiplier = React.useCallback((critMultString: string | undefined): number => {
+    if (!critMultString) return 1;
+    const match = critMultString.toLowerCase().match(/x(\d+)|×(\d+)/);
+    return match ? parseInt(match[1] || match[2], 10) : 1;
+  }, []);
+
   const handleRollAction = React.useCallback((rollType: 'initiative' | 'grapple' | 'melee-attack' | 'melee-damage' | 'ranged-attack' | 'ranged-damage') => {
     if (!UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS || !abilityScores || !aggregatedFeatEffects) return;
     
@@ -466,12 +472,6 @@ const CombatPanelComponent = ({
     });
   }, [UI_STRINGS, DND_CLASSES, SIZES, ABILITY_LABELS, abilityScores, classes, size, aggregatedFeatEffects, onOpenRollDialog, rerollTwentiesForChecks, currentLang, baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, localInitiativeMiscModifier, localGrappleMiscModifier, calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus, localPowerAttackValue, localCombatExpertiseValue, meleeAbilityModForAttack, sizeModifierAttack, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, getWeaponEnhancementBonus, getActiveDamageBonuses, getActiveAttackBonuses, parseCritMultiplier, totalBabWithModifier]);
   
-  const parseCritMultiplier = React.useCallback((critMultString: string | undefined): number => {
-    if (!critMultString) return 1;
-    const match = critMultString.toLowerCase().match(/x(\d+)|×(\d+)/);
-    return match ? parseInt(match[1] || match[2], 10) : 1;
-  }, []);
-
   const handleOpenAttackBreakdown = React.useCallback((isMelee: boolean) => {
     const weaponDef = isMelee ? selectedMainHandMeleeWeaponDefinition : selectedRangedWeaponDefinition;
     if (!weaponDef && (!isMelee || selectedMainHandMeleeWeaponInstanceId !== 'unarmed')) return;
@@ -729,7 +729,7 @@ const CombatPanelComponent = ({
             </Card>
             <Card className={cn("flex flex-col justify-start", panelContentPadding, panelGridGap)}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
-                 <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 mt-4">
                   <div className="text-center flex flex-col gap-1">
                     <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                     <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
