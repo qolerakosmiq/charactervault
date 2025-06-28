@@ -41,6 +41,7 @@ import {
   panelFieldHorizontalGap,
   panelFieldVerticalGap,
   panelGridGap,
+  panelBadgeGroupGap,
   textStyleCardTitle,
   textStyleInput,
   textStyleLabel,
@@ -108,8 +109,10 @@ const CombatPanelComponent = ({
   
   const characterFeats = combatData.feats;
 
-  const babArray = React.useMemo(() => getBab(combatData.classes || [], DND_CLASSES), [combatData.classes, DND_CLASSES]);
-  const totalBabWithModifier = React.useMemo(() => babArray.map(bab => bab + (localBabMiscModifier || 0)), [babArray, localBabMiscModifier]);
+  const totalBabWithModifier = React.useMemo(() => {
+    const babArray = getBab(combatData.classes || [], DND_CLASSES);
+    return babArray.map(bab => bab + (localBabMiscModifier || 0));
+  }, [combatData.classes, DND_CLASSES, localBabMiscModifier]);
 
   const allWeaponAndShieldDefinitions = React.useMemo(() => {
     if (translationsLoading || !translations) return [];
@@ -265,7 +268,7 @@ const CombatPanelComponent = ({
         const itemDef = getWeaponDefinition(itemInst.definitionId);
         return itemDef && (itemDef.itemType === 'weapon' || (itemDef.itemType === 'shield' && !!itemDef.damage));
     }) || [];
-
+  
     const unarmedDef: ItemDefinition = {
       definitionId: 'unarmed-placeholder',
       label: { en: 'Unarmed', fr: 'À mains nues' },
@@ -275,7 +278,7 @@ const CombatPanelComponent = ({
       criticalRange: '20',
       criticalMultiplier: '×2'
     };
-
+  
     const meleeInventoryItems = inventoryItems
       .map(inst => ({ ...inst, definition: getWeaponDefinition(inst.definitionId)! }))
       .filter(item => item.definition && (item.definition.weaponType === 'melee' || item.definition.weaponType === 'melee-or-ranged'));
@@ -356,8 +359,10 @@ const CombatPanelComponent = ({
     if (isMelee && (combatData.powerAttackValue || 0) > 0) components.push({ label: UI_STRINGS.powerAttackDamageBonusLabel, value: (combatData.powerAttackValue || 0) });
     
     const strModifierForDamageBonus = getAbilityModifierByName(combatData.abilityScores, 'strength');
-    const meleeNumericalDamageBonusFinal = (selectedMainHandMeleeWeaponInstanceId === 'unarmed' || weaponDef?.weaponType === 'melee' || weaponDef?.weaponType === 'melee-or-ranged' ? strModifierForDamageBonus : 0) + getWeaponEnhancementBonus(weaponDef).damage + getActiveDamageBonuses('melee', weaponDef).reduce((s, e) => s + ((e.value as number) || 0), 0) + (combatData.powerAttackValue || 0);
-    const rangedNumericalDamageBonusFinal = getWeaponEnhancementBonus(weaponDef).damage + getActiveDamageBonuses('ranged', weaponDef).reduce((s, e) => s + ((e.value as number) || 0), 0);
+    const selectedMainHandWeaponDefinition = meleeWeaponInstances.find(w => w.instanceId === selectedMainHandMeleeWeaponInstanceId)?.definition;
+    const meleeNumericalDamageBonusFinal = (selectedMainHandMeleeWeaponInstanceId === 'unarmed' || selectedMainHandWeaponDefinition?.weaponType === 'melee' || selectedMainHandWeaponDefinition?.weaponType === 'melee-or-ranged' ? strModifierForDamageBonus : 0) + getWeaponEnhancementBonus(selectedMainHandWeaponDefinition).damage + getActiveDamageBonuses('melee', selectedMainHandWeaponDefinition).reduce((s, e) => s + ((e.value as number) || 0), 0) + (combatData.powerAttackValue || 0);
+    const selectedRangedWeaponDefinition = rangedWeaponInstances.find(w => w.instanceId === selectedRangedWeaponInstanceId)?.definition;
+    const rangedNumericalDamageBonusFinal = getWeaponEnhancementBonus(selectedRangedWeaponDefinition).damage + getActiveDamageBonuses('ranged', selectedRangedWeaponDefinition).reduce((s, e) => s + ((e.value as number) || 0), 0);
     
     const totalNumericBonus = (isMelee ? meleeNumericalDamageBonusFinal : rangedNumericalDamageBonusFinal) - (isMelee ? strMod : 0) + abilityMod; 
     components.push({ label: UI_STRINGS.infoDialogTotalNumericBonusLabel, value: totalNumericBonus, isBold: true });
@@ -612,7 +617,7 @@ const CombatPanelComponent = ({
                       </div>
                     </div>
                 </div>
-                <div className={cn("flex flex-col gap-4")}>
+                <div className={cn("flex flex-col", panelGridGap)}>
                   <div className={cn("flex flex-col", panelFieldVerticalGap)}>
                       <Label htmlFor="main-hand-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel}</Label>
                       <Select value={selectedMainHandMeleeWeaponInstanceId} onValueChange={setSelectedMainHandMeleeWeaponInstanceId} disabled={panelIsLocked}>
