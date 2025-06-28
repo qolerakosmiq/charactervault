@@ -89,6 +89,12 @@ const CombatPanelComponent = ({
   }));
 
   const { DND_CLASSES, SIZES, ABILITY_LABELS, UI_STRINGS, ITEM_DEFINITIONS_WEAPONS, ITEM_DEFINITIONS_SHIELDS } = translations || {};
+  const {
+    attackRollBonuses,
+    damageRollBonuses,
+    initiativeBonus,
+    modifiedMechanics,
+  } = aggregatedFeatEffects || {};
   
   const handleUpdateCallback = React.useCallback((fieldName: CombatFieldKey) => (value: any) => {
     if (onCharacterUpdate) {
@@ -126,14 +132,14 @@ const CombatPanelComponent = ({
   }, [classes, DND_CLASSES, localBabMiscModifier]);
 
   const baseInitiative = React.useMemo(() => {
-    if (!aggregatedFeatEffects) return 0;
-    return calculateInitiative(dexModifier, localInitiativeMiscModifier || 0) + (aggregatedFeatEffects.initiativeBonus || 0);
-  }, [dexModifier, localInitiativeMiscModifier, aggregatedFeatEffects]);
+    return calculateInitiative(dexModifier, localInitiativeMiscModifier || 0) + (initiativeBonus || 0);
+  }, [dexModifier, localInitiativeMiscModifier, initiativeBonus]);
 
   const totalGrappleModifier = React.useMemo(() => {
-    if (!SIZES || !DND_CLASSES || !aggregatedFeatEffects) return 0;
-    return calculateGrapple(classes || [], strModifier, getSizeModifierGrapple(size, SIZES), DND_CLASSES) + (localGrappleMiscModifier || 0) + (aggregatedFeatEffects?.attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0);
-  }, [classes, strModifier, size, SIZES, DND_CLASSES, localGrappleMiscModifier, aggregatedFeatEffects]);
+    if (!SIZES || !DND_CLASSES) return 0;
+    const featGrappleBonus = attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0;
+    return calculateGrapple(classes || [], strModifier, getSizeModifierGrapple(size, SIZES), DND_CLASSES) + (localGrappleMiscModifier || 0) + featGrappleBonus;
+  }, [classes, strModifier, size, SIZES, DND_CLASSES, localGrappleMiscModifier, attackRollBonuses]);
   
   const hasPowerAttackFeat = React.useMemo(() => allFeatDefinitions.some(f => f.id === 'power-attack' && characterFeats.some(cf => cf.definitionId === f.id)), [allFeatDefinitions, characterFeats]);
   const hasCombatExpertiseFeat = React.useMemo(() => allFeatDefinitions.some(f => f.id === 'combat-expertise' && characterFeats.some(cf => cf.definitionId === f.id)), [allFeatDefinitions, characterFeats]);
@@ -168,8 +174,8 @@ const CombatPanelComponent = ({
   }, []);
 
   const getActiveAttackBonuses = React.useCallback((weaponType: WeaponStyleType | 'unarmed', selectedWeaponDefinition?: ItemDefinition | null): AttackRollEffect[] => {
-    if (!aggregatedFeatEffects?.attackRollBonuses) return [];
-    return aggregatedFeatEffects.attackRollBonuses.filter(effect => {
+    if (!attackRollBonuses) return [];
+    return attackRollBonuses.filter(effect => {
       if (!effect.isActive || typeof effect.value !== 'number') return false;
       if (effect.appliesTo === 'all') return true;
       if (effect.appliesTo === weaponType) return true;
@@ -181,11 +187,11 @@ const CombatPanelComponent = ({
       }
       return false;
     });
-  }, [aggregatedFeatEffects, currentLang]);
+  }, [attackRollBonuses, currentLang]);
   
   const getActiveDamageBonuses = React.useCallback((weaponType: WeaponStyleType | 'unarmed', selectedWeaponDefinition?: ItemDefinition | null): DamageRollEffect[] => {
-    if (!aggregatedFeatEffects?.damageRollBonuses) return [];
-    return aggregatedFeatEffects.damageRollBonuses.filter(effect => {
+    if (!damageRollBonuses) return [];
+    return damageRollBonuses.filter(effect => {
       if (!effect.isActive) return false;
       if (effect.appliesTo === 'all') return true;
       if (effect.appliesTo === weaponType) return true;
@@ -197,17 +203,17 @@ const CombatPanelComponent = ({
       }
       return false;
     });
-  }, [aggregatedFeatEffects, currentLang]);
+  }, [damageRollBonuses, currentLang]);
 
   const unarmedBaseDamageFromFeat = React.useMemo(() => {
-    if (!UI_STRINGS || !aggregatedFeatEffects) return '1d3';
-    return aggregatedFeatEffects.modifiedMechanics?.unarmedDamage?.isActive && typeof aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value === 'string'
-      ? aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value
+    if (!UI_STRINGS) return '1d3';
+    return modifiedMechanics?.unarmedDamage?.isActive && typeof modifiedMechanics.unarmedDamage.value === 'string'
+      ? modifiedMechanics.unarmedDamage.value
       : UI_STRINGS.unarmedDamageDefault;
-  }, [aggregatedFeatEffects, UI_STRINGS]);
+  }, [modifiedMechanics, UI_STRINGS]);
 
   const meleeWeaponInstances = React.useMemo(() => {
-    if (!UI_STRINGS || !aggregatedFeatEffects || !inventory) return [];
+    if (!UI_STRINGS || !inventory) return [];
     const inventoryItems = inventory.filter(itemInst => {
         const itemDef = getWeaponDefinition(itemInst.definitionId);
         return itemDef && (itemDef.itemType === 'weapon' || (itemDef.itemType === 'shield' && !!itemDef.damage));
@@ -231,7 +237,7 @@ const CombatPanelComponent = ({
       { instanceId: 'unarmed', definitionId: 'unarmed-placeholder', quantity: 1, definition: unarmedDef },
       ...meleeInventoryItems,
     ];
-  }, [inventory, getWeaponDefinition, aggregatedFeatEffects, UI_STRINGS, unarmedBaseDamageFromFeat]);
+  }, [inventory, getWeaponDefinition, UI_STRINGS, unarmedBaseDamageFromFeat]);
   
   const rangedWeaponInstances = React.useMemo(() => {
     if (!inventory) return [];
@@ -468,7 +474,7 @@ const CombatPanelComponent = ({
         dialogTitle = UI_STRINGS.rollDialogTitleInitiative || 'Roll Initiative';
         baseModifier = baseInitiative;
         if (dexModifier !== 0) calculationBreakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || 'Ability Mod ({abilityAbbr})').replace("{abilityAbbr}", 'DEX'), value: dexModifier });
-        if ((aggregatedFeatEffects?.initiativeBonus || 0) !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: aggregatedFeatEffects?.initiativeBonus || 0 });
+        if ((initiativeBonus || 0) !== 0) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: initiativeBonus || 0 });
         if (localInitiativeMiscModifier !== 0) calculationBreakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localInitiativeMiscModifier || 0 });
         break;
       
@@ -479,7 +485,7 @@ const CombatPanelComponent = ({
         if(strModifier) calculationBreakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel || 'Ability Mod ({abilityAbbr})').replace("{abilityAbbr}", 'STR'), value: strModifier });
         const sizeModGrapple = getSizeModifierGrapple(size, SIZES || []);
         if(sizeModGrapple) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelSizeModLabel || 'Size Mod (Attack)', value: sizeModGrapple });
-        const featGrappleBonus = (aggregatedFeatEffects?.attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0);
+        const featGrappleBonus = (attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0);
         if(featGrappleBonus) calculationBreakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel || 'Feat Bonus', value: featGrappleBonus });
         if(localGrappleMiscModifier) calculationBreakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || 'Misc Modifier', value: localGrappleMiscModifier || 0 });
         break;
@@ -528,7 +534,7 @@ const CombatPanelComponent = ({
       weaponDamageDiceString, weaponCriticalMultiplier, extraDamageDice,
       rerollTwentiesForChecks: rollType.includes('attack') || rollType.includes('damage') ? false : rerollTwentiesForChecks,
     });
-  }, [UI_STRINGS, abilityScores, classes, size, aggregatedFeatEffects, onOpenRollDialog, rerollTwentiesForChecks, currentLang, baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, localInitiativeMiscModifier, localGrappleMiscModifier, calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus, localPowerAttackValue, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, parseCritMultiplier, totalBabWithModifier, strModifier, dexModifier, meleeAttackBreakdown, meleeDamageBreakdown, rangedAttackBreakdown, rangedDamageBreakdown, meleeExtraDamageDice, rangedExtraDamageDice]);
+  }, [UI_STRINGS, onOpenRollDialog, rerollTwentiesForChecks, currentLang, baseInitiative, totalGrappleModifier, selectedMainHandMeleeWeaponDefinition, selectedRangedWeaponDefinition, localInitiativeMiscModifier, localGrappleMiscModifier, calculatedMeleeAttackBonus, calculatedMeleeNumericalDamageBonus, calculatedRangedAttackBonus, calculatedRangedNumericalDamageBonus, unarmedBaseDamageFromFeat, selectedMainHandMeleeWeaponInstanceId, parseCritMultiplier, totalBabWithModifier, strModifier, dexModifier, size, SIZES, attackRollBonuses, classes, DND_CLASSES, meleeAttackBreakdown, meleeDamageBreakdown, rangedAttackBreakdown, rangedDamageBreakdown, meleeExtraDamageDice, rangedExtraDamageDice]);
   
   const mainHandWeaponDisplay = React.useMemo(() => {
     if (!selectedMainHandMeleeWeaponDefinition || !UI_STRINGS) return null;
@@ -560,7 +566,7 @@ const CombatPanelComponent = ({
     );
   }, [selectedRangedWeaponDefinition, UI_STRINGS]);
 
-  if (translationsLoading || !UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS || !aggregatedFeatEffects) {
+  if (translationsLoading || !UI_STRINGS || !DND_CLASSES || !SIZES || !ABILITY_LABELS) {
     return null;
   }
 
