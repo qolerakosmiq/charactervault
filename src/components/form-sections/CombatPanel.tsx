@@ -206,28 +206,6 @@ const CombatPanelComponent = ({
       : UI_STRINGS.unarmedDamageDefault;
   }, [aggregatedFeatEffects, UI_STRINGS]);
 
-  const meleeExtraDamageDice = React.useMemo(() => 
-    getActiveDamageBonuses(
-      selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? 'unarmed' : 'melee',
-      selectedMainHandMeleeWeaponDefinition
-    )
-    .filter(d => typeof d.value === 'string' && d.value.includes('d'))
-    .map(d => d.value as string),
-    [getActiveDamageBonuses, selectedMainHandMeleeWeaponInstanceId, selectedMainHandMeleeWeaponDefinition]
-  );
-  
-  const rangedExtraDamageDice = React.useMemo(() =>
-    selectedRangedWeaponDefinition 
-      ? getActiveDamageBonuses(
-          'ranged',
-          selectedRangedWeaponDefinition
-        )
-        .filter(d => typeof d.value === 'string' && d.value.includes('d'))
-        .map(d => d.value as string)
-      : [],
-    [getActiveDamageBonuses, selectedRangedWeaponDefinition]
-  );
-
   const meleeWeaponInstances = React.useMemo(() => {
     if (!UI_STRINGS || !aggregatedFeatEffects) return [];
     const inventoryItems = inventory?.filter(itemInst => {
@@ -325,6 +303,34 @@ const CombatPanelComponent = ({
   const selectedRangedWeaponDefinition = selectedRangedWeaponInstance?.definition;
   
   const meleeAbilityModForAttack = React.useMemo(() => selectedMainHandMeleeWeaponDefinition?.isFinesseWeapon && dexModifier > strModifier ? dexModifier : strModifier, [selectedMainHandMeleeWeaponDefinition, dexModifier, strModifier]);
+
+  const parseCritMultiplier = React.useCallback((critMultString: string | undefined): number => {
+    if (!critMultString) return 1;
+    const match = critMultString.toLowerCase().match(/x(\d+)|×(\d+)/);
+    return match ? parseInt(match[1] || match[2], 10) : 1;
+  }, []);
+  
+  const meleeExtraDamageDice = React.useMemo(() => 
+    getActiveDamageBonuses(
+      selectedMainHandMeleeWeaponInstanceId === 'unarmed' ? 'unarmed' : 'melee',
+      selectedMainHandMeleeWeaponDefinition
+    )
+    .filter(d => typeof d.value === 'string' && d.value.includes('d'))
+    .map(d => d.value as string),
+    [getActiveDamageBonuses, selectedMainHandMeleeWeaponInstanceId, selectedMainHandMeleeWeaponDefinition]
+  );
+  
+  const rangedExtraDamageDice = React.useMemo(() =>
+    selectedRangedWeaponDefinition 
+      ? getActiveDamageBonuses(
+          'ranged',
+          selectedRangedWeaponDefinition
+        )
+        .filter(d => typeof d.value === 'string' && d.value.includes('d'))
+        .map(d => d.value as string)
+      : [],
+    [getActiveDamageBonuses, selectedRangedWeaponDefinition]
+  );
   
   const calculateFinalAttackBonus = React.useCallback((baseBab: number, abilityMod: number, sizeMod: number, weaponType: 'melee' | 'ranged' | 'unarmed', selectedWeaponDefinition?: ItemDefinition | null, powerAttackVal: number = 0, combatExpertiseVal: number = 0): number => {
     let totalBonus = baseBab + abilityMod + sizeMod;
@@ -368,12 +374,6 @@ const CombatPanelComponent = ({
   const handleBabInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'babBreakdown' }), [onOpenCombatStatInfoDialog]);
   const handleInitiativeInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'initiativeBreakdown' }), [onOpenCombatStatInfoDialog]);
   const handleGrappleModifierInfo = React.useCallback(() => onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' }), [onOpenCombatStatInfoDialog]);
-
-  const parseCritMultiplier = React.useCallback((critMultString: string | undefined): number => {
-    if (!critMultString) return 1;
-    const match = critMultString.toLowerCase().match(/x(\d+)|×(\d+)/);
-    return match ? parseInt(match[1] || match[2], 10) : 1;
-  }, []);
 
   const getAttackBreakdown = React.useCallback((isMelee: boolean): GenericBreakdownItem[] => {
     if (!UI_STRINGS || !ABILITY_LABELS) return [];
