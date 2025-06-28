@@ -74,13 +74,15 @@ export const AttackCard = React.memo(({
 
   const rollAttackAriaLabel = React.useMemo(() => {
     const name = weaponName ? getLocalizedString(weaponName, currentLang, DEFAULT_LANGUAGE) : (uiStrings.attacksPanelUnarmedOption || 'Unarmed');
-    return (uiStrings.rollDialogMeleeAttackAriaLabel || "Roll Melee Attack with {weaponName}").replace("{weaponName}", name);
-  }, [weaponName, currentLang, uiStrings.rollDialogMeleeAttackAriaLabel, uiStrings.attacksPanelUnarmedOption]);
+    const key = attackType === 'melee' ? 'rollDialogMeleeAttackAriaLabel' : 'rollDialogRangedAttackAriaLabel';
+    const formatString = uiStrings[key] || "Roll Attack with {weaponName}";
+    return formatString.replace("{weaponName}", name);
+  }, [weaponName, currentLang, uiStrings, attackType]);
 
   const rollDamageAriaLabel = React.useMemo(() => {
     const name = weaponName ? getLocalizedString(weaponName, currentLang, DEFAULT_LANGUAGE) : (uiStrings.attacksPanelUnarmedOption || 'Unarmed');
     return (uiStrings.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", name);
-  }, [weaponName, currentLang, uiStrings.rollDialogDamageAriaLabel, uiStrings.attacksPanelUnarmedOption]);
+  }, [weaponName, currentLang, uiStrings]);
 
   const isDamageRollDisabled = React.useMemo(() => {
     return attackType === 'melee'
@@ -89,7 +91,7 @@ export const AttackCard = React.memo(({
   }, [attackType, weaponInstances, selectedWeaponInstanceId, isRangedCardAndNoWeapons]);
 
   return (
-    <Card className={cn("flex flex-col justify-start", panelContentPadding, panelFieldVerticalGap)}>
+    <Card className={cn("flex flex-col justify-start", panelContentPadding, "gap-4")}>
       <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><Icon />{title}</CardTitle>
       <div className="grid grid-cols-2 gap-2">
         <div className="text-center flex flex-col gap-1">
