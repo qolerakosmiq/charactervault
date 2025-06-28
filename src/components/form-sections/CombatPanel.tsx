@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -14,7 +15,8 @@ import type {
   CombatPanelCharacterData,
   AttackRollEffect,
   DamageRollEffect,
-  GearSlotId
+  GearSlotId,
+  WeaponStyleType
 } from '@/types/character-core';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
@@ -32,6 +34,7 @@ import { getLocalizedString } from '@/i18n/i18n-data';
 import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
+import { DualBadge } from '@/components/ui/DualBadge';
 import {
   debounceDelayFormInput,
   panelContentPadding,
@@ -46,6 +49,8 @@ import {
   inputWidthStandard,
   textStylePanelSectionHeader,
   textStyleSubLabel,
+  panelBadgeGroupGap,
+  textStyleBadgeSmall
 } from '@/config/layout';
 
 
@@ -135,7 +140,7 @@ const CombatPanelComponent = ({
 
 
   const getActiveAttackBonuses = React.useCallback((
-    weaponType: 'melee' | 'ranged' | 'unarmed',
+    weaponType: WeaponStyleType | 'unarmed',
     selectedWeaponDefinition?: ItemDefinition | null
   ): AttackRollEffect[] => {
     if (!aggregatedFeatEffects?.attackRollBonuses) return [];
@@ -181,7 +186,7 @@ const CombatPanelComponent = ({
   }, [getActiveAttackBonuses, getWeaponEnhancementBonus]);
 
   const getActiveDamageBonuses = React.useCallback((
-    weaponType: 'melee' | 'ranged' | 'unarmed',
+    weaponType: WeaponStyleType | 'unarmed',
     selectedWeaponDefinition?: ItemDefinition | null
   ): DamageRollEffect[] => {
      if (!aggregatedFeatEffects?.damageRollBonuses) return [];
@@ -746,10 +751,10 @@ const CombatPanelComponent = ({
                 <CardHeader className="p-4 pb-0">
                     <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
                 </CardHeader>
-                <CardContent className={cn("flex flex-col", panelGridGap, "pt-0")}>
+                <CardContent className={cn("flex flex-col pt-0", panelGridGap)}>
                     <div className="flex flex-col gap-1">
                         <Label htmlFor="melee-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelMeleeWeaponLabel}</Label>
-                        <Select value={selectedMeleeWeaponInstanceId} onValueChange={setSelectedMeleeWeaponInstanceId}>
+                        <Select value={selectedMeleeWeaponInstanceId} onValueChange={setSelectedMeleeWeaponInstanceId} disabled={panelIsLocked}>
                             <SelectTrigger id="melee-weapon-select"><SelectValue /></SelectTrigger>
                             <SelectContent>
                                 <SelectGroup>
@@ -759,13 +764,30 @@ const CombatPanelComponent = ({
                         </Select>
                     </div>
                     {selectedMeleeWeaponDefinition && (
-                      <div className="text-sm flex flex-col gap-0.5">
-                        <p><span className="text-muted-foreground">{UI_STRINGS.attacksPanelWeaponDamageLabel}:</span> {selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition.damage || 'N/A'}</p>
-                        <p><span className="text-muted-foreground">{UI_STRINGS.attacksPanelWeaponCriticalLabel}:</span> {selectedMeleeWeaponDefinition.criticalRange || 'N/A'} {selectedMeleeWeaponDefinition.criticalMultiplier || ''}</p>
-                        {selectedMeleeWeaponDefinition.damageType && <p><span className="text-muted-foreground">{UI_STRINGS.attacksPanelWeaponDamageTypeLabel}:</span> {getLocalizedString(selectedMeleeWeaponDefinition.damageType, currentLang, DEFAULT_LANGUAGE)}</p>}
+                      <div className={cn("flex flex-wrap items-center", panelBadgeGroupGap)}>
+                        <DualBadge
+                          color="primary"
+                          leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel}
+                          rightLabel={selectedMeleeWeaponInstanceId === 'unarmed' ? unarmedBaseDamageFromFeat : selectedMeleeWeaponDefinition.damage || 'N/A'}
+                          className={textStyleBadgeSmall}
+                        />
+                        <DualBadge
+                          color="secondary"
+                          leftLabel={UI_STRINGS.attacksPanelWeaponCriticalLabel}
+                          rightLabel={`${selectedMeleeWeaponDefinition.criticalRange || 'N/A'} ${selectedMeleeWeaponDefinition.criticalMultiplier || ''}`}
+                          className={textStyleBadgeSmall}
+                        />
+                        {selectedMeleeWeaponDefinition.damageType && (
+                          <DualBadge
+                            color="default"
+                            leftLabel={UI_STRINGS.attacksPanelWeaponDamageTypeLabel}
+                            rightLabel={getLocalizedString(selectedMeleeWeaponDefinition.damageType, currentLang, DEFAULT_LANGUAGE)}
+                            className={textStyleBadgeSmall}
+                          />
+                        )}
                       </div>
                     )}
-                    <div className="flex justify-around items-center">
+                    <div className="flex justify-around items-center mt-2">
                         <div className="text-center flex flex-col gap-1">
                             <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                             <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
@@ -790,10 +812,10 @@ const CombatPanelComponent = ({
                 <CardHeader className="p-4 pb-0">
                     <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
                 </CardHeader>
-                <CardContent className={cn("flex flex-col", panelGridGap, "pt-0")}>
+                <CardContent className={cn("flex flex-col pt-0", panelGridGap)}>
                     <div className="flex flex-col gap-1">
                         <Label htmlFor="ranged-weapon-select" className={textStyleLabel}>{UI_STRINGS.attacksPanelRangedWeaponLabel}</Label>
-                        <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={rangedWeaponInstances.length === 0}>
+                        <Select value={selectedRangedWeaponInstanceId} onValueChange={setSelectedRangedWeaponInstanceId} disabled={panelIsLocked || rangedWeaponInstances.length === 0}>
                             <SelectTrigger id="ranged-weapon-select">
                                 <SelectValue placeholder={rangedWeaponInstances.length === 0 ? (UI_STRINGS.attacksPanelNoRangedWeapons) : (UI_STRINGS.attacksPanelSelectRangedWeapon)} />
                             </SelectTrigger>
@@ -808,16 +830,40 @@ const CombatPanelComponent = ({
                             </SelectContent>
                         </Select>
                     </div>
-                    {selectedRangedWeaponDefinition ? (
+                    {selectedRangedWeaponDefinition && (
                         <>
-                        <div className="text-sm flex flex-col gap-0.5">
-                            <p><span className="text-muted-foreground">{UI_STRINGS.attacksPanelWeaponDamageLabel}:</span> {selectedRangedWeaponDefinition.damage || 'N/A'}</p>
-                            <p><span className="text-muted-foreground">{UI_STRINGS.attacksPanelWeaponCriticalLabel}:</span> {selectedRangedWeaponDefinition.criticalRange || 'N/A'} {selectedRangedWeaponDefinition.criticalMultiplier || ''}</p>
-                            {selectedRangedWeaponDefinition.rangeIncrement && <p><span className="text-muted-foreground">{UI_STRINGS.attacksPanelWeaponRangeLabel}:</span> {selectedRangedWeaponDefinition.rangeIncrement} {UI_STRINGS.speedUnit || "ft."}</p>}
-                            {selectedRangedWeaponDefinition.damageType && <p><span className="text-muted-foreground">{UI_STRINGS.attacksPanelWeaponDamageTypeLabel}:</span> {getLocalizedString(selectedRangedWeaponDefinition.damageType, currentLang, DEFAULT_LANGUAGE)}</p>}
+                        <div className={cn("flex flex-wrap items-center", panelBadgeGroupGap)}>
+                            <DualBadge
+                            color="primary"
+                            leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel}
+                            rightLabel={selectedRangedWeaponDefinition.damage || 'N/A'}
+                            className={textStyleBadgeSmall}
+                            />
+                            <DualBadge
+                            color="secondary"
+                            leftLabel={UI_STRINGS.attacksPanelWeaponCriticalLabel}
+                            rightLabel={`${selectedRangedWeaponDefinition.criticalRange || ''} ${selectedRangedWeaponDefinition.criticalMultiplier || ''}`}
+                            className={textStyleBadgeSmall}
+                            />
+                            {selectedRangedWeaponDefinition.rangeIncrement && (
+                            <DualBadge
+                                color="default"
+                                leftLabel={UI_STRINGS.attacksPanelWeaponRangeLabel}
+                                rightLabel={`${selectedRangedWeaponDefinition.rangeIncrement} ${UI_STRINGS.speedUnit || "ft."}`}
+                                className={textStyleBadgeSmall}
+                            />
+                            )}
+                            {selectedRangedWeaponDefinition.damageType && (
+                            <DualBadge
+                                color="default"
+                                leftLabel={UI_STRINGS.attacksPanelWeaponDamageTypeLabel}
+                                rightLabel={getLocalizedString(selectedRangedWeaponDefinition.damageType, currentLang, DEFAULT_LANGUAGE)}
+                                className={textStyleBadgeSmall}
+                            />
+                            )}
                         </div>
                         
-                        <div className="flex justify-around items-center">
+                        <div className="flex justify-around items-center mt-2">
                             <div className="text-center flex flex-col gap-1">
                                 <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
@@ -836,8 +882,9 @@ const CombatPanelComponent = ({
                             </div>
                         </div>
                         </>
-                    ) : (
-                        <div className="h-28"></div>
+                    )}
+                    {!selectedRangedWeaponDefinition && (
+                         <div className="h-28"></div>
                     )}
                 </CardContent>
             </Card>
