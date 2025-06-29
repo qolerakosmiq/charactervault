@@ -15,9 +15,10 @@ import {
   textStyleLabel,
   textStyleValueBig,
   panelBadgeGroupGap,
-  textStyleBadgeSmall
+  textStyleBadgeSmall,
 } from '@/config/layout';
 import { DualBadge } from '../ui/DualBadge';
+import { renderModifierValue } from '../info-dialog-content/dialog-utils';
 
 
 interface AttackCardProps {
@@ -26,7 +27,7 @@ interface AttackCardProps {
   weaponInstances: Array<ItemInstance & { definition: ItemDefinition }>;
   selectedWeaponInstanceId: string;
   onSelectedWeaponChange: (id: string) => void;
-  formattedDamageBonus: string;
+  damageBonus: number;
   onOpenDamageBreakdown: () => void;
   onRollDamage: () => void;
   isPanelLocked: boolean;
@@ -40,7 +41,7 @@ export const AttackCard = React.memo(({
   weaponInstances,
   selectedWeaponInstanceId,
   onSelectedWeaponChange,
-  formattedDamageBonus,
+  damageBonus,
   onOpenDamageBreakdown,
   onRollDamage,
   isPanelLocked,
@@ -105,7 +106,7 @@ export const AttackCard = React.memo(({
             {uiStrings.attacksPanelDamageBonusLabel}
           </Label>
           <div className={cn("flex items-center justify-center h-10", panelFieldHorizontalGap)}>
-            <p className={cn(textStyleValueBig, "text-accent")}>{formattedDamageBonus}</p>
+            <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(damageBonus)}</p>
             <Button type="button" variant="ghost" size="icon-xs" onClick={onOpenDamageBreakdown} disabled={isPanelLocked}>
               <Info />
             </Button>
