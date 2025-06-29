@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -27,6 +26,9 @@ interface AttackCardProps {
   weaponInstances: Array<ItemInstance & { definition: ItemDefinition }>;
   selectedWeaponInstanceId: string;
   onSelectedWeaponChange: (id: string) => void;
+  attackBonus: number;
+  onOpenAttackBreakdown: () => void;
+  onRollAttack: () => void;
   damageBonus: number;
   onOpenDamageBreakdown: () => void;
   onRollDamage: () => void;
@@ -41,6 +43,9 @@ export const AttackCard = React.memo(({
   weaponInstances,
   selectedWeaponInstanceId,
   onSelectedWeaponChange,
+  attackBonus,
+  onOpenAttackBreakdown,
+  onRollAttack,
   damageBonus,
   onOpenDamageBreakdown,
   onRollDamage,
@@ -68,6 +73,7 @@ export const AttackCard = React.memo(({
     );
   }, [selectedWeaponDefinition, uiStrings, panelBadgeGroupGap, textStyleBadgeSmall]);
 
+  const noWeaponSelected = selectedWeaponInstanceId === 'none';
 
   return (
     <div className={cn("grid grid-cols-2 w-full gap-1 items-start")}>
@@ -78,7 +84,7 @@ export const AttackCard = React.memo(({
         </Label>
       </div>
       <div className="col-span-1 text-center">
-        {selectedWeaponInstanceId !== 'none' && (
+        {!noWeaponSelected && (
           <Label className={textStyleLabel}>
             {uiStrings.attacksPanelDamageBonusLabel}
           </Label>
@@ -108,7 +114,7 @@ export const AttackCard = React.memo(({
         </Select>
       </div>
       <div className="col-span-1 h-10 flex items-center justify-center">
-        {selectedWeaponInstanceId !== 'none' && (
+        {!noWeaponSelected && (
           <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
             <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(damageBonus)}</p>
             <Button type="button" variant="ghost" size="icon-xs" onClick={onOpenDamageBreakdown} disabled={isPanelLocked}>
@@ -122,7 +128,7 @@ export const AttackCard = React.memo(({
       </div>
 
       {/* Row 3: Badges */}
-      {selectedWeaponInstanceId !== 'none' && (
+      {!noWeaponSelected && (
         <div className="col-span-2">
           {weaponDisplay}
         </div>

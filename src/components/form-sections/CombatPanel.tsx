@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -270,36 +269,167 @@ const CombatPanelComponent = ({
     return total;
   }, [aggregatedFeatEffects?.damageRollBonuses, currentLang]);
 
+  const calculateTotalAttackBonus = React.useCallback((weaponInstanceId: string, weaponType: 'melee' | 'ranged'): number => {
+    const weaponInstances = weaponType === 'melee' ? meleeWeaponInstances : rangedWeaponInstances;
+    const weaponDef = weaponInstances.find(w => w.instanceId === weaponInstanceId)?.definition;
+    const enhBonus = getWeaponEnhancementBonus(weaponDef);
+    const featBonus = getActiveAttackBonuses(weaponType, weaponDef);
+    const powerAttackPenalty = (weaponType === 'melee' && localPowerAttackValue) ? -localPowerAttackValue : 0;
+    const combatExpertisePenalty = (weaponType === 'melee' && localCombatExpertiseValue) ? -localCombatExpertiseValue : 0;
 
-  const calculateTotalDamageBonus = (weaponInstanceId: string, weaponType: 'melee' | 'ranged'): number => {
+    let abilityModForAttack = weaponType === 'melee' ? strModifier : dexModifier;
+    if (weaponType === 'melee' && weaponDef?.isFinesseWeapon && dexModifier > strModifier) {
+      abilityModForAttack = dexModifier;
+    }
+
+    return totalBabWithModifier[0] + abilityModForAttack + sizeModifierAttack + enhBonus.attack + featBonus + powerAttackPenalty + combatExpertisePenalty;
+  }, [meleeWeaponInstances, rangedWeaponInstances, getWeaponEnhancementBonus, getActiveAttackBonuses, dexModifier, strModifier, totalBabWithModifier, sizeModifierAttack, localPowerAttackValue, localCombatExpertiseValue]);
+
+  const calculateTotalDamageBonus = React.useCallback((weaponInstanceId: string, weaponType: 'melee' | 'ranged'): number => {
       const weaponInstances = weaponType === 'melee' ? meleeWeaponInstances : rangedWeaponInstances;
       const weaponDef = weaponInstances.find(w => w.instanceId === weaponInstanceId)?.definition;
       const enhBonus = getWeaponEnhancementBonus(weaponDef);
       const featBonus = getActiveDamageBonuses(weaponType, weaponDef);
+      const powerAttackBonus = (weaponType === 'melee' && localPowerAttackValue) ? localPowerAttackValue : 0;
       
       let abilityBonus = 0;
       if (weaponType === 'melee') {
           abilityBonus = strModifier;
       }
 
-      return abilityBonus + enhBonus.damage + featBonus + (powerAttackValue || 0);
-  };
+      return abilityBonus + enhBonus.damage + featBonus + powerAttackBonus;
+  }, [meleeWeaponInstances, rangedWeaponInstances, getWeaponEnhancementBonus, getActiveDamageBonuses, strModifier, localPowerAttackValue]);
   
-  const meleeAttackBonusFinal = React.useMemo(() => {
-    const mainHandWeaponDef = meleeWeaponInstances.find(w => w.instanceId === selectedMainHandMeleeWeaponInstanceId)?.definition;
-    const abilityMod = (mainHandWeaponDef?.isFinesseWeapon && dexModifier > strModifier) ? dexModifier : strModifier;
-    const enhancementBonus = getWeaponEnhancementBonus(mainHandWeaponDef);
-    const featBonus = getActiveAttackBonuses('melee', mainHandWeaponDef);
-    return totalBabWithModifier[0] + abilityMod + sizeModifierAttack + enhancementBonus.attack + featBonus - (localPowerAttackValue || 0) - (localCombatExpertiseValue || 0);
-  }, [selectedMainHandMeleeWeaponInstanceId, meleeWeaponInstances, dexModifier, strModifier, getWeaponEnhancementBonus, getActiveAttackBonuses, totalBabWithModifier, sizeModifierAttack, localPowerAttackValue, localCombatExpertiseValue]);
-  
-  const rangedAttackBonusFinal = React.useMemo(() => {
-    const rangedWeaponDef = rangedWeaponInstances.find(w => w.instanceId === selectedRangedWeaponInstanceId)?.definition;
-    if (!rangedWeaponDef) return 0;
-    const enhancementBonus = getWeaponEnhancementBonus(rangedWeaponDef);
-    const featBonus = getActiveAttackBonuses('ranged', rangedWeaponDef);
-    return totalBabWithModifier[0] + dexModifier + sizeModifierAttack + enhancementBonus.attack + featBonus;
-  }, [selectedRangedWeaponInstanceId, rangedWeaponInstances, dexModifier, getWeaponEnhancementBonus, getActiveAttackBonuses, totalBabWithModifier, sizeModifierAttack]);
+  const handleOpenAttackBreakdown = React.useCallback((weaponInstanceId: string, weaponType: 'melee' | 'ranged') => {
+    if (!UI_STRINGS || !ABILITY_LABELS) return;
+    const weaponInstances = weaponType === 'melee' ? meleeWeaponInstances : rangedWeaponInstances;
+    const weaponDef = weaponInstances.find(w => w.instanceId === weaponInstanceId)?.definition;
+    if (!weaponDef && weaponInstanceId !== 'unarmed') return;
+
+    const components: GenericBreakdownItem[] = [];
+    const bab = totalBabWithModifier[0];
+    const abilityMod = weaponType === 'melee' ? ((weaponDef?.isFinesseWeapon && dexModifier > strModifier) ? dexModifier : strModifier) : dexModifier;
+    const abilityAbbr = ABILITY_LABELS.find(al => al.id === (weaponType === 'melee' ? (weaponDef?.isFinesseWeapon && dexModifier > strModifier ? 'dexterity' : 'strength') : 'dexterity'))?.abbr || 'MOD';
+    const sizeMod = sizeModifierAttack;
+    const enhBonus = getWeaponEnhancementBonus(weaponDef).attack;
+    const featBonus = getActiveAttackBonuses(weaponType, weaponDef);
+    const powerAttackPenalty = (weaponType === 'melee' && localPowerAttackValue) ? -localPowerAttackValue : 0;
+    const combatExpertisePenalty = (weaponType === 'melee' && localCombatExpertiseValue) ? -localCombatExpertiseValue : 0;
+
+    components.push({ label: UI_STRINGS.attacksPanelBabLabel, value: bab });
+    components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+    if(sizeMod !== 0) components.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
+    if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
+    if(featBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonus });
+    if (powerAttackPenalty !== 0) components.push({ label: UI_STRINGS.powerAttackPenaltyLabel, value: powerAttackPenalty });
+    if (combatExpertisePenalty !== 0) components.push({ label: UI_STRINGS.combatExpertisePenaltyLabel, value: combatExpertisePenalty });
+    
+    const total = bab + abilityMod + sizeMod + enhBonus + featBonus + powerAttackPenalty + combatExpertisePenalty;
+    components.push({ label: UI_STRINGS.infoDialogTotalLabel, value: total, isBold: true });
+
+    onOpenCombatStatInfoDialog({
+      type: weaponType === 'melee' ? 'meleeAttackBreakdown' : 'rangedAttackBreakdown',
+      components
+    });
+  }, [onOpenCombatStatInfoDialog, totalBabWithModifier, dexModifier, strModifier, sizeModifierAttack, getWeaponEnhancementBonus, getActiveAttackBonuses, localPowerAttackValue, localCombatExpertiseValue, meleeWeaponInstances, rangedWeaponInstances, UI_STRINGS, ABILITY_LABELS]);
+
+  const handleOpenDamageBreakdown = React.useCallback((weaponInstanceId: string, weaponType: 'melee' | 'ranged') => {
+    if (!UI_STRINGS || !ABILITY_LABELS) return;
+    const weaponInstances = weaponType === 'melee' ? meleeWeaponInstances : rangedWeaponInstances;
+    const weaponDef = weaponInstances.find(w => w.instanceId === weaponInstanceId)?.definition;
+    if (!weaponDef && weaponInstanceId !== 'unarmed') return;
+
+    const components: GenericBreakdownItem[] = [];
+    const baseDamage = weaponInstanceId === 'unarmed' ? (UI_STRINGS.unarmedDamageDefault || '1d3') : weaponDef?.damage;
+    components.push({ label: UI_STRINGS.attacksPanelBaseWeaponDamageLabel, value: baseDamage || "N/A", isRawValue: true });
+
+    const abilityMod = weaponType === 'melee' ? strModifier : 0;
+    const abilityAbbr = weaponType === 'melee' ? (ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || 'STR') : '';
+    if (abilityMod !== 0) components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+
+    const enhBonus = getWeaponEnhancementBonus(weaponDef).damage;
+    if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
+    
+    const featBonus = getActiveDamageBonuses(weaponType, weaponDef);
+    if(featBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonus });
+
+    const powerAttackBonus = (weaponType === 'melee' && localPowerAttackValue) ? localPowerAttackValue : 0;
+    if (powerAttackBonus > 0) components.push({ label: UI_STRINGS.powerAttackDamageBonusLabel, value: powerAttackBonus });
+
+    const totalNumericBonus = abilityMod + enhBonus + featBonus + powerAttackBonus;
+    components.push({ label: UI_STRINGS.infoDialogTotalNumericBonusLabel, value: totalNumericBonus, isBold: true });
+    
+    onOpenCombatStatInfoDialog({
+      type: weaponType === 'melee' ? 'meleeDamageBreakdown' : 'rangedDamageBreakdown',
+      components
+    });
+  }, [onOpenCombatStatInfoDialog, strModifier, getWeaponEnhancementBonus, getActiveDamageBonuses, localPowerAttackValue, meleeWeaponInstances, rangedWeaponInstances, UI_STRINGS, ABILITY_LABELS]);
+
+  const handleRoll = React.useCallback((weaponInstanceId: string, weaponType: 'melee' | 'ranged', rollPurpose: 'attack' | 'damage') => {
+    if (!UI_STRINGS || !ABILITY_LABELS) return;
+    const weaponInstances = weaponType === 'melee' ? meleeWeaponInstances : rangedWeaponInstances;
+    const weaponDef = weaponInstances.find(w => w.instanceId === weaponInstanceId)?.definition;
+    if (!weaponDef && weaponInstanceId !== 'unarmed') return;
+
+    const weaponName = getLocalizedString(weaponDef?.label || {en: 'Unarmed', fr: 'À mains nues'}, currentLang, DEFAULT_LANGUAGE);
+    
+    if (rollPurpose === 'attack') {
+      const breakdown = []; // Re-calculate for dialog
+      const bab = totalBabWithModifier[0];
+      const abilityMod = weaponType === 'melee' ? ((weaponDef?.isFinesseWeapon && dexModifier > strModifier) ? dexModifier : strModifier) : dexModifier;
+      const abilityAbbr = ABILITY_LABELS.find(al => al.id === (weaponType === 'melee' ? (weaponDef?.isFinesseWeapon && dexModifier > strModifier ? 'dexterity' : 'strength') : 'dexterity'))?.abbr || 'MOD';
+      const sizeMod = sizeModifierAttack;
+      const enhBonus = getWeaponEnhancementBonus(weaponDef).attack;
+      const featBonus = getActiveAttackBonuses(weaponType, weaponDef);
+      const powerAttackPenalty = (weaponType === 'melee' && localPowerAttackValue) ? -localPowerAttackValue : 0;
+      const combatExpertisePenalty = (weaponType === 'melee' && localCombatExpertiseValue) ? -localCombatExpertiseValue : 0;
+
+      breakdown.push({ label: UI_STRINGS.attacksPanelBabLabel, value: bab });
+      breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+      if(sizeMod !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
+      if(enhBonus !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
+      if(featBonus !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonus });
+      if (powerAttackPenalty !== 0) breakdown.push({ label: UI_STRINGS.powerAttackPenaltyLabel, value: powerAttackPenalty });
+      if (combatExpertisePenalty !== 0) breakdown.push({ label: UI_STRINGS.combatExpertisePenaltyLabel, value: combatExpertisePenalty });
+      
+      const totalBonus = bab + abilityMod + sizeMod + enhBonus + featBonus + powerAttackPenalty + combatExpertisePenalty;
+
+      onOpenRollDialog({
+        dialogTitle: (UI_STRINGS.rollDialogTitleMeleeAttackFormat).replace("{weaponName}", weaponName),
+        rollType: `${weaponType}_attack`,
+        baseModifier: totalBonus,
+        calculationBreakdown: breakdown,
+        rerollTwentiesForChecks: rerollTwentiesForChecks
+      });
+    } else { // damage roll
+      const baseDamageDice = weaponInstanceId === 'unarmed' ? (aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage?.isActive && typeof aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value === 'string' ? aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value : (UI_STRINGS.unarmedDamageDefault || "1d3")) : (weaponDef?.damage || '');
+      const totalNumericDamageBonus = calculateTotalDamageBonus(weaponInstanceId, weaponType);
+      const critMultiplier = weaponDef?.criticalMultiplier ? parseInt(weaponDef.criticalMultiplier.replace('x', ''), 10) : 2;
+
+      const breakdown = []; // Re-calculate for dialog
+      const abilityMod = weaponType === 'melee' ? strModifier : 0;
+      const abilityAbbr = weaponType === 'melee' ? (ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || 'STR') : '';
+      if (abilityMod !== 0) breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+
+      const enhBonus = getWeaponEnhancementBonus(weaponDef).damage;
+      if(enhBonus !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
+      
+      const featBonus = getActiveDamageBonuses(weaponType, weaponDef);
+      if(featBonus !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelFeatBonusLabel, value: featBonus });
+
+      const powerAttackBonus = (weaponType === 'melee' && localPowerAttackValue) ? localPowerAttackValue : 0;
+      if (powerAttackBonus > 0) breakdown.push({ label: UI_STRINGS.powerAttackDamageBonusLabel, value: powerAttackBonus });
+
+      onOpenRollDialog({
+        dialogTitle: (UI_STRINGS.rollDialogTitleMeleeDamageFormat).replace("{weaponName}", weaponName).replace("{dice}", baseDamageDice),
+        rollType: 'damage',
+        baseModifier: totalNumericDamageBonus,
+        calculationBreakdown: breakdown,
+        weaponDamageDiceString: baseDamageDice,
+        weaponCriticalMultiplier: critMultiplier
+      });
+    }
+  }, [onOpenRollDialog, meleeWeaponInstances, rangedWeaponInstances, currentLang, UI_STRINGS, ABILITY_LABELS, calculateTotalAttackBonus, calculateTotalDamageBonus, rerollTwentiesForChecks, totalBabWithModifier, dexModifier, strModifier, sizeModifierAttack, getWeaponEnhancementBonus, getActiveAttackBonuses, localPowerAttackValue, localCombatExpertiseValue, aggregatedFeatEffects]);
 
 
   if (translationsLoading || !UI_STRINGS || !DND_CLASSES || !SIZES || !aggregatedFeatEffects) return null;
@@ -342,21 +472,44 @@ const CombatPanelComponent = ({
           
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <Card className={cn("flex flex-col")}>
-              <CardHeader className={cn(panelContentPadding)}>
+              <CardHeader className={cn(panelContentPadding, "items-center")}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center justify-center gap-2")}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
-                 <div className="text-center flex flex-col gap-1 pt-2">
-                    <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
-                    <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                      <p className={cn(textStyleValueBig, "text-accent")}>{meleeAttackBonusFinal >= 0 ? '+' : ''}{meleeAttackBonusFinal}</p>
-                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Info /></Button>
-                      <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Dices /></Button>
-                    </div>
-                  </div>
               </CardHeader>
               <CardContent className={cn("flex flex-col flex-grow", panelGridGap, panelContentPadding, "pt-0")}>
-                  
+                  <AttackCard
+                      label={UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel || "Main Hand"}
+                      selectId="main-hand-melee-select"
+                      weaponInstances={meleeWeaponInstances}
+                      selectedWeaponInstanceId={selectedMainHandMeleeWeaponInstanceId}
+                      onSelectedWeaponChange={setSelectedMainHandMeleeWeaponInstanceId}
+                      attackBonus={calculateTotalAttackBonus(selectedMainHandMeleeWeaponInstanceId, 'melee')}
+                      damageBonus={calculateTotalDamageBonus(selectedMainHandMeleeWeaponInstanceId, 'melee')}
+                      onOpenAttackBreakdown={() => handleOpenAttackBreakdown(selectedMainHandMeleeWeaponInstanceId, 'melee')}
+                      onRollAttack={() => handleRoll(selectedMainHandMeleeWeaponInstanceId, 'melee', 'attack')}
+                      onOpenDamageBreakdown={() => handleOpenDamageBreakdown(selectedMainHandMeleeWeaponInstanceId, 'melee')}
+                      onRollDamage={() => handleRoll(selectedMainHandMeleeWeaponInstanceId, 'melee', 'damage')}
+                      isPanelLocked={panelIsLocked}
+                      uiStrings={UI_STRINGS}
+                      currentLang={currentLang}
+                  />
+                  <AttackCard
+                      label={UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel || "Off Hand"}
+                      selectId="off-hand-melee-select"
+                      weaponInstances={meleeWeaponInstances}
+                      selectedWeaponInstanceId={selectedOffHandMeleeWeaponInstanceId}
+                      onSelectedWeaponChange={setSelectedOffHandMeleeWeaponInstanceId}
+                      attackBonus={calculateTotalAttackBonus(selectedOffHandMeleeWeaponInstanceId, 'melee')}
+                      damageBonus={calculateTotalDamageBonus(selectedOffHandMeleeWeaponInstanceId, 'melee')}
+                      onOpenAttackBreakdown={() => handleOpenAttackBreakdown(selectedOffHandMeleeWeaponInstanceId, 'melee')}
+                      onRollAttack={() => handleRoll(selectedOffHandMeleeWeaponInstanceId, 'melee', 'attack')}
+                      onOpenDamageBreakdown={() => handleOpenDamageBreakdown(selectedOffHandMeleeWeaponInstanceId, 'melee')}
+                      onRollDamage={() => handleRoll(selectedOffHandMeleeWeaponInstanceId, 'melee', 'damage')}
+                      isPanelLocked={panelIsLocked}
+                      uiStrings={UI_STRINGS}
+                      currentLang={currentLang}
+                  />
                   {(hasPowerAttackFeat || hasCombatExpertiseFeat) && !panelIsLocked && (
-                    <div className={cn("grid grid-cols-2", panelGridGap)}>
+                    <div className={cn("grid grid-cols-2 pt-2", panelGridGap)}>
                       {hasPowerAttackFeat && (
                         <div className="flex flex-col items-center text-center gap-1">
                           <Label htmlFor="power-attack-value" className={cn(textStyleLabel, "flex items-center gap-1")}><Activity className="text-destructive/80"/>{UI_STRINGS.powerAttackValueLabel}</Label>
@@ -377,47 +530,12 @@ const CombatPanelComponent = ({
                       )}
                     </div>
                   )}
-                  
-                  <AttackCard
-                      label={UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel || "Main Hand"}
-                      selectId="main-hand-melee-select"
-                      weaponInstances={meleeWeaponInstances}
-                      selectedWeaponInstanceId={selectedMainHandMeleeWeaponInstanceId}
-                      onSelectedWeaponChange={setSelectedMainHandMeleeWeaponInstanceId}
-                      damageBonus={calculateTotalDamageBonus(selectedMainHandMeleeWeaponInstanceId, 'melee')}
-                      onOpenDamageBreakdown={() => {}}
-                      onRollDamage={() => {}}
-                      isPanelLocked={panelIsLocked}
-                      uiStrings={UI_STRINGS}
-                      currentLang={currentLang}
-                  />
-                  <AttackCard
-                      label={UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel || "Off Hand"}
-                      selectId="off-hand-melee-select"
-                      weaponInstances={meleeWeaponInstances}
-                      selectedWeaponInstanceId={selectedOffHandMeleeWeaponInstanceId}
-                      onSelectedWeaponChange={setSelectedOffHandMeleeWeaponInstanceId}
-                      damageBonus={calculateTotalDamageBonus(selectedOffHandMeleeWeaponInstanceId, 'melee')}
-                      onOpenDamageBreakdown={() => {}}
-                      onRollDamage={() => {}}
-                      isPanelLocked={panelIsLocked}
-                      uiStrings={UI_STRINGS}
-                      currentLang={currentLang}
-                  />
               </CardContent>
             </Card>
 
             <Card className={cn("flex flex-col")}>
-              <CardHeader className={cn(panelContentPadding)}>
+              <CardHeader className={cn(panelContentPadding, "items-center")}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center justify-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
-                <div className="text-center flex flex-col gap-1 pt-2">
-                  <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
-                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={cn(textStyleValueBig, "text-accent")}>{rangedAttackBonusFinal >= 0 ? '+' : ''}{rangedAttackBonusFinal}</p>
-                    <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Info /></Button>
-                    <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Dices /></Button>
-                  </div>
-                </div>
               </CardHeader>
               <CardContent className={cn("flex flex-col flex-grow", panelGridGap, panelContentPadding, "pt-0")}>
                 <AttackCard
@@ -426,9 +544,12 @@ const CombatPanelComponent = ({
                     weaponInstances={rangedWeaponInstances}
                     selectedWeaponInstanceId={selectedRangedWeaponInstanceId}
                     onSelectedWeaponChange={setSelectedRangedWeaponInstanceId}
+                    attackBonus={calculateTotalAttackBonus(selectedRangedWeaponInstanceId, 'ranged')}
                     damageBonus={calculateTotalDamageBonus(selectedRangedWeaponInstanceId, 'ranged')}
-                    onOpenDamageBreakdown={() => {}}
-                    onRollDamage={() => {}}
+                    onOpenAttackBreakdown={() => handleOpenAttackBreakdown(selectedRangedWeaponInstanceId, 'ranged')}
+                    onRollAttack={() => handleRoll(selectedRangedWeaponInstanceId, 'ranged', 'attack')}
+                    onOpenDamageBreakdown={() => handleOpenDamageBreakdown(selectedRangedWeaponInstanceId, 'ranged')}
+                    onRollDamage={() => handleRoll(selectedRangedWeaponInstanceId, 'ranged', 'damage')}
                     isPanelLocked={panelIsLocked}
                     uiStrings={UI_STRINGS}
                     currentLang={currentLang}
