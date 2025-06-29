@@ -16,6 +16,7 @@ import {
   textStyleValueBig,
   panelBadgeGroupGap,
   textStyleBadgeSmall,
+  panelGridGap,
 } from '@/config/layout';
 import { DualBadge } from '../ui/DualBadge';
 import { renderModifierValue } from '../info-dialog-content/dialog-utils';
@@ -48,7 +49,7 @@ export const AttackCard = React.memo(({
   uiStrings,
   currentLang
 }: AttackCardProps) => {
-  
+
   const selectedWeaponDefinition = React.useMemo(() => {
     return weaponInstances.find(w => w.instanceId === selectedWeaponInstanceId)?.definition;
   }, [weaponInstances, selectedWeaponInstanceId]);
@@ -70,16 +71,26 @@ export const AttackCard = React.memo(({
 
 
   return (
-    <div className="flex items-start w-full gap-4">
-      {/* Left Column: Weapon Selection & Stats (75%) */}
-      <div className="w-3/4 flex flex-col gap-2">
+    <div className={cn("grid grid-cols-2 w-full", panelGridGap, "items-start")}>
+      {/* Row 1: Labels */}
+      <div className="col-span-1">
         <Label htmlFor={selectId} className={textStyleLabel}>
           {label}
         </Label>
+      </div>
+      <div className="col-span-1 text-center">
+        {selectedWeaponInstanceId !== 'none' && (
+          <Label className={textStyleLabel}>
+            {uiStrings.attacksPanelDamageBonusLabel}
+          </Label>
+        )}
+      </div>
+
+      {/* Row 2: Inputs and Values */}
+      <div className="col-span-1">
         <Select
           value={selectedWeaponInstanceId}
           onValueChange={onSelectedWeaponChange}
-          disabled={isPanelLocked}
         >
           <SelectTrigger id={selectId}>
             <SelectValue />
@@ -96,16 +107,10 @@ export const AttackCard = React.memo(({
             </SelectGroup>
           </SelectContent>
         </Select>
-        {selectedWeaponInstanceId !== 'none' && weaponDisplay}
       </div>
-
-      {/* Right Column: Damage Bonus (25%) */}
-      {selectedWeaponInstanceId !== 'none' && (
-        <div className="w-1/4 flex flex-col gap-2 items-center text-center">
-          <Label className={textStyleLabel}>
-            {uiStrings.attacksPanelDamageBonusLabel}
-          </Label>
-          <div className={cn("flex items-center justify-center h-10", panelFieldHorizontalGap)}>
+      <div className="col-span-1 h-10 flex items-center justify-center">
+        {selectedWeaponInstanceId !== 'none' && (
+          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
             <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(damageBonus)}</p>
             <Button type="button" variant="ghost" size="icon-xs" onClick={onOpenDamageBreakdown} disabled={isPanelLocked}>
               <Info />
@@ -114,6 +119,13 @@ export const AttackCard = React.memo(({
               <Dices />
             </Button>
           </div>
+        )}
+      </div>
+
+      {/* Row 3: Badges */}
+      {selectedWeaponInstanceId !== 'none' && (
+        <div className="col-span-2 mt-2">
+          {weaponDisplay}
         </div>
       )}
     </div>
