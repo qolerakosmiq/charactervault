@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -348,7 +347,7 @@ const CombatPanelComponent = ({
     const baseDamage = weaponInstanceId === 'unarmed' ? (aggregatedFeatEffects?.modifiedMechanics?.unarmedDamage?.isActive && typeof aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value === 'string' ? aggregatedFeatEffects.modifiedMechanics.unarmedDamage.value : (UI_STRINGS.unarmedDamageDefault)) : weaponDef?.damage;
     components.push({ label: UI_STRINGS.attacksPanelBaseWeaponDamageLabel, value: baseDamage || "N/A", isRawValue: true });
 
-    const abilityMod = weaponType === 'melee' ? strModifier : 0;
+    const abilityMod = weaponType === 'melee' ? strModifier : 0; // Ranged typically doesn't add ability to damage unless specific feats
     const abilityAbbr = weaponType === 'melee' ? (ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || 'STR') : '';
     if (abilityMod !== 0) components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
 
@@ -497,39 +496,43 @@ const CombatPanelComponent = ({
               <CardHeader className={cn(panelContentPadding, "items-center")}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center justify-center gap-2")}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
               </CardHeader>
+              <div className="text-center border-b pb-3 mb-3 mx-4">
+                <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
+                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                  <p className={cn(textStyleValueBig, "text-accent")}>
+                    {renderModifierValue(calculateTotalAttackBonus(selectedMainHandMeleeWeaponInstanceId, 'melee'))}
+                  </p>
+                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(selectedMainHandMeleeWeaponInstanceId, 'melee')} disabled={panelIsLocked}><Info /></Button>
+                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRoll(selectedMainHandMeleeWeaponInstanceId, 'melee', 'attack')} disabled={panelIsLocked}><Dices /></Button>
+                </div>
+              </div>
               <CardContent className={cn("flex flex-col flex-grow", panelGridGap, panelContentPadding, "pt-0")}>
-                  <AttackCard
-                      label={UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel || "Main Hand"}
-                      selectId="main-hand-melee-select"
-                      weaponInstances={meleeWeaponInstances}
-                      selectedWeaponInstanceId={selectedMainHandMeleeWeaponInstanceId}
-                      onSelectedWeaponChange={setSelectedMainHandMeleeWeaponInstanceId}
-                      attackBonus={calculateTotalAttackBonus(selectedMainHandMeleeWeaponInstanceId, 'melee')}
-                      damageBonus={calculateTotalDamageBonus(selectedMainHandMeleeWeaponInstanceId, 'melee')}
-                      onOpenAttackBreakdown={() => handleOpenAttackBreakdown(selectedMainHandMeleeWeaponInstanceId, 'melee')}
-                      onRollAttack={() => handleRoll(selectedMainHandMeleeWeaponInstanceId, 'melee', 'attack')}
-                      onOpenDamageBreakdown={() => handleOpenDamageBreakdown(selectedMainHandMeleeWeaponInstanceId, 'melee')}
-                      onRollDamage={() => handleRoll(selectedMainHandMeleeWeaponInstanceId, 'melee', 'damage')}
-                      isPanelLocked={panelIsLocked}
-                      uiStrings={UI_STRINGS}
-                      currentLang={currentLang}
-                  />
-                  <AttackCard
-                      label={UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel || "Off Hand"}
-                      selectId="off-hand-melee-select"
-                      weaponInstances={meleeWeaponInstances}
-                      selectedWeaponInstanceId={selectedOffHandMeleeWeaponInstanceId}
-                      onSelectedWeaponChange={setSelectedOffHandMeleeWeaponInstanceId}
-                      attackBonus={calculateTotalAttackBonus(selectedOffHandMeleeWeaponInstanceId, 'melee')}
-                      damageBonus={calculateTotalDamageBonus(selectedOffHandMeleeWeaponInstanceId, 'melee')}
-                      onOpenAttackBreakdown={() => handleOpenAttackBreakdown(selectedOffHandMeleeWeaponInstanceId, 'melee')}
-                      onRollAttack={() => handleRoll(selectedOffHandMeleeWeaponInstanceId, 'melee', 'attack')}
-                      onOpenDamageBreakdown={() => handleOpenDamageBreakdown(selectedOffHandMeleeWeaponInstanceId, 'melee')}
-                      onRollDamage={() => handleRoll(selectedOffHandMeleeWeaponInstanceId, 'melee', 'damage')}
-                      isPanelLocked={panelIsLocked}
-                      uiStrings={UI_STRINGS}
-                      currentLang={currentLang}
-                  />
+                <AttackCard
+                  label={UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel || "Main Hand"}
+                  selectId="main-hand-melee-select"
+                  weaponInstances={meleeWeaponInstances}
+                  selectedWeaponInstanceId={selectedMainHandMeleeWeaponInstanceId}
+                  onSelectedWeaponChange={setSelectedMainHandMeleeWeaponInstanceId}
+                  damageBonus={calculateTotalDamageBonus(selectedMainHandMeleeWeaponInstanceId, 'melee')}
+                  onOpenDamageBreakdown={() => handleOpenDamageBreakdown(selectedMainHandMeleeWeaponInstanceId, 'melee')}
+                  onRollDamage={() => handleRoll(selectedMainHandMeleeWeaponInstanceId, 'melee', 'damage')}
+                  isPanelLocked={panelIsLocked}
+                  uiStrings={UI_STRINGS}
+                  currentLang={currentLang}
+                />
+                <AttackCard
+                  label={UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel || "Off Hand"}
+                  selectId="off-hand-melee-select"
+                  weaponInstances={meleeWeaponInstances}
+                  selectedWeaponInstanceId={selectedOffHandMeleeWeaponInstanceId}
+                  onSelectedWeaponChange={setSelectedOffHandMeleeWeaponInstanceId}
+                  damageBonus={calculateTotalDamageBonus(selectedOffHandMeleeWeaponInstanceId, 'melee')}
+                  onOpenDamageBreakdown={() => handleOpenDamageBreakdown(selectedOffHandMeleeWeaponInstanceId, 'melee')}
+                  onRollDamage={() => handleRoll(selectedOffHandMeleeWeaponInstanceId, 'melee', 'damage')}
+                  isPanelLocked={panelIsLocked}
+                  uiStrings={UI_STRINGS}
+                  currentLang={currentLang}
+                />
                   {(hasPowerAttackFeat || hasCombatExpertiseFeat) && !panelIsLocked && (
                     <div className={cn("grid grid-cols-2 pt-2", panelGridGap)}>
                       {hasPowerAttackFeat && (
@@ -559,6 +562,16 @@ const CombatPanelComponent = ({
               <CardHeader className={cn(panelContentPadding, "items-center")}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center justify-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
               </CardHeader>
+               <div className="text-center border-b pb-3 mb-3 mx-4">
+                 <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
+                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                   <p className={cn(textStyleValueBig, "text-accent")}>
+                     {selectedRangedWeaponInstanceId === 'none' ? '—' : renderModifierValue(calculateTotalAttackBonus(selectedRangedWeaponInstanceId, 'ranged'))}
+                   </p>
+                   <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleOpenAttackBreakdown(selectedRangedWeaponInstanceId, 'ranged')} disabled={panelIsLocked || selectedRangedWeaponInstanceId === 'none'}><Info /></Button>
+                   <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRoll(selectedRangedWeaponInstanceId, 'ranged', 'attack')} disabled={panelIsLocked || selectedRangedWeaponInstanceId === 'none'}><Dices /></Button>
+                 </div>
+               </div>
               <CardContent className={cn("flex flex-col flex-grow", panelGridGap, panelContentPadding, "pt-0")}>
                 <AttackCard
                     label={UI_STRINGS.attacksPanelRangedWeaponLabel || "Ranged"}
@@ -566,10 +579,7 @@ const CombatPanelComponent = ({
                     weaponInstances={rangedWeaponInstances}
                     selectedWeaponInstanceId={selectedRangedWeaponInstanceId}
                     onSelectedWeaponChange={setSelectedRangedWeaponInstanceId}
-                    attackBonus={calculateTotalAttackBonus(selectedRangedWeaponInstanceId, 'ranged')}
                     damageBonus={calculateTotalDamageBonus(selectedRangedWeaponInstanceId, 'ranged')}
-                    onOpenAttackBreakdown={() => handleOpenAttackBreakdown(selectedRangedWeaponInstanceId, 'ranged')}
-                    onRollAttack={() => handleRoll(selectedRangedWeaponInstanceId, 'ranged', 'attack')}
                     onOpenDamageBreakdown={() => handleOpenDamageBreakdown(selectedRangedWeaponInstanceId, 'ranged')}
                     onRollDamage={() => handleRoll(selectedRangedWeaponInstanceId, 'ranged', 'damage')}
                     isPanelLocked={panelIsLocked}
