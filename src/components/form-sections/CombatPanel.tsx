@@ -212,7 +212,7 @@ const CombatPanelComponent = ({
     const breakdown: GenericBreakdownItem[] = [];
     breakdown.push({ label: UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus", value: baseBab });
     breakdown.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(l => l.id === 'strength')?.abbr || "STR"), value: strModifier });
-    breakdown.push({ label: UI_STRINGS.infoDialogSizeModifierLabel || "Size Modifier", value: sizeMod });
+    breakdown.push({ label: UI_STRINGS.infoDialogGrappleModSizeLabel || "Size Modifier", value: sizeMod });
     if(featBonus !== 0) breakdown.push({ label: UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus", value: featBonus });
     if(localGrappleMiscModifier !== 0) breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier", value: localGrappleMiscModifier });
 
@@ -319,7 +319,7 @@ const CombatPanelComponent = ({
     const powerAttackPenalty = (weaponType === 'melee' && localPowerAttackValue) ? -localPowerAttackValue : 0;
     const combatExpertisePenalty = (weaponType === 'melee' && localCombatExpertiseValue) ? -localCombatExpertiseValue : 0;
 
-    components.push({ label: UI_STRINGS.attacksPanelBabLabel, value: bab });
+    components.push({ label: UI_STRINGS.combatPanelBabLabel, value: bab });
     components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
     if(sizeMod !== 0) components.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
     if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
@@ -399,7 +399,7 @@ const CombatPanelComponent = ({
       const powerAttackPenalty = (weaponType === 'melee' && localPowerAttackValue) ? -localPowerAttackValue : 0;
       const combatExpertisePenalty = (weaponType === 'melee' && localCombatExpertiseValue) ? -localCombatExpertiseValue : 0;
 
-      breakdown.push({ label: UI_STRINGS.attacksPanelBabLabel, value: bab });
+      breakdown.push({ label: UI_STRINGS.combatPanelBabLabel, value: bab });
       breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
       if(sizeMod !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
       if(enhBonus !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
@@ -494,7 +494,7 @@ const CombatPanelComponent = ({
           
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <Card className={cn("flex flex-col")}>
-              <CardHeader className={cn(panelContentPadding, "items-center", "text-center")}>
+              <CardHeader className={cn(panelContentPadding, "items-center", "text-center", panelGridGap)}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center justify-center", panelFieldHorizontalGap)}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
                 <div className="text-center">
                   <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
@@ -560,9 +560,9 @@ const CombatPanelComponent = ({
             </Card>
 
             <Card className={cn("flex flex-col")}>
-              <CardHeader className={cn(panelContentPadding, "items-center", "text-center")}>
+              <CardHeader className={cn(panelContentPadding, "items-center", "text-center", panelGridGap)}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center justify-center", panelFieldHorizontalGap)}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
-                <div className="text-center">
+                 <div className="text-center">
                   <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                   <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                     <p className={cn(textStyleValueBig, "text-accent")}>
