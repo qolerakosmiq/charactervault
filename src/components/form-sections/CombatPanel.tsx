@@ -126,7 +126,7 @@ const CombatPanelComponent = ({
   }, [classes, strModifier, size, SIZES, DND_CLASSES, localGrappleMiscModifier, aggregatedFeatEffects?.attackRollBonuses]);
   
   const hasPowerAttackFeat = React.useMemo(() => allFeatDefinitions.some(f => f.id === 'power-attack' && characterFeats.some(cf => cf.definitionId === f.id)), [allFeatDefinitions, characterFeats]);
-  const hasCombatExpertiseFeat = React.useMemo(() => allFeatDefinitions.some(f => f.id === 'combat-expertise' && characterFeats.some(cf => cf.definitionId === f.id)), [allFeatDefinitions, characterFeats]);
+  const hasCombatExpertiseFeat = React.useMemo(() => allFeatDefinitions.some(f => f.id === 'combat-expertise' && characterFeats.some(cf => cf.definitionId === 'combat-expertise')), [allFeatDefinitions, characterFeats]);
   const maxBabForSpinners = React.useMemo(() => (DND_CLASSES ? getBab(classes || [], DND_CLASSES) : [0])[0] || 0, [classes, DND_CLASSES]);
   
   const allWeaponAndShieldDefinitionsMap = React.useMemo(() => {
@@ -279,36 +279,31 @@ const CombatPanelComponent = ({
     >
       {({ isLocked: panelIsLocked }) => (
         <CardContent className={cn("flex flex-col", panelGridGap)}>
-          <Card>
-             <CardHeader className={cn(panelContentPadding)}>
-              <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><Activity />{UI_STRINGS.combatPanelCombatVitalsTitle}</CardTitle>
-            </CardHeader>
-            <CardContent className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap, panelContentPadding, "pt-0")}>
-              <div className="flex flex-col items-center justify-center p-3 gap-1">
-                <Label className={textStyleLabel}>{UI_STRINGS.combatPanelBabLabel}</Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={cn(textStyleValueBig, "text-accent")}>{totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'babBreakdown'})} disabled={panelIsLocked}><Info /></Button>
-                </div>
+          <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
+            <div className="flex flex-col items-center justify-center p-3 gap-1">
+              <Label className={textStyleLabel}>{UI_STRINGS.combatPanelBabLabel}</Label>
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                <p className={cn(textStyleValueBig, "text-accent")}>{totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</p>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'babBreakdown'})} disabled={panelIsLocked}><Info /></Button>
               </div>
-              <div className="flex flex-col items-center justify-center p-3 gap-1">
-                <Label className={textStyleLabel}>{UI_STRINGS.combatPanelInitiativeLabel}</Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(baseInitiative)}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'initiativeBreakdown'})} disabled={panelIsLocked}><Info /></Button>
-                  <Button type="button" variant="ghost" size="icon-xs" onClick={handleInitiativeRoll} disabled={panelIsLocked}><Dices /></Button>
-                </div>
+            </div>
+            <div className="flex flex-col items-center justify-center p-3 gap-1">
+              <Label className={textStyleLabel}>{UI_STRINGS.combatPanelInitiativeLabel}</Label>
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                <p className={cn(textStyleValueBig, "text-accent")}>{baseInitiative >= 0 ? '+' : ''}{baseInitiative}</p>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'initiativeBreakdown'})} disabled={panelIsLocked}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleInitiativeRoll} disabled={panelIsLocked}><Dices /></Button>
               </div>
-              <div className="flex flex-col items-center justify-center p-3 gap-1">
-                <Label className={textStyleLabel}>{UI_STRINGS.combatPanelGrappleModifierLabel}</Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(totalGrappleModifier)}</p>
-                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'grappleModifierBreakdown'})} disabled={panelIsLocked}><Info /></Button>
-                  <Button type="button" variant="ghost" size="icon-xs" onClick={handleGrappleRoll} disabled={panelIsLocked}><Dices /></Button>
-                </div>
+            </div>
+            <div className="flex flex-col items-center justify-center p-3 gap-1">
+              <Label className={textStyleLabel}>{UI_STRINGS.combatPanelGrappleModifierLabel}</Label>
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                <p className={cn(textStyleValueBig, "text-accent")}>{totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}</p>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'grappleModifierBreakdown'})} disabled={panelIsLocked}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleGrappleRoll} disabled={panelIsLocked}><Dices /></Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
           
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <Card className={cn("flex flex-col")}>
@@ -317,7 +312,7 @@ const CombatPanelComponent = ({
                  <div className="text-center flex flex-col gap-1 pt-2">
                     <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                     <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                      <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(meleeAttackBonusFinal)}</p>
+                      <p className={cn(textStyleValueBig, "text-accent")}>{meleeAttackBonusFinal >= 0 ? '+' : ''}{meleeAttackBonusFinal}</p>
                       <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Info /></Button>
                       <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Dices /></Button>
                     </div>
@@ -383,7 +378,7 @@ const CombatPanelComponent = ({
                 <div className="text-center flex flex-col gap-1 pt-2">
                   <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                   <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                    <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(rangedAttackBonusFinal)}</p> 
+                    <p className={cn(textStyleValueBig, "text-accent")}>{rangedAttackBonusFinal >= 0 ? '+' : ''}{rangedAttackBonusFinal}</p>
                     <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Info /></Button>
                     <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Dices /></Button>
                   </div>
