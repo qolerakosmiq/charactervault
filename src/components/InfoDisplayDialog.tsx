@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -922,31 +923,21 @@ export function InfoDisplayDialog({
         break;
       }
       case 'meleeAttackBreakdown':
-        iconKey = 'meleeAttackBreakdown';
+      case 'rangedAttackBreakdown':
+        iconKey = contentType.type;
         data = {
-          title: UI_STRINGS.infoDialogTitleMeleeAttackBreakdown || "Melee Attack Breakdown",
+          title: contentType.type === 'meleeAttackBreakdown' ? UI_STRINGS.infoDialogTitleMeleeAttackBreakdown : UI_STRINGS.infoDialogTitleRangedAttackBreakdown,
+          subtitle: contentType.subtitle,
           content: [<MeleeAttackBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
         };
         break;
       case 'meleeDamageBreakdown':
-        iconKey = 'meleeDamageBreakdown';
-        data = {
-          title: UI_STRINGS.infoDialogTitleMeleeDamageBreakdown || "Melee Damage Breakdown",
-          content: [<MeleeDamageBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
-        };
-        break;
-      case 'rangedAttackBreakdown':
-        iconKey = 'rangedAttackBreakdown';
-        data = {
-          title: UI_STRINGS.infoDialogTitleRangedAttackBreakdown || "Ranged Attack Breakdown",
-          content: [<RangedAttackBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
-        };
-        break;
       case 'rangedDamageBreakdown':
-        iconKey = 'rangedDamageBreakdown';
+        iconKey = contentType.type;
         data = {
-          title: UI_STRINGS.infoDialogTitleRangedDamageBreakdown || "Ranged Damage Breakdown",
-          content: [<RangedDamageBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
+          title: contentType.type === 'meleeDamageBreakdown' ? UI_STRINGS.infoDialogTitleMeleeDamageBreakdown : UI_STRINGS.infoDialogTitleRangedDamageBreakdown,
+          subtitle: contentType.subtitle,
+          content: [<MeleeDamageBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
         };
         break;
       case 'genericHtml':
@@ -954,18 +945,17 @@ export function InfoDisplayDialog({
         data = { title: contentType.title, content: [GenericHtmlContentDisplay({htmlContent: contentType.content})] };
         break;
        case 'genericNumericalBreakdown':
-        iconKey = 'default'; // Or derive from titleKey if possible
+        iconKey = 'default';
         const titleForGeneric = UI_STRINGS[contentType.titleKey] || "Breakdown";
-        // This case might need its own specific display component if styling for values is complex
-        const contentForGeneric = [<div key="generic-num-content">{contentType.components.map((comp, idx) => (
-            <div key={`${idx}-${comp.label}`} className="flex justify-between text-sm">
-                <span>{comp.label}</span>
-                <span>{comp.value}</span>
-            </div>
-        ))}</div>];
-        data = { title: titleForGeneric, content: contentForGeneric };
+        data = {
+          title: titleForGeneric,
+          subtitle: contentType.subtitle,
+          content: contentType.type === 'meleeDamageBreakdown' || contentType.type === 'rangedDamageBreakdown'
+            ? [<MeleeDamageBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
+            : [<MeleeAttackBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
+        };
         break;
-      case 'classSpecificChoiceOptions': // Added case
+      case 'classSpecificChoiceOptions':
         iconKey = 'classSpecificChoiceOptions';
         data = {
           title: contentType.title,
@@ -985,6 +975,7 @@ export function InfoDisplayDialog({
 
   const {
     title: finalTitle,
+    subtitle: finalSubtitle,
     content: contentBlocks,
     iconKey: finalIconKey
   } = derivedData;
@@ -1008,11 +999,12 @@ export function InfoDisplayDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md md:max-w-lg">
-        <DialogHeader>
+        <DialogHeader className="gap-2">
           <DialogTitle className="flex items-center font-serif text-left">
             <IconComponent className="mr-2 h-6 w-6 text-primary" />
             {finalTitle}
           </DialogTitle>
+          {finalSubtitle && <DialogDescription>{finalSubtitle}</DialogDescription>}
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4 my-2">
           <div className="pb-4">
@@ -1029,6 +1021,7 @@ export function InfoDisplayDialog({
 
 interface DerivedDialogData {
   title: string;
+  subtitle?: string;
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }

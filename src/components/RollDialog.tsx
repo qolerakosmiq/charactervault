@@ -7,7 +7,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -26,9 +25,9 @@ export interface RollDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   dialogTitle: string;
-  dialogSubtitle?: string; // New prop for subtitle
+  dialogSubtitle?: string;
   rollType: string;
-  baseModifier: number; 
+  baseModifier: number;
   calculationBreakdown: GenericBreakdownItem[];
   weaponDamageDiceString?: string;
   weaponCriticalMultiplier?: number;
@@ -40,7 +39,7 @@ export function RollDialog({
   isOpen,
   onOpenChange,
   dialogTitle,
-  dialogSubtitle, // New prop
+  dialogSubtitle,
   rollType,
   baseModifier,
   calculationBreakdown,
@@ -56,8 +55,7 @@ export function RollDialog({
   
   const [baseDamageRoll, setBaseDamageRoll] = React.useState<number | null>(null);
   const [criticalHitBonusDamage, setCriticalHitBonusDamage] = React.useState<number | null>(null);
-  const [bonusDiceRolls, setBonusDiceRolls] = React.useState<number | null>(null);
-  const [totalStaticBonus, setTotalStaticBonus] = React.useState<number | null>(null);
+  const [bonusDiceRollsResult, setBonusDiceRollsResult] = React.useState<number | null>(null);
   
   const [finalResult, setFinalResult] = React.useState<number | null>(null);
   const [isRolling, setIsRolling] = React.useState(false);
@@ -73,15 +71,14 @@ export function RollDialog({
       setBonusD20Rolls([]);
       setBaseDamageRoll(null);
       setCriticalHitBonusDamage(null);
-      setBonusDiceRolls(null);
-      setTotalStaticBonus(null);
+      setBonusDiceRollsResult(null);
       setFinalResult(null);
       setIsCritical(false);
     }
   }, [isOpen]);
 
-  const { bonusDiceStrings, staticBonus, baseDamageDiceString } = React.useMemo(() => {
-    if (!isDamageRoll) return { bonusDiceStrings: [], staticBonus: 0, baseDamageDiceString: '' };
+  const { bonusDiceStrings, staticBonus, baseDamageDiceStringForRoll } = React.useMemo(() => {
+    if (!isDamageRoll) return { bonusDiceStrings: [], staticBonus: 0, baseDamageDiceStringForRoll: '' };
     
     const baseDiceItems = calculationBreakdown.filter(item => item.isRawValue);
     const staticBonusItems = calculationBreakdown.filter(item => !item.isRawValue);
@@ -90,7 +87,7 @@ export function RollDialog({
     const bonusDiceStrs = baseDiceItems.filter(i => i.label.toLowerCase().includes('base') === false).map(i => i.value as string);
     const staticBns = staticBonusItems.reduce((acc, item) => acc + (Number(item.value) || 0), 0);
     
-    return { bonusDiceStrings: bonusDiceStrs, staticBonus: staticBns, baseDamageDiceString: baseDamageStr };
+    return { bonusDiceStrings: bonusDiceStrs, staticBonus: staticBns, baseDamageDiceStringForRoll: baseDamageStr };
   }, [calculationBreakdown, isDamageRoll, weaponDamageDiceString]);
 
 
@@ -98,32 +95,24 @@ export function RollDialog({
     setIsRolling(true);
 
     if (isDamageRoll) {
-      let totalBaseResult = 0;
-      const { result: firstBaseRoll } = parseAndRollDice(baseDamageDiceString);
-      totalBaseResult += firstBaseRoll;
-      setBaseDamageRoll(totalBaseResult);
-      
-      let critBonusDamage = 0;
-      // In 3.5e, you re-roll all damage, including static modifiers like STR and enhancement, but not precision-based damage like Sneak Attack or elemental damage from Flaming weapons.
-      // For simplicity here, we will re-roll the base dice and re-add the static bonus, which is a common house rule and simpler to model.
-      // Bonus damage dice (like from Psychic Strike) are generally not multiplied.
-      if (isCritical && weaponCriticalMultiplier) {
-        for (let i = 1; i < weaponCriticalMultiplier; i++) {
-          const { result: critRoll } = parseAndRollDice(baseDamageDiceString);
-          critBonusDamage += critRoll;
-        }
-      }
-      setCriticalHitBonusDamage(critBonusDamage);
+      const { result: baseRoll } = parseAndRollDice(baseDamageDiceStringForRoll);
+      setBaseDamageRoll(baseRoll);
       
       let totalBonusDiceResult = 0;
       for (const diceStr of bonusDiceStrings) {
         totalBonusDiceResult += parseAndRollDice(diceStr).result;
       }
+      setBonusDiceRollsResult(totalBonusDiceResult);
       
-      setBonusDiceRolls(totalBonusDiceResult);
-      setTotalStaticBonus(staticBonus);
+      let critBonusDamage = 0;
+      if (isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1) {
+        // According to SRD, you multiply the dice and the static bonuses that apply to the weapon.
+        // Bonus dice (like flaming) are not multiplied.
+        critBonusDamage = (baseRoll + staticBonus) * (weaponCriticalMultiplier - 1);
+      }
+      setCriticalHitBonusDamage(critBonusDamage);
       
-      const totalFinalDamage = totalBaseResult + critBonusDamage + totalBonusDiceResult + staticBonus;
+      const totalFinalDamage = baseRoll + staticBonus + critBonusDamage + totalBonusDiceResult;
       setFinalResult(totalFinalDamage);
 
     } else { // Attack, Save, Check rolls
@@ -161,14 +150,14 @@ export function RollDialog({
     if (bonus !== 0) {
       parts.push(`${bonus > 0 ? '+' : ''}${bonus}`);
     }
-    return parts.join(' ').replace(/\+ -/g, '- ');
+    return parts.join(' + ').replace(/\+ -/g, '- ');
   }, [isDamageRoll, calculationBreakdown]);
 
 
   if (translationsLoading || !translations) { return null; }
   const UI_STRINGS = translations.UI_STRINGS;
   
-  const buttonText = isDamageRoll ? UI_STRINGS.rollDialogRollDamageButton.replace('{dice}', weaponDamageDiceString || 'Dice') : UI_STRINGS.rollDialogRollButton;
+  const buttonText = isDamageRoll ? UI_STRINGS.rollDialogRollDamageButton.replace('{dice}', baseDamageDiceStringForRoll || 'Dice') : UI_STRINGS.rollDialogRollButton;
   
   const isInitialRollCritFailure = !isDamageRoll && initialD20Roll === 1;
   const isInitialRollNat20 = !isDamageRoll && initialD20Roll === 20;
@@ -183,12 +172,12 @@ export function RollDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
+        <DialogHeader className="gap-2">
           <DialogTitle className="font-serif flex items-center text-left">
             <Dices className="mr-2 h-5 w-5 text-primary" />
             {dialogTitle}
           </DialogTitle>
-          {dialogSubtitle && <DialogDescription>{dialogSubtitle}</DialogDescription>}
+          {dialogSubtitle && <DialogDescription className="text-sm text-muted-foreground">{dialogSubtitle}</DialogDescription>}
         </DialogHeader>
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
@@ -256,15 +245,15 @@ export function RollDialog({
                         <span className="font-bold">{renderModifierValue(criticalHitBonusDamage)}</span>
                     </div>
                   )}
-                  {bonusDiceRolls !== null && bonusDiceRolls > 0 && (
+                  {bonusDiceRollsResult !== null && bonusDiceRollsResult > 0 && (
                      <div className="flex justify-between items-center text-sm mb-0.5">
                         <span className="text-foreground">{UI_STRINGS.rollDialogBonusDiceResultLabel}</span>
-                        <span className="font-bold text-primary">{renderModifierValue(bonusDiceRolls)}</span>
+                        <span className="font-bold text-primary">{renderModifierValue(bonusDiceRollsResult)}</span>
                     </div>
                   )}
                    <div className="flex justify-between items-center text-sm mb-0.5">
                       <span className="text-foreground">{UI_STRINGS.rollDialogStaticBonusesTotalLabel}</span>
-                      <span className="font-bold text-primary">{renderModifierValue(totalStaticBonus || 0)}</span>
+                      <span className="font-bold text-primary">{renderModifierValue(staticBonus)}</span>
                   </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center mt-0.5">
