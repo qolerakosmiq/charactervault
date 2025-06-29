@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -26,12 +27,17 @@ interface AttackCardProps {
   weaponInstances: Array<ItemInstance & { definition: ItemDefinition }>;
   selectedWeaponInstanceId: string;
   onSelectedWeaponChange: (id: string) => void;
+  
+  // Attack Bonus props
   attackBonus: number;
   onOpenAttackBreakdown: () => void;
   onRollAttack: () => void;
+  
+  // Damage Bonus props
   damageBonus: number;
   onOpenDamageBreakdown: () => void;
   onRollDamage: () => void;
+
   isPanelLocked: boolean;
   uiStrings: Record<string, string>;
   currentLang: LanguageCode;
@@ -58,6 +64,11 @@ export const AttackCard = React.memo(({
     return weaponInstances.find(w => w.instanceId === selectedWeaponInstanceId)?.definition;
   }, [weaponInstances, selectedWeaponInstanceId]);
 
+  const rollAttackAriaLabel = React.useMemo(() => {
+    const name = selectedWeaponDefinition?.label ? getLocalizedString(selectedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : (uiStrings.attacksPanelUnarmedOption || 'Unarmed');
+    return (uiStrings.rollDialogAttackAriaLabel || "Roll Attack for {weaponName}").replace("{weaponName}", name);
+  }, [selectedWeaponDefinition, currentLang, uiStrings]);
+  
   const rollDamageAriaLabel = React.useMemo(() => {
     const name = selectedWeaponDefinition?.label ? getLocalizedString(selectedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : (uiStrings.attacksPanelUnarmedOption || 'Unarmed');
     return (uiStrings.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", name);
@@ -76,26 +87,15 @@ export const AttackCard = React.memo(({
   const noWeaponSelected = selectedWeaponInstanceId === 'none';
 
   return (
-    <div className={cn("grid grid-cols-2 w-full gap-1 items-start")}>
-      {/* Row 1: Labels */}
-      <div className="col-span-1">
+    <div className="flex flex-col gap-2">
+      <div>
         <Label htmlFor={selectId} className={textStyleLabel}>
           {label}
         </Label>
-      </div>
-      <div className="col-span-1 text-center">
-        {!noWeaponSelected && (
-          <Label className={textStyleLabel}>
-            {uiStrings.attacksPanelDamageBonusLabel}
-          </Label>
-        )}
-      </div>
-
-      {/* Row 2: Inputs and Values */}
-      <div className="col-span-1">
         <Select
           value={selectedWeaponInstanceId}
           onValueChange={onSelectedWeaponChange}
+          disabled={isPanelLocked}
         >
           <SelectTrigger id={selectId}>
             <SelectValue />
@@ -113,25 +113,35 @@ export const AttackCard = React.memo(({
           </SelectContent>
         </Select>
       </div>
-      <div className="col-span-1 h-10 flex items-center justify-center">
-        {!noWeaponSelected && (
-          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-            <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(damageBonus)}</p>
-            <Button type="button" variant="ghost" size="icon-xs" onClick={onOpenDamageBreakdown} disabled={isPanelLocked}>
-              <Info />
-            </Button>
-            <Button type="button" variant="ghost" size="icon-xs" onClick={onRollDamage} disabled={isPanelLocked} aria-label={rollDamageAriaLabel}>
-              <Dices />
-            </Button>
-          </div>
-        )}
-      </div>
-
-      {/* Row 3: Badges */}
+      
       {!noWeaponSelected && (
-        <div className="col-span-2">
-          {weaponDisplay}
-        </div>
+        <>
+          <div className="col-span-2">
+            {weaponDisplay}
+          </div>
+
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1 mt-1">
+            {/* Attack Bonus Column */}
+            <div className="text-center">
+              <Label className={textStyleLabel}>{uiStrings.attacksPanelAttackBonusLabel}</Label>
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(attackBonus)}</p>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={onOpenAttackBreakdown} disabled={isPanelLocked}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={onRollAttack} disabled={isPanelLocked} aria-label={rollAttackAriaLabel}><Dices /></Button>
+              </div>
+            </div>
+
+            {/* Damage Bonus Column */}
+            <div className="text-center">
+              <Label className={textStyleLabel}>{uiStrings.attacksPanelDamageBonusLabel}</Label>
+              <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(damageBonus)}</p>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={onOpenDamageBreakdown} disabled={isPanelLocked}><Info /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={onRollDamage} disabled={isPanelLocked} aria-label={rollDamageAriaLabel}><Dices /></Button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   );

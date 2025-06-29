@@ -23,6 +23,8 @@
   "rollDialogTitleRangedAttackFormat": { "en": "Ranged Attack", "fr": "Attaque à Distance" },
   "rollDialogTitleRangedDamageFormat": { "en": "Ranged Damage", "fr": "Dégâts à Distance" },
   "rollDialogSkillCheckAriaLabel": { "en": "Roll {skillName} Check", "fr": "Lancer un test de {skillName}" },
+  "rollDialogAttackAriaLabel": { "en": "Roll Attack for {weaponName}", "fr": "Lancer l'Attaque pour {weaponName}" },
+  "rollDialogDamageAriaLabel": { "en": "Roll Damage for {weaponName}", "fr": "Lancer les Dégâts pour {weaponName}" },
   "rollDialogCritFailureLabel": { "en": "Critical Failure!", "fr": "Échec Critique !" },
   "rollDialogGenericBreakdownLabel": { "en": "Component", "fr": "Composant" },
   "rollDialogAbilityModifierLabel": { "en": "Ability Modifier ({abilityAbbr})", "fr": "Mod. de Carac. ({abilityAbbr})" },
