@@ -78,25 +78,29 @@ export function RollDialog({
     }
   }, [isOpen]);
 
-  const { staticBonus, bonusDiceStrings, baseDamageDiceStringForRoll, staticBonusMultiplied, staticBonusNotMultiplied } = React.useMemo(() => {
-    if (!isDamageRoll || !calculationBreakdown) return { staticBonus: 0, bonusDiceStrings: [], baseDamageDiceStringForRoll: '', staticBonusMultiplied: 0, staticBonusNotMultiplied: 0 };
+  const {
+    staticBonusTotal,
+    bonusDiceStrings,
+    baseDamageDiceStringForRoll,
+    staticBonusMultiplied,
+  } = React.useMemo(() => {
+    if (!isDamageRoll || !calculationBreakdown) return { staticBonusTotal: 0, bonusDiceStrings: [], baseDamageDiceStringForRoll: '', staticBonusMultiplied: 0 };
     
-    const baseDiceItems = calculationBreakdown.filter(item => item.isRawValue);
-    
-    const staticBonusItemsMultipliable = calculationBreakdown.filter(item => !item.isRawValue && item.isCritMultipliable);
-    const staticBonusItemsNotMultipliable = calculationBreakdown.filter(item => !item.isRawValue && !item.isCritMultipliable);
+    const baseDiceItem = calculationBreakdown.find(item => item.isRawValue && item.label.toLowerCase().includes('base'));
+    const bonusDiceItems = calculationBreakdown.filter(item => item.isRawValue && item.label.toLowerCase().includes('base') === false);
 
-    const baseDamageStr = weaponDamageDiceString || (baseDiceItems.find(i => i.label.toLowerCase().includes('base'))?.value as string) || '';
-    const bonusDiceStrs = baseDiceItems.filter(i => i.label.toLowerCase().includes('base') === false).map(i => i.value as string);
+    const staticBonusItems = calculationBreakdown.filter(item => !item.isRawValue);
     
-    const staticBnsMultiplied = staticBonusItemsMultipliable.reduce((acc, item) => acc + Number(item.value), 0);
-    const staticBnsNotMultiplied = staticBonusItemsNotMultipliable.reduce((acc, item) => acc + Number(item.value), 0);
+    const baseDamageStr = weaponDamageDiceString || (baseDiceItem?.value as string) || '';
+    const bonusDiceStrs = bonusDiceItems.map(i => i.value as string);
+    
+    const staticBnsTotal = staticBonusItems.reduce((acc, item) => acc + Number(item.value), 0);
+    const staticBnsMultiplied = staticBonusItems.filter(item => item.isCritMultipliable).reduce((acc, item) => acc + Number(item.value), 0);
     
     return { 
       bonusDiceStrings: bonusDiceStrs, 
-      staticBonus: staticBnsMultiplied + staticBnsNotMultiplied,
+      staticBonusTotal: staticBnsTotal,
       staticBonusMultiplied: staticBnsMultiplied,
-      staticBonusNotMultiplied: staticBnsNotMultiplied,
       baseDamageDiceStringForRoll: baseDamageStr 
     };
   }, [calculationBreakdown, isDamageRoll, weaponDamageDiceString]);
@@ -122,7 +126,7 @@ export function RollDialog({
         }
         setCriticalHitBonusDamage(critBonusDamage);
         
-        const totalFinalDamage = baseRoll + staticBonus + critBonusDamage + totalBonusDiceResult;
+        const totalFinalDamage = baseRoll + staticBonusTotal + critBonusDamage + totalBonusDiceResult;
         setFinalResult(totalFinalDamage);
 
       } else { // Attack, Save, Check rolls
@@ -190,7 +194,7 @@ export function RollDialog({
             {dialogTitle}
           </DialogTitle>
           {dialogSubtitle && (
-            <DialogDescription className="text-sm text-muted-foreground pt-1">
+            <DialogDescription className="text-sm text-muted-foreground pt-1 pl-7">
               {dialogSubtitle}
             </DialogDescription>
           )}
@@ -257,7 +261,7 @@ export function RollDialog({
                   </div>
                   <div className="flex justify-between items-center text-sm mb-0.5">
                       <span className="text-foreground">{UI_STRINGS.rollDialogStaticBonusesTotalLabel}</span>
-                      <span className="font-bold text-primary">{renderModifierValue(staticBonus)}</span>
+                      <span className="font-bold text-primary">{renderModifierValue(staticBonusTotal)}</span>
                   </div>
                   {criticalHitBonusDamage !== null && criticalHitBonusDamage > 0 && (
                      <div className="flex justify-between items-center text-sm mb-0.5 text-red-500">
@@ -331,4 +335,3 @@ export function RollDialog({
   );
 }
 
-    
