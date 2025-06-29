@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -946,7 +947,7 @@ export function InfoDisplayDialog({
         break;
        case 'genericNumericalBreakdown':
         iconKey = 'default';
-        const titleForGeneric = UI_STRINGS[contentType.titleKey] || "Breakdown";
+        const titleForGeneric = UI_STRINGS[contentType.titleKey as keyof typeof UI_STRINGS] || "Breakdown";
         data = {
           title: titleForGeneric,
           subtitle: contentType.subtitle,
@@ -999,12 +1000,14 @@ export function InfoDisplayDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md md:max-w-lg">
-        <DialogHeader className="gap-2">
-          <DialogTitle className="flex items-center font-serif text-left">
-            <IconComponent className="mr-2 h-6 w-6 text-primary" />
-            {finalTitle}
-          </DialogTitle>
-          {finalSubtitle && <DialogDescription>{finalSubtitle}</DialogDescription>}
+        <DialogHeader>
+          <div className="flex items-start text-left">
+            <IconComponent className="mr-2 h-6 w-6 shrink-0 text-primary" />
+            <div className="flex flex-col gap-1.5">
+              <DialogTitle className="font-serif">{finalTitle}</DialogTitle>
+              {finalSubtitle && <DialogDescription>{finalSubtitle}</DialogDescription>}
+            </div>
+          </div>
         </DialogHeader>
         <ScrollArea className="max-h-[70vh] pr-4 my-2">
           <div className="pb-4">
@@ -1025,3 +1028,5 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
+
+    

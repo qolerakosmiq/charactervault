@@ -78,7 +78,7 @@ export function RollDialog({
   }, [isOpen]);
 
   const { bonusDiceStrings, staticBonus, baseDamageDiceStringForRoll } = React.useMemo(() => {
-    if (!isDamageRoll) return { bonusDiceStrings: [], staticBonus: 0, baseDamageDiceStringForRoll: '' };
+    if (!isDamageRoll || !calculationBreakdown) return { bonusDiceStrings: [], staticBonus: 0, baseDamageDiceStringForRoll: '' };
     
     const baseDiceItems = calculationBreakdown.filter(item => item.isRawValue);
     const staticBonusItems = calculationBreakdown.filter(item => !item.isRawValue);
@@ -105,11 +105,12 @@ export function RollDialog({
         setBonusDiceRollsResult(totalBonusDiceResult);
         
         let critBonusDamage = 0;
-        if (isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1) {
-          // Per user instruction: multiply the result of the base dice and static bonuses, don't re-roll.
-          // The critical bonus is the extra damage, i.e. (total damage - normal damage)
-          const totalNormalDamage = baseRoll + staticBonus;
-          critBonusDamage = totalNormalDamage * (weaponCriticalMultiplier - 1);
+        const multiplier = weaponCriticalMultiplier || 2;
+        if (isCritical && multiplier > 1) {
+          for (let i = 0; i < multiplier - 1; i++) {
+            critBonusDamage += parseAndRollDice(baseDamageDiceStringForRoll).result;
+          }
+          critBonusDamage += staticBonus * (multiplier - 1);
         }
         setCriticalHitBonusDamage(critBonusDamage);
         
@@ -175,12 +176,14 @@ export function RollDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader className="gap-2">
-          <DialogTitle className="font-serif flex items-center text-left">
-            <Dices className="mr-2 h-5 w-5 text-primary" />
-            {dialogTitle}
-          </DialogTitle>
-          {dialogSubtitle && <DialogDescription className="text-sm text-muted-foreground">{dialogSubtitle}</DialogDescription>}
+        <DialogHeader>
+           <div className="flex items-start text-left">
+            <Dices className="mr-2 h-5 w-5 shrink-0 text-primary" />
+            <div className="flex flex-col gap-1.5">
+              <DialogTitle className="font-serif">{dialogTitle}</DialogTitle>
+              {dialogSubtitle && <DialogDescription>{dialogSubtitle}</DialogDescription>}
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
@@ -317,3 +320,5 @@ export function RollDialog({
     </Dialog>
   );
 }
+
+    
