@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -14,7 +15,7 @@ import type {
   GearSlotId,
   LocalizedString
 } from '@/types/character-core';
-import { Card, CardHeader, CardContent, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Swords, Info, Dices, Hand, ArrowRightLeft, Activity, Shield as ShieldIcon } from 'lucide-react';
@@ -193,47 +194,30 @@ const CombatPanelComponent = ({
         <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel || "Critical on {range}").replace("{range}", weaponDef.criticalRange || '20')} rightLabel={(weaponDef.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
       </div>
     );
-  }, [UI_STRINGS]);
+  }, [UI_STRINGS, panelBadgeGroupGap, textStyleBadgeSmall]);
 
-  const handleOpenInitiativeRoll = React.useCallback(() => {
-    const breakdown: GenericBreakdownItem[] = [];
-    if (dexModifier !== 0) breakdown.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === 'dexterity')?.abbr || "DEX"), value: dexModifier });
-    if (aggregatedFeatEffects?.initiativeBonus || 0 !== 0) breakdown.push({ label: UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus", value: aggregatedFeatEffects?.initiativeBonus || 0 });
-    if (localInitiativeMiscModifier !== 0) breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier", value: localInitiativeMiscModifier || 0 });
-
+  const handleInitiativeRoll = React.useCallback(() => {
     onOpenRollDialog({
       dialogTitle: UI_STRINGS.rollDialogTitleInitiative || "Roll Initiative",
       rollType: 'initiative_check',
       baseModifier: baseInitiative,
-      calculationBreakdown: breakdown,
+      calculationBreakdown: [],
       rerollTwentiesForChecks: rerollTwentiesForChecks,
     });
-  }, [onOpenRollDialog, baseInitiative, dexModifier, localInitiativeMiscModifier, aggregatedFeatEffects, rerollTwentiesForChecks, UI_STRINGS, ABILITY_LABELS]);
+  }, [onOpenRollDialog, baseInitiative, rerollTwentiesForChecks, UI_STRINGS]);
 
-  const handleOpenGrappleRoll = React.useCallback(() => {
-    const bab = (DND_CLASSES ? getBab(classes || [], DND_CLASSES) : [0])[0] || 0;
-    const sizeModGrapple = SIZES ? getSizeModifierGrapple(size, SIZES) : 0;
-    const featBonus = aggregatedFeatEffects?.attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0;
-    const breakdown: GenericBreakdownItem[] = [];
-
-    breakdown.push({ label: UI_STRINGS.infoDialogGrappleModBabLabel || "Base Attack Bonus", value: bab });
-    breakdown.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || "STR"), value: strModifier });
-    if (sizeModGrapple !== 0) breakdown.push({ label: UI_STRINGS.infoDialogGrappleModSizeLabel || "Size Modifier", value: sizeModGrapple });
-    if (featBonus !== 0) breakdown.push({ label: UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus", value: featBonus });
-    if (localGrappleMiscModifier !== 0) breakdown.push({ label: UI_STRINGS.infoDialogCustomModifierLabel || "Misc Modifier", value: localGrappleMiscModifier });
-
+  const handleGrappleRoll = React.useCallback(() => {
     onOpenRollDialog({
       dialogTitle: UI_STRINGS.rollDialogTitleGrappleCheck || "Roll Grapple Check",
       rollType: 'grapple_check',
       baseModifier: totalGrappleModifier,
-      calculationBreakdown: breakdown,
+      calculationBreakdown: [],
       rerollTwentiesForChecks: rerollTwentiesForChecks
     });
-  }, [onOpenRollDialog, totalGrappleModifier, classes, strModifier, size, localGrappleMiscModifier, aggregatedFeatEffects, rerollTwentiesForChecks, UI_STRINGS, DND_CLASSES, SIZES, ABILITY_LABELS]);
+  }, [onOpenRollDialog, totalGrappleModifier, rerollTwentiesForChecks, UI_STRINGS]);
 
 
   if (translationsLoading || !UI_STRINGS || !DND_CLASSES || !SIZES || !aggregatedFeatEffects) return null;
-  const sizeModifierAttackValue = sizeModifierAttack ?? 0;
 
   return (
     <LockablePanelWrapper
@@ -244,108 +228,116 @@ const CombatPanelComponent = ({
     >
       {({ isLocked: panelIsLocked }) => (
         <CardContent className={cn("flex flex-col", panelGridGap)}>
+          
           <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
-            <div className="text-center flex flex-col gap-1">
+            <Card className="flex flex-col items-center justify-center p-3 gap-1">
               <Label className={textStyleLabel}>{UI_STRINGS.combatPanelBabLabel}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p className={cn(textStyleValueBig, "text-accent")}>{totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</p>
                 <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'babBreakdown'})} disabled={panelIsLocked}><Info /></Button>
               </div>
-            </div>
-            <div className="text-center flex flex-col gap-1">
+            </Card>
+            <Card className="flex flex-col items-center justify-center p-3 gap-1">
               <Label className={textStyleLabel}>{UI_STRINGS.combatPanelInitiativeLabel}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p className={cn(textStyleValueBig, "text-accent")}>{baseInitiative >= 0 ? '+' : ''}{baseInitiative}</p>
                 <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'initiativeBreakdown'})} disabled={panelIsLocked}><Info /></Button>
-                <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenInitiativeRoll} disabled={panelIsLocked}><Dices /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleInitiativeRoll} disabled={panelIsLocked}><Dices /></Button>
               </div>
-            </div>
-            <div className="text-center flex flex-col gap-1">
+            </Card>
+            <Card className="flex flex-col items-center justify-center p-3 gap-1">
               <Label className={textStyleLabel}>{UI_STRINGS.combatPanelGrappleModifierLabel}</Label>
               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                 <p className={cn(textStyleValueBig, "text-accent")}>{totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}</p>
                 <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'grappleModifierBreakdown'})} disabled={panelIsLocked}><Info /></Button>
-                <Button type="button" variant="ghost" size="icon-xs" onClick={handleOpenGrappleRoll} disabled={panelIsLocked}><Dices /></Button>
+                <Button type="button" variant="ghost" size="icon-xs" onClick={handleGrappleRoll} disabled={panelIsLocked}><Dices /></Button>
               </div>
-            </div>
+            </Card>
           </div>
 
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             {/* Melee Attacks Card */}
-            <Card className={cn("flex flex-col", panelContentPadding, panelGridGap)}>
-              <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
-              <div className="text-center flex flex-col gap-1">
-                <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
-                <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                  <p className={cn(textStyleValueBig, "text-accent")}>+X</p> {/* Placeholder */}
-                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Info /></Button>
-                  <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Dices /></Button>
+            <Card>
+              <CardHeader>
+                <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
+              </CardHeader>
+              <CardContent className={cn("flex flex-col", panelGridGap)}>
+                <div className="text-center flex flex-col gap-1">
+                  <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
+                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                    <p className={cn(textStyleValueBig, "text-accent")}>+X</p> {/* Placeholder */}
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Info /></Button>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Dices /></Button>
+                  </div>
                 </div>
-              </div>
 
-              {(hasPowerAttackFeat || hasCombatExpertiseFeat) && !panelIsLocked && (
-                <div className={cn("grid grid-cols-2", panelGridGap)}>
-                  {hasPowerAttackFeat && (
-                    <div className="flex flex-col items-center text-center gap-1">
-                      <Label htmlFor="power-attack-value" className={cn(textStyleLabel, "flex items-center gap-1")}><Activity className="text-destructive/80"/>{UI_STRINGS.powerAttackValueLabel}</Label>
-                      <p className={textStyleSubLabel}>{UI_STRINGS.powerAttackDescription}</p>
-                      <div className={cn("flex justify-center", inputWidthStandard)}>
-                        <Input id="power-attack-value" type="number" value={localPowerAttackValue} onChange={(e) => setLocalPowerAttackValue(parseInt(e.target.value, 10) || 0)} min={0} max={maxBabForSpinners > 0 ? maxBabForSpinners : 0} className={cn(textStyleInput)} />
+                {(hasPowerAttackFeat || hasCombatExpertiseFeat) && !panelIsLocked && (
+                  <div className={cn("grid grid-cols-2", panelGridGap)}>
+                    {hasPowerAttackFeat && (
+                      <div className="flex flex-col items-center text-center gap-1">
+                        <Label htmlFor="power-attack-value" className={cn(textStyleLabel, "flex items-center gap-1")}><Activity className="text-destructive/80"/>{UI_STRINGS.powerAttackValueLabel}</Label>
+                        <p className={textStyleSubLabel}>{UI_STRINGS.powerAttackDescription}</p>
+                        <div className={cn("flex justify-center", inputWidthStandard)}>
+                          <Input id="power-attack-value" type="number" value={localPowerAttackValue} onChange={(e) => setLocalPowerAttackValue(parseInt(e.target.value, 10) || 0)} min={0} max={maxBabForSpinners > 0 ? maxBabForSpinners : 0} className={cn(textStyleInput)} />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                   {hasCombatExpertiseFeat && (
-                    <div className="flex flex-col items-center text-center gap-1">
-                      <Label htmlFor="combat-expertise-value" className={cn(textStyleLabel, "flex items-center gap-1")}><ShieldIcon className="text-blue-500/80"/>{UI_STRINGS.combatExpertiseValueLabel}</Label>
-                      <p className={textStyleSubLabel}>{UI_STRINGS.combatExpertiseDescription}</p>
-                      <div className={cn("flex justify-center", inputWidthStandard)}>
-                        <Input id="combat-expertise-value" type="number" value={localCombatExpertiseValue} onChange={(e) => setLocalCombatExpertiseValue(parseInt(e.target.value, 10) || 0)} min={0} max={maxBabForSpinners > 0 ? maxBabForSpinners : 0} className={cn(textStyleInput)} />
+                    )}
+                    {hasCombatExpertiseFeat && (
+                      <div className="flex flex-col items-center text-center gap-1">
+                        <Label htmlFor="combat-expertise-value" className={cn(textStyleLabel, "flex items-center gap-1")}><ShieldIcon className="text-blue-500/80"/>{UI_STRINGS.combatExpertiseValueLabel}</Label>
+                        <p className={textStyleSubLabel}>{UI_STRINGS.combatExpertiseDescription}</p>
+                        <div className={cn("flex justify-center", inputWidthStandard)}>
+                          <Input id="combat-expertise-value" type="number" value={localCombatExpertiseValue} onChange={(e) => setLocalCombatExpertiseValue(parseInt(e.target.value, 10) || 0)} min={0} max={maxBabForSpinners > 0 ? maxBabForSpinners : 0} className={cn(textStyleInput)} />
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              )}
-              
-              <AttackCard
-                  label={UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel || "Main Hand"}
-                  selectId="main-hand-melee-select"
-                  weaponInstances={meleeWeaponInstances}
-                  selectedWeaponInstanceId={selectedMainHandMeleeWeaponInstanceId}
-                  onSelectedWeaponChange={setSelectedMainHandMeleeWeaponInstanceId}
-                  formattedDamageBonus="+Y"
-                  weaponDisplay={createWeaponDisplay(meleeWeaponInstances.find(w=>w.instanceId === selectedMainHandMeleeWeaponInstanceId)?.definition)}
-                  onOpenDamageBreakdown={() => {}}
-                  onRollDamage={() => {}}
-                  isPanelLocked={panelIsLocked}
-                  uiStrings={UI_STRINGS}
-                  currentLang={currentLang}
-              />
-              <AttackCard
-                  label={UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel || "Off Hand"}
-                  selectId="off-hand-melee-select"
-                  weaponInstances={meleeWeaponInstances}
-                  selectedWeaponInstanceId={selectedOffHandMeleeWeaponInstanceId}
-                  onSelectedWeaponChange={setSelectedOffHandMeleeWeaponInstanceId}
-                  formattedDamageBonus="+Z"
-                  weaponDisplay={createWeaponDisplay(meleeWeaponInstances.find(w=>w.instanceId === selectedOffHandMeleeWeaponInstanceId)?.definition)}
-                  onOpenDamageBreakdown={() => {}}
-                  onRollDamage={() => {}}
-                  isPanelLocked={panelIsLocked}
-                  uiStrings={UI_STRINGS}
-                  currentLang={currentLang}
-              />
+                    )}
+                  </div>
+                )}
+                
+                <AttackCard
+                    label={UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel || "Main Hand"}
+                    selectId="main-hand-melee-select"
+                    weaponInstances={meleeWeaponInstances}
+                    selectedWeaponInstanceId={selectedMainHandMeleeWeaponInstanceId}
+                    onSelectedWeaponChange={setSelectedMainHandMeleeWeaponInstanceId}
+                    formattedDamageBonus="+Y"
+                    weaponDisplay={createWeaponDisplay(meleeWeaponInstances.find(w=>w.instanceId === selectedMainHandMeleeWeaponInstanceId)?.definition)}
+                    onOpenDamageBreakdown={() => {}}
+                    onRollDamage={() => {}}
+                    isPanelLocked={panelIsLocked}
+                    uiStrings={UI_STRINGS}
+                    currentLang={currentLang}
+                />
+                <AttackCard
+                    label={UI_STRINGS.attacksPanelOffHandMeleeWeaponLabel || "Off Hand"}
+                    selectId="off-hand-melee-select"
+                    weaponInstances={meleeWeaponInstances}
+                    selectedWeaponInstanceId={selectedOffHandMeleeWeaponInstanceId}
+                    onSelectedWeaponChange={setSelectedOffHandMeleeWeaponInstanceId}
+                    formattedDamageBonus="+Z"
+                    weaponDisplay={createWeaponDisplay(meleeWeaponInstances.find(w=>w.instanceId === selectedOffHandMeleeWeaponInstanceId)?.definition)}
+                    onOpenDamageBreakdown={() => {}}
+                    onRollDamage={() => {}}
+                    isPanelLocked={panelIsLocked}
+                    uiStrings={UI_STRINGS}
+                    currentLang={currentLang}
+                />
+              </CardContent>
             </Card>
 
-            <Card className={cn("flex flex-col", panelContentPadding, panelGridGap)}>
-               <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
-               <div className="text-center flex flex-col gap-1">
-                <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
-                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                   <p className={cn(textStyleValueBig, "text-accent")}>+X</p> 
-                   <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Info /></Button>
-                   <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Dices /></Button>
-                 </div>
-               </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className={cn(textStyleCardTitle, "flex items-center gap-2")}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
+              </CardHeader>
+              <CardContent className={cn("flex flex-col", panelGridGap)}>
+                <div className="text-center flex flex-col gap-1">
+                  <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
+                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
+                    <p className={cn(textStyleValueBig, "text-accent")}>+X</p> 
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Info /></Button>
+                    <Button type="button" variant="ghost" size="icon-xs" onClick={() => {}} disabled={panelIsLocked}><Dices /></Button>
+                  </div>
+                </div>
                 <AttackCard
                     label={UI_STRINGS.attacksPanelRangedWeaponLabel || "Ranged"}
                     selectId="ranged-weapon-select"
@@ -360,7 +352,8 @@ const CombatPanelComponent = ({
                     uiStrings={UI_STRINGS}
                     currentLang={currentLang}
                 />
-             </Card>
+              </CardContent>
+            </Card>
           </div>
         </CardContent>
       )}
