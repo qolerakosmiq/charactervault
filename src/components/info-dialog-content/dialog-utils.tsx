@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -6,7 +5,11 @@ import { cn } from '@/lib/utils';
 
 export const renderModifierValue = (value: number | string): React.ReactNode => {
   const numValue = typeof value === 'string' ? parseFloat(value) : value;
-  if (isNaN(numValue)) return <span>{value}</span>;
+  if (isNaN(numValue)) {
+    // This prevents rendering NaN, which causes a React error.
+    // If the original value was a non-numeric string, we display it. Otherwise, display a placeholder.
+    return <span>{typeof value === 'string' ? value : '—'}</span>;
+  }
   if (numValue === 0) return <span className="text-muted-foreground">+0</span>;
   if (numValue > 0) return <span className="text-emerald-500">+{numValue}</span>;
   return <span className="text-destructive">{numValue}</span>;
