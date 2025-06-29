@@ -64,7 +64,6 @@ export function RollDialog({
 
   const isDamageRoll = rollType.toLowerCase().includes('damage');
   const isAttackRoll = rollType.toLowerCase().includes('attack');
-  const isCheckRoll = !isDamageRoll && !isAttackRoll;
 
   React.useEffect(() => {
     if (isOpen) {
@@ -86,7 +85,7 @@ export function RollDialog({
     
     const baseDamageStr = weaponDamageDiceString || (baseDiceItems.find(i => i.label.toLowerCase().includes('base'))?.value as string) || '';
     const bonusDiceStrs = baseDiceItems.filter(i => i.label.toLowerCase().includes('base') === false).map(i => i.value as string);
-    const staticBns = staticBonusItems.reduce((acc, item) => acc + (Number(item.value) || 0), 0);
+    const staticBns = staticBonusItems.reduce((acc, item) => acc + Number(item.value), 0);
     
     return { bonusDiceStrings: bonusDiceStrs, staticBonus: staticBns, baseDamageDiceStringForRoll: baseDamageStr };
   }, [calculationBreakdown, isDamageRoll, weaponDamageDiceString]);
@@ -107,15 +106,10 @@ export function RollDialog({
         
         let critBonusDamage = 0;
         if (isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1) {
-          let critBonusBaseRolls = 0;
-          for(let i=0; i < (weaponCriticalMultiplier - 1); i++) {
-            critBonusBaseRolls += parseAndRollDice(baseDamageDiceStringForRoll).result;
-          }
-          const applicableStaticBonus = calculationBreakdown
-            .filter(item => !item.isRawValue && (item.label.toLowerCase().includes('ability') || item.label.toLowerCase().includes('enhancement')))
-            .reduce((acc, item) => acc + Number(item.value), 0);
-            
-          critBonusDamage = critBonusBaseRolls + (applicableStaticBonus * (weaponCriticalMultiplier - 1));
+          // Per user instruction: multiply the result of the base dice and static bonuses, don't re-roll.
+          // The critical bonus is the extra damage, i.e. (total damage - normal damage)
+          const totalNormalDamage = baseRoll + staticBonus;
+          critBonusDamage = totalNormalDamage * (weaponCriticalMultiplier - 1);
         }
         setCriticalHitBonusDamage(critBonusDamage);
         
@@ -129,13 +123,13 @@ export function RollDialog({
         let currentTotalD20Value = firstRollResult;
         const currentBonusRolls: number[] = [];
 
-        if (isCheckRoll && rerollTwentiesForChecks && firstRollResult === 20) {
+        if (rerollTwentiesForChecks && firstRollResult === 20) {
           let latestBonusRoll = 20;
           let safetyBreak = 0;
           while (latestBonusRoll === 20 && safetyBreak < 10) {
             const { result: bonusRollVal } = parseAndRollDice("1d20");
             latestBonusRoll = bonusRollVal;
-            currentBonusRolls.push(latestBonusRoll);
+            currentBonusRolls.push(bonusRollVal);
             currentTotalD20Value += latestBonusRoll;
             safetyBreak++;
           }

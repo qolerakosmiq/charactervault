@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -493,10 +494,8 @@ const CombatPanelComponent = ({
           
           <div className={cn("grid grid-cols-1 md:grid-cols-2", panelGridGap)}>
             <Card className={cn("flex flex-col")}>
-              <CardHeader className={cn(panelContentPadding, "items-center")}>
+              <CardHeader className={cn(panelContentPadding, "items-center", "text-center")}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center justify-center", panelFieldHorizontalGap)}><Hand />{UI_STRINGS.attacksPanelMeleeTitle}</CardTitle>
-              </CardHeader>
-              <CardContent className={cn("flex flex-col flex-grow", panelGridGap, panelContentPadding)}>
                 <div className="text-center">
                   <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                   <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
@@ -507,6 +506,8 @@ const CombatPanelComponent = ({
                     <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRoll(selectedMainHandMeleeWeaponInstanceId, 'melee', 'attack')} disabled={panelIsLocked}><Dices /></Button>
                   </div>
                 </div>
+              </CardHeader>
+              <CardContent className={cn("flex flex-col flex-grow", panelGridGap, panelContentPadding)}>
                 <AttackCard
                   label={UI_STRINGS.attacksPanelMainHandMeleeWeaponLabel || "Main Hand"}
                   selectId="main-hand-melee-select"
@@ -559,10 +560,8 @@ const CombatPanelComponent = ({
             </Card>
 
             <Card className={cn("flex flex-col")}>
-              <CardHeader className={cn(panelContentPadding, "items-center")}>
+              <CardHeader className={cn(panelContentPadding, "items-center", "text-center")}>
                 <CardTitle className={cn(textStyleCardTitle, "flex items-center justify-center", panelFieldHorizontalGap)}><ArrowRightLeft />{UI_STRINGS.attacksPanelRangedTitle}</CardTitle>
-              </CardHeader>
-              <CardContent className={cn("flex flex-col flex-grow", panelGridGap, panelContentPadding)}>
                 <div className="text-center">
                   <Label className={textStyleLabel}>{UI_STRINGS.attacksPanelAttackBonusLabel}</Label>
                   <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
@@ -573,6 +572,8 @@ const CombatPanelComponent = ({
                     <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleRoll(selectedRangedWeaponInstanceId, 'ranged', 'attack')} disabled={panelIsLocked || selectedRangedWeaponInstanceId === 'none'}><Dices /></Button>
                   </div>
                 </div>
+              </CardHeader>
+              <CardContent className={cn("flex flex-col flex-grow", panelGridGap, panelContentPadding)}>
                 <AttackCard
                     label={UI_STRINGS.attacksPanelRangedWeaponLabel || "Ranged"}
                     selectId="ranged-weapon-select"
