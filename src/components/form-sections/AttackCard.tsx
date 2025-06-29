@@ -15,6 +15,8 @@ import {
   textStyleValueBig,
   panelBadgeGroupGap,
   textStyleBadgeSmall,
+  panelFieldVerticalGap,
+  panelGridGap,
 } from '@/config/layout';
 import { DualBadge } from '../ui/DualBadge';
 import { renderModifierValue } from '../info-dialog-content/dialog-utils';
@@ -27,7 +29,6 @@ interface AttackCardProps {
   selectedWeaponInstanceId: string;
   onSelectedWeaponChange: (id: string) => void;
   
-  // Damage Bonus props
   damageBonus: number;
   onOpenDamageBreakdown: () => void;
   onRollDamage: () => void;
@@ -73,55 +74,53 @@ export const AttackCard = React.memo(({
   const noWeaponSelected = selectedWeaponInstanceId === 'none';
 
   return (
-    <div className="flex flex-col gap-2">
-       <div className={cn("grid grid-cols-2 gap-1")}>
-        {/* Column 1: Weapon Selection */}
-        <div className="flex flex-col gap-1">
-          <Label htmlFor={selectId} className={textStyleLabel}>
-            {label}
-          </Label>
-          <Select
-            value={selectedWeaponInstanceId}
-            onValueChange={onSelectedWeaponChange}
-            disabled={isPanelLocked}
-          >
-            <SelectTrigger id={selectId}>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="none">{uiStrings.deityNoneOption}</SelectItem>
-                {weaponInstances.map(wInst => (
-                  <SelectItem key={`cs-melee-${wInst.instanceId}`} value={wInst.instanceId}>
-                    {getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}
-                    {wInst.instanceId !== 'unarmed' && wInst.quantity > 1 && ` (x${wInst.quantity})`}
-                  </SelectItem>
-                ))}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
+    <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+        <div className={cn("grid grid-cols-2", panelGridGap)}>
+            <div className={cn("flex flex-col", panelFieldVerticalGap)}>
+                <Label htmlFor={selectId} className={textStyleLabel}>
+                    {label}
+                </Label>
+                <Select
+                    value={selectedWeaponInstanceId}
+                    onValueChange={onSelectedWeaponChange}
+                    disabled={isPanelLocked}
+                >
+                    <SelectTrigger id={selectId}>
+                    <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                    <SelectGroup>
+                        <SelectItem value="none">{uiStrings.deityNoneOption}</SelectItem>
+                        {weaponInstances.map(wInst => (
+                        <SelectItem key={`cs-melee-${wInst.instanceId}`} value={wInst.instanceId}>
+                            {getLocalizedString(wInst.definition.label, currentLang, DEFAULT_LANGUAGE)}
+                            {wInst.instanceId !== 'unarmed' && wInst.quantity > 1 && ` (x${wInst.quantity})`}
+                        </SelectItem>
+                        ))}
+                    </SelectGroup>
+                    </SelectContent>
+                </Select>
+            </div>
+            
+            <div className={cn("text-center flex flex-col items-center justify-start", panelFieldVerticalGap)}>
+                {!noWeaponSelected && (
+                    <>
+                        <Label className={textStyleLabel}>{uiStrings.attacksPanelDamageBonusLabel}</Label>
+                        <div className={cn("flex items-center justify-center h-10", panelFieldHorizontalGap)}>
+                            <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(damageBonus)}</p>
+                            <Button type="button" variant="ghost" size="icon-xs" onClick={onOpenDamageBreakdown} disabled={isPanelLocked}><Info /></Button>
+                            <Button type="button" variant="ghost" size="icon-xs" onClick={onRollDamage} disabled={isPanelLocked} aria-label={rollDamageAriaLabel}><Dices /></Button>
+                        </div>
+                    </>
+                )}
+            </div>
         </div>
-
-        {/* Column 2: Damage Bonus */}
-        <div className="text-center flex flex-col items-center justify-start">
-           {!noWeaponSelected && (
-             <>
-               <Label className={textStyleLabel}>{uiStrings.attacksPanelDamageBonusLabel}</Label>
-               <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-                 <p className={cn(textStyleValueBig, "text-accent")}>{renderModifierValue(damageBonus)}</p>
-                 <Button type="button" variant="ghost" size="icon-xs" onClick={onOpenDamageBreakdown} disabled={isPanelLocked}><Info /></Button>
-                 <Button type="button" variant="ghost" size="icon-xs" onClick={onRollDamage} disabled={isPanelLocked} aria-label={rollDamageAriaLabel}><Dices /></Button>
-               </div>
-             </>
-           )}
-        </div>
-      </div>
-      
-      {!noWeaponSelected && (
-          <div className="col-span-2">
-            {weaponDisplay}
-          </div>
-      )}
+        
+        {!noWeaponSelected && (
+            <div className="col-span-2">
+                {weaponDisplay}
+            </div>
+        )}
     </div>
   );
 });
