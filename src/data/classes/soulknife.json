@@ -1,4 +1,3 @@
-
 {
   "id": "soulknife",
   "label": { "en": "Soulknife", "fr": "PsychLame" },
@@ -47,7 +46,31 @@
         "fr": "La lame mentale d'un psychlame est une lame semi-solide composée d'énergie psychique distillée de l'esprit même du psychlame. Le psychlame peut manifester sa lame mentale par une action libre et la dissiper par une action libre. La lame mentale d'un psychlame équivaut à une arme magique avec un bonus d'altération de +1 tous les quatre niveaux de psychlame. Le psychlame peut choisir de former sa lame mentale en une arme légère, une arme à une main ou une arme à deux mains. Le psychlame choisit le type de sa lame mentale parmi les suivants : épée courte, épée longue ou épée bâtarde. Un psychlame de petite taille qui choisit l'épée bâtarde comme forme de lame mentale la traite comme une arme à deux mains"
       },
       "type": "special-su", "isClassFeature": true, "permanentEffect": true,
-      "effectsText": { "en": "Manifest psychic blade (+1/4 levels enhancement). Can be light, one-handed, or two-handed", "fr": "Manifeste une lame psychique (amélioration +1/4 niveaux). Peut être légère, à une main ou à deux mains" }
+      "effectsText": { "en": "Manifest psychic blade (+1/4 levels enhancement). Can be light, one-handed, or two-handed", "fr": "Manifeste une lame psychique (amélioration +1/4 niveaux). Peut être légère, à une main ou à deux mains" },
+      "effects": [
+        {
+          "type": "grantsAbility",
+          "abilityKey": "mindBlade",
+          "name": {"en": "Mind Blade", "fr": "Lame Mentale"},
+          "grantedWeapon": {
+            "slot": "main-hand",
+            "category": "melee",
+            "definition": {
+              "definitionId": "mind-blade",
+              "label": { "en": "Mind Blade", "fr": "Lame Mentale" },
+              "itemType": "weapon",
+              "weaponType": "melee",
+              "damage": "1d6",
+              "criticalRange": "19-20",
+              "criticalMultiplier": "x2",
+              "damageType": { "en": "Varies", "fr": "Variable" },
+              "isFinesseWeapon": true,
+              "isLightWeapon": true,
+              "proficiencyCategory": "exotic"
+            }
+          }
+        }
+      ]
     },
     {
       "id": "class-soulknife-weapon-focus-mind-blade",
@@ -107,7 +130,7 @@
       "effectsText": { "en": "+10ft speed (no/light armor)", "fr": "+3m vitesse (sans/armure légère)" },
       "effects": [{ "type": "speed", "speedType": "land", "modification": "bonus", "value": 10, "bonusType": "enhancement", "condition": "unarmored_or_light_armor"}]
     },
-    { "id": "class-soulknife-blade-skills-1", "label": { "en": "Blade Skills (1st)", "fr": "Compétences de Lame (1ère)" }, "description": {"en": "At 7th level and every four levels thereafter (11th, 15th, and 19th), a soulknife can choose one blade skill from the list found in the Expanded Psionics Handbook or other sources", "fr": "Au niveau 7 et tous les quatre niveaux par la suite (11e, 15e et 19e), un psychlame peut choisir une compétence de lame dans la liste trouvée dans le Manuel des Psioniques Étendu ou d'autres sources"}, "effectsText": {"en": "Choose a blade skill", "fr": "Choisissez une compétence de lame"}, "type": "special-ex", "isClassFeature": true },
+    { "id": "class-soulknife-blade-skills-1", "label": { "en": "Blade Skills (1st)", "fr": "Compétences de Lame (1ère)" }, "description": {"en": "At 7th level, a soulknife can choose one blade skill from the list found in the Expanded Psionics Handbook or other sources", "fr": "Au niveau 7, un psychlame peut choisir une compétence de lame dans la liste trouvée dans le Manuel des Psioniques Étendu ou d'autres sources"}, "effectsText": {"en": "Choose a blade skill", "fr": "Choisissez une compétence de lame"}, "type": "special-ex", "isClassFeature": true },
     {
       "id": "class-soulknife-knife-to-the-soul",
       "label": { "en": "Knife to the Soul", "fr": "Couteau dans l'Âme" },
@@ -139,5 +162,3 @@
     { "id": "class-soulknife-mind-blade-enhancement-plus-5", "label": { "en": "Mind Blade Enhancement +5", "fr": "Amélioration de Lame Mentale +5" }, "description": {"en": "At 20th level, the mind blade enhancement bonus increases to +5", "fr": "Au 20ème niveau, le bonus d'altération de la lame mentale passe à +5"}, "effectsText": {"en": "Mind blade enhancement bonus increases to +5", "fr": "Le bonus d'altération de la lame mentale passe à +5"}, "type": "special-su", "isClassFeature": true, "permanentEffect": true }
   ]
 }
-
-    
