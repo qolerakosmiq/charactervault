@@ -1,3 +1,4 @@
+
 'use client';
 
 import *as React from 'react';
@@ -13,7 +14,11 @@ import {
   panelFieldHorizontalGap,
   textStyleLabel,
   textStyleValueBig,
+  panelBadgeGroupGap,
+  textStyleBadgeSmall
 } from '@/config/layout';
+import { DualBadge } from '../ui/DualBadge';
+
 
 interface AttackCardProps {
   label: string;
@@ -22,7 +27,6 @@ interface AttackCardProps {
   selectedWeaponInstanceId: string;
   onSelectedWeaponChange: (id: string) => void;
   formattedDamageBonus: string;
-  weaponDisplay: React.ReactNode;
   onOpenDamageBreakdown: () => void;
   onRollDamage: () => void;
   isPanelLocked: boolean;
@@ -37,24 +41,32 @@ export const AttackCard = React.memo(({
   selectedWeaponInstanceId,
   onSelectedWeaponChange,
   formattedDamageBonus,
-  weaponDisplay,
   onOpenDamageBreakdown,
   onRollDamage,
   isPanelLocked,
   uiStrings,
   currentLang
 }: AttackCardProps) => {
-
-  const weaponName = React.useMemo(() => {
-    return weaponInstances.find(w => w.instanceId === selectedWeaponInstanceId)?.definition.label;
+  
+  const selectedWeaponDefinition = React.useMemo(() => {
+    return weaponInstances.find(w => w.instanceId === selectedWeaponInstanceId)?.definition;
   }, [weaponInstances, selectedWeaponInstanceId]);
 
   const rollDamageAriaLabel = React.useMemo(() => {
-    const name = weaponName ? getLocalizedString(weaponName, currentLang, DEFAULT_LANGUAGE) : (uiStrings.attacksPanelUnarmedOption || 'Unarmed');
+    const name = selectedWeaponDefinition?.label ? getLocalizedString(selectedWeaponDefinition.label, currentLang, DEFAULT_LANGUAGE) : (uiStrings.attacksPanelUnarmedOption || 'Unarmed');
     return (uiStrings.rollDialogDamageAriaLabel || "Roll Damage for {weaponName}").replace("{weaponName}", name);
-  }, [weaponName, currentLang, uiStrings]);
+  }, [selectedWeaponDefinition, currentLang, uiStrings]);
 
-  const isWeaponSelected = selectedWeaponInstanceId !== 'none' && selectedWeaponInstanceId !== 'unarmed';
+  const weaponDisplay = React.useMemo(() => {
+    if (!selectedWeaponDefinition) return null;
+    return (
+      <div className={cn("flex w-full items-center justify-start", panelBadgeGroupGap)}>
+        <DualBadge color="primary" leftLabel={uiStrings.attacksPanelWeaponDamageLabel} rightLabel={selectedWeaponDefinition.damage || '—'} className={textStyleBadgeSmall} />
+        <DualBadge color="secondary" leftLabel={(uiStrings.attacksPanelCriticalOnLabel || "Critical on {range}").replace("{range}", selectedWeaponDefinition.criticalRange || '20')} rightLabel={(selectedWeaponDefinition.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
+      </div>
+    );
+  }, [selectedWeaponDefinition, uiStrings, panelBadgeGroupGap, textStyleBadgeSmall]);
+
 
   return (
     <div className="flex items-start w-full gap-4">
@@ -66,7 +78,7 @@ export const AttackCard = React.memo(({
         <Select
           value={selectedWeaponInstanceId}
           onValueChange={onSelectedWeaponChange}
-          // Note: The 'disabled' prop is intentionally omitted here to keep the select enabled when locked.
+          disabled={isPanelLocked}
         >
           <SelectTrigger id={selectId}>
             <SelectValue />
@@ -83,7 +95,7 @@ export const AttackCard = React.memo(({
             </SelectGroup>
           </SelectContent>
         </Select>
-        {weaponDisplay}
+        {selectedWeaponInstanceId !== 'none' && weaponDisplay}
       </div>
 
       {/* Right Column: Damage Bonus (25%) */}

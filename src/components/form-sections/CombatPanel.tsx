@@ -30,7 +30,6 @@ import { DEFAULT_LANGUAGE, type LanguageCode } from '@/i18n/config';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
 import { Input } from '@/components/ui/input';
 import { AttackCard } from './AttackCard';
-import { DualBadge } from '@/components/ui/DualBadge';
 import {
   debounceDelayFormInput,
   panelContentPadding,
@@ -100,6 +99,7 @@ const CombatPanelComponent = ({
   const [localGrappleMiscModifier, setLocalGrappleMiscModifier] = useDebouncedFormField(
     grappleMiscModifier || 0, handleUpdateCallback('grappleMiscModifier'), debounceDelayFormInput
   );
+  
   const [localPowerAttackValue, setLocalPowerAttackValue] = useDebouncedFormField(
     powerAttackValue || 0, handleUpdateCallback('powerAttackValue'), debounceDelayFormInput
   );
@@ -185,16 +185,6 @@ const CombatPanelComponent = ({
     // Logic to set default selected weapons based on equipped gear can go here
   }, [equippedGear, inventory, getWeaponDefinition]);
 
-
-  const createWeaponDisplay = React.useCallback((weaponDef?: ItemDefinition): React.ReactNode => {
-    if (!weaponDef || !UI_STRINGS) return null;
-    return (
-      <div className={cn("flex w-full items-center justify-start", panelBadgeGroupGap)}>
-        <DualBadge color="primary" leftLabel={UI_STRINGS.attacksPanelWeaponDamageLabel} rightLabel={weaponDef.damage || '—'} className={textStyleBadgeSmall} />
-        <DualBadge color="secondary" leftLabel={(UI_STRINGS.attacksPanelCriticalOnLabel || "Critical on {range}").replace("{range}", weaponDef.criticalRange || '20')} rightLabel={(weaponDef.criticalMultiplier || '×2').replace('x', '×')} className={textStyleBadgeSmall} />
-      </div>
-    );
-  }, [UI_STRINGS, panelBadgeGroupGap, textStyleBadgeSmall]);
 
   const handleInitiativeRoll = React.useCallback(() => {
     if (!UI_STRINGS || !ABILITY_LABELS) return;
@@ -324,7 +314,6 @@ const CombatPanelComponent = ({
                       selectedWeaponInstanceId={selectedMainHandMeleeWeaponInstanceId}
                       onSelectedWeaponChange={setSelectedMainHandMeleeWeaponInstanceId}
                       formattedDamageBonus="+Y"
-                      weaponDisplay={createWeaponDisplay(meleeWeaponInstances.find(w=>w.instanceId === selectedMainHandMeleeWeaponInstanceId)?.definition)}
                       onOpenDamageBreakdown={() => {}}
                       onRollDamage={() => {}}
                       isPanelLocked={panelIsLocked}
@@ -338,7 +327,6 @@ const CombatPanelComponent = ({
                       selectedWeaponInstanceId={selectedOffHandMeleeWeaponInstanceId}
                       onSelectedWeaponChange={setSelectedOffHandMeleeWeaponInstanceId}
                       formattedDamageBonus="+Z"
-                      weaponDisplay={createWeaponDisplay(meleeWeaponInstances.find(w=>w.instanceId === selectedOffHandMeleeWeaponInstanceId)?.definition)}
                       onOpenDamageBreakdown={() => {}}
                       onRollDamage={() => {}}
                       isPanelLocked={panelIsLocked}
@@ -368,7 +356,6 @@ const CombatPanelComponent = ({
                     selectedWeaponInstanceId={selectedRangedWeaponInstanceId}
                     onSelectedWeaponChange={setSelectedRangedWeaponInstanceId}
                     formattedDamageBonus="+W"
-                    weaponDisplay={createWeaponDisplay(rangedWeaponInstances.find(w=>w.instanceId === selectedRangedWeaponInstanceId)?.definition)}
                     onOpenDamageBreakdown={() => {}}
                     onRollDamage={() => {}}
                     isPanelLocked={panelIsLocked}
