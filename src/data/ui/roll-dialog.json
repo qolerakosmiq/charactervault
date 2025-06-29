@@ -1,4 +1,5 @@
 
+
 {
   "rollDialogCriticalHitLabel": { "en": "Critical Hit!", "fr": "Coup Critique !" },
   "rollDialogRollDamageButton": { "en": "Roll {dice}", "fr": "Lancer {dice}" },
@@ -41,3 +42,5 @@
   "rollDialogBonusDiceRollLabel": { "en": "Bonus Dice Roll", "fr": "Lancer de dé bonus" },
   "rollDialogFinalResultLabel": { "en": "Final Result", "fr": "Résultat final" }
 }
+
+    

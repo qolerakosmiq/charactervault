@@ -1,7 +1,8 @@
 
+
 'use client';
 
-import *as React from 'react';
+import * as React from 'react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -77,17 +78,27 @@ export function RollDialog({
     }
   }, [isOpen]);
 
-  const { bonusDiceStrings, staticBonus, baseDamageDiceStringForRoll } = React.useMemo(() => {
-    if (!isDamageRoll || !calculationBreakdown) return { bonusDiceStrings: [], staticBonus: 0, baseDamageDiceStringForRoll: '' };
+  const { staticBonus, bonusDiceStrings, baseDamageDiceStringForRoll, staticBonusMultiplied, staticBonusNotMultiplied } = React.useMemo(() => {
+    if (!isDamageRoll || !calculationBreakdown) return { staticBonus: 0, bonusDiceStrings: [], baseDamageDiceStringForRoll: '', staticBonusMultiplied: 0, staticBonusNotMultiplied: 0 };
     
     const baseDiceItems = calculationBreakdown.filter(item => item.isRawValue);
-    const staticBonusItems = calculationBreakdown.filter(item => !item.isRawValue);
     
+    const staticBonusItemsMultipliable = calculationBreakdown.filter(item => !item.isRawValue && item.isCritMultipliable);
+    const staticBonusItemsNotMultipliable = calculationBreakdown.filter(item => !item.isRawValue && !item.isCritMultipliable);
+
     const baseDamageStr = weaponDamageDiceString || (baseDiceItems.find(i => i.label.toLowerCase().includes('base'))?.value as string) || '';
     const bonusDiceStrs = baseDiceItems.filter(i => i.label.toLowerCase().includes('base') === false).map(i => i.value as string);
-    const staticBns = staticBonusItems.reduce((acc, item) => acc + Number(item.value), 0);
     
-    return { bonusDiceStrings: bonusDiceStrs, staticBonus: staticBns, baseDamageDiceStringForRoll: baseDamageStr };
+    const staticBnsMultiplied = staticBonusItemsMultipliable.reduce((acc, item) => acc + Number(item.value), 0);
+    const staticBnsNotMultiplied = staticBonusItemsNotMultipliable.reduce((acc, item) => acc + Number(item.value), 0);
+    
+    return { 
+      bonusDiceStrings: bonusDiceStrs, 
+      staticBonus: staticBnsMultiplied + staticBnsNotMultiplied,
+      staticBonusMultiplied: staticBnsMultiplied,
+      staticBonusNotMultiplied: staticBnsNotMultiplied,
+      baseDamageDiceStringForRoll: baseDamageStr 
+    };
   }, [calculationBreakdown, isDamageRoll, weaponDamageDiceString]);
 
 
@@ -107,10 +118,7 @@ export function RollDialog({
         let critBonusDamage = 0;
         const multiplier = weaponCriticalMultiplier || 2;
         if (isCritical && multiplier > 1) {
-          for (let i = 0; i < multiplier - 1; i++) {
-            critBonusDamage += parseAndRollDice(baseDamageDiceStringForRoll).result;
-          }
-          critBonusDamage += staticBonus * (multiplier - 1);
+            critBonusDamage = (baseRoll + staticBonusMultiplied) * (multiplier - 1);
         }
         setCriticalHitBonusDamage(critBonusDamage);
         
@@ -176,14 +184,16 @@ export function RollDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-           <div className="flex items-start text-left">
-            <Dices className="mr-2 h-5 w-5 shrink-0 text-primary" />
-            <div className="flex flex-col gap-1.5">
-              <DialogTitle className="font-serif">{dialogTitle}</DialogTitle>
-              {dialogSubtitle && <DialogDescription>{dialogSubtitle}</DialogDescription>}
-            </div>
-          </div>
+        <DialogHeader className="text-left">
+          <DialogTitle className="flex items-center gap-2 font-serif">
+            <Dices className="h-5 w-5 shrink-0 text-primary" />
+            {dialogTitle}
+          </DialogTitle>
+          {dialogSubtitle && (
+            <DialogDescription className="text-sm text-muted-foreground pt-1">
+              {dialogSubtitle}
+            </DialogDescription>
+          )}
         </DialogHeader>
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
@@ -245,6 +255,10 @@ export function RollDialog({
                     <span className="text-foreground">{UI_STRINGS.rollDialogBaseDiceResultLabel}</span>
                     <span className="font-bold text-primary">{baseDamageRoll}</span>
                   </div>
+                  <div className="flex justify-between items-center text-sm mb-0.5">
+                      <span className="text-foreground">{UI_STRINGS.rollDialogStaticBonusesTotalLabel}</span>
+                      <span className="font-bold text-primary">{renderModifierValue(staticBonus)}</span>
+                  </div>
                   {criticalHitBonusDamage !== null && criticalHitBonusDamage > 0 && (
                      <div className="flex justify-between items-center text-sm mb-0.5 text-red-500">
                         <span className="font-semibold">{UI_STRINGS.rollDialogCriticalBonusLabel}</span>
@@ -257,10 +271,6 @@ export function RollDialog({
                         <span className="font-bold text-primary">{renderModifierValue(bonusDiceRollsResult)}</span>
                     </div>
                   )}
-                   <div className="flex justify-between items-center text-sm mb-0.5">
-                      <span className="text-foreground">{UI_STRINGS.rollDialogStaticBonusesTotalLabel}</span>
-                      <span className="font-bold text-primary">{renderModifierValue(staticBonus)}</span>
-                  </div>
                   <Separator className="my-1 bg-border/50"/>
                   <div className="flex justify-between items-center mt-0.5">
                     <span className="text-lg font-semibold">{UI_STRINGS.rollDialogTotalDamageLabel}</span>

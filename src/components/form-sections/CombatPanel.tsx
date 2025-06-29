@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import *as React from 'react';
@@ -210,7 +211,7 @@ const CombatPanelComponent = ({
     const featBonus = aggregatedFeatEffects.attackRollBonuses?.filter(b => b.appliesTo === 'grapple' && b.isActive).reduce((sum, b) => sum + (typeof b.value === 'number' ? b.value : 0), 0) || 0;
 
     const breakdown: GenericBreakdownItem[] = [];
-    breakdown.push({ label: UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus", value: baseBab });
+    breakdown.push({ label: UI_STRINGS.combatPanelBabLabel, value: baseBab });
     breakdown.push({ label: (UI_STRINGS.rollDialogAbilityModifierLabel || "Ability Modifier ({abilityAbbr})").replace("{abilityAbbr}", ABILITY_LABELS.find(l => l.id === 'strength')?.abbr || "STR"), value: strModifier });
     breakdown.push({ label: UI_STRINGS.infoDialogGrappleModSizeLabel || "Size Modifier", value: sizeMod });
     if(featBonus !== 0) breakdown.push({ label: UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus", value: featBonus });
@@ -319,7 +320,7 @@ const CombatPanelComponent = ({
     const powerAttackPenalty = (weaponType === 'melee' && localPowerAttackValue) ? -localPowerAttackValue : 0;
     const combatExpertisePenalty = (weaponType === 'melee' && localCombatExpertiseValue) ? -localCombatExpertiseValue : 0;
 
-    components.push({ label: UI_STRINGS.combatPanelBabLabel, value: bab });
+    components.push({ label: UI_STRINGS.combatPanelBabLabel || "Base Attack Bonus", value: bab });
     components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
     if(sizeMod !== 0) components.push({ label: UI_STRINGS.attacksPanelSizeModLabel, value: sizeMod });
     if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
@@ -350,22 +351,23 @@ const CombatPanelComponent = ({
 
     const abilityMod = weaponType === 'melee' ? strModifier : 0; // Ranged typically doesn't add ability to damage unless specific feats
     const abilityAbbr = weaponType === 'melee' ? (ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || 'STR') : '';
-    if (abilityMod !== 0) components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+    if (abilityMod !== 0) components.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod, isCritMultipliable: true });
 
     const enhBonus = getWeaponEnhancementBonus(weaponDef).damage;
-    if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
+    if(enhBonus !== 0) components.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus, isCritMultipliable: true });
     
     const activeDamageEffects = getActiveDamageBonuses(weaponType, weaponDef);
     activeDamageEffects.forEach(effect => {
+        const isMultipliable = (effect.bonusType !== 'precision' && !effect.value.toString().match(/d\d/));
         if(typeof effect.value === 'string' && effect.value.match(/\d*d\d+/)) {
-            components.push({ label: getLocalizedString(effect.sourceFeat || {en: 'Bonus Damage', fr: 'Dégâts Bonus'}, currentLang), value: effect.value, isRawValue: true });
+            components.push({ label: getLocalizedString(effect.sourceFeat || {en: 'Bonus Damage', fr: 'Dégâts Bonus'}, currentLang), value: effect.value, isRawValue: true, isCritMultipliable: false });
         } else if (typeof effect.value === 'number') {
-            components.push({ label: getLocalizedString(effect.sourceFeat || {en: 'Bonus Damage', fr: 'Dégâts Bonus'}, currentLang), value: effect.value });
+            components.push({ label: getLocalizedString(effect.sourceFeat || {en: 'Bonus Damage', fr: 'Dégâts Bonus'}, currentLang), value: effect.value, isCritMultipliable: isMultipliable });
         }
     });
     
     const powerAttackBonus = (weaponType === 'melee' && localPowerAttackValue) ? localPowerAttackValue : 0;
-    if (powerAttackBonus > 0) components.push({ label: UI_STRINGS.powerAttackDamageBonusLabel, value: powerAttackBonus });
+    if (powerAttackBonus > 0) components.push({ label: UI_STRINGS.powerAttackDamageBonusLabel, value: powerAttackBonus, isCritMultipliable: true });
 
     const totalNumericBonus = calculateTotalDamageBonus(weaponInstanceId, weaponType);
     components.push({ label: UI_STRINGS.infoDialogTotalNumericBonusLabel, value: totalNumericBonus, isBold: true });
@@ -424,21 +426,23 @@ const CombatPanelComponent = ({
       
       const abilityMod = weaponType === 'melee' ? strModifier : 0;
       const abilityAbbr = weaponType === 'melee' ? (ABILITY_LABELS.find(al => al.id === 'strength')?.abbr || 'STR') : '';
-      if (abilityMod !== 0) breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod });
+      if (abilityMod !== 0) breakdown.push({ label: (UI_STRINGS.attacksPanelAbilityModLabel).replace("{abilityAbbr}", abilityAbbr), value: abilityMod, isCritMultipliable: true });
 
       const enhBonus = getWeaponEnhancementBonus(weaponDef).damage;
-      if(enhBonus !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus });
+      if(enhBonus !== 0) breakdown.push({ label: UI_STRINGS.attacksPanelWeaponEnhancementLabel, value: enhBonus, isCritMultipliable: true });
       
       activeDamageEffects.forEach(effect => {
+        const isMultipliable = (effect.bonusType !== 'precision' && !effect.value.toString().match(/d\d/));
+        const label = getLocalizedString(effect.sourceFeat || {en: 'Bonus Damage', fr: 'Dégâts Bonus'}, currentLang);
         if(typeof effect.value === 'string' && effect.value.match(/\d*d\d+/)) {
-            breakdown.push({ label: getLocalizedString(effect.sourceFeat || {en: 'Bonus Damage', fr: 'Dégâts Bonus'}, currentLang), value: effect.value, isRawValue: true });
+            breakdown.push({ label, value: effect.value, isRawValue: true, isCritMultipliable: false });
         } else if (typeof effect.value === 'number') {
-            breakdown.push({ label: getLocalizedString(effect.sourceFeat || {en: 'Bonus Damage', fr: 'Dégâts Bonus'}, currentLang), value: effect.value });
+            breakdown.push({ label, value: effect.value, isCritMultipliable: isMultipliable });
         }
       });
       
       const powerAttackBonus = (weaponType === 'melee' && localPowerAttackValue) ? localPowerAttackValue : 0;
-      if (powerAttackBonus > 0) breakdown.push({ label: UI_STRINGS.powerAttackDamageBonusLabel, value: powerAttackBonus });
+      if (powerAttackBonus > 0) breakdown.push({ label: UI_STRINGS.powerAttackDamageBonusLabel, value: powerAttackBonus, isCritMultipliable: true });
 
       const totalNumericBonus = calculateTotalDamageBonus(weaponInstanceId, weaponType);
 
@@ -597,3 +601,5 @@ const CombatPanelComponent = ({
 };
 CombatPanelComponent.displayName = 'CombatPanelComponent';
 export const CombatPanel = React.memo(CombatPanelComponent);
+
+    
