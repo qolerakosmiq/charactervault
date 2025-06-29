@@ -16,7 +16,6 @@ import {
   textStyleValueBig,
   panelBadgeGroupGap,
   textStyleBadgeSmall,
-  panelGridGap,
 } from '@/config/layout';
 import { DualBadge } from '../ui/DualBadge';
 import { renderModifierValue } from '../info-dialog-content/dialog-utils';
@@ -71,7 +70,7 @@ export const AttackCard = React.memo(({
 
 
   return (
-    <div className={cn("grid grid-cols-2 w-full", panelGridGap, "items-start")}>
+    <div className={cn("grid grid-cols-2 w-full gap-1 items-start")}>
       {/* Row 1: Labels */}
       <div className="col-span-1">
         <Label htmlFor={selectId} className={textStyleLabel}>
@@ -124,7 +123,7 @@ export const AttackCard = React.memo(({
 
       {/* Row 3: Badges */}
       {selectedWeaponInstanceId !== 'none' && (
-        <div className="col-span-2 mt-2">
+        <div className="col-span-2">
           {weaponDisplay}
         </div>
       )}
