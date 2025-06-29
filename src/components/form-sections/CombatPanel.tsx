@@ -408,7 +408,7 @@ const CombatPanelComponent = ({
       if (combatExpertisePenalty !== 0) breakdown.push({ label: UI_STRINGS.combatExpertisePenaltyLabel, value: combatExpertisePenalty });
 
       onOpenRollDialog({
-        dialogTitle: UI_STRINGS.rollDialogTitleMeleeAttackFormat,
+        dialogTitle: (weaponType === 'melee' ? UI_STRINGS.rollDialogTitleMeleeAttackFormat : UI_STRINGS.rollDialogTitleRangedAttackFormat) || "Attack Roll",
         dialogSubtitle: weaponName,
         rollType: `${weaponType}_attack`,
         baseModifier: totalBonus,
