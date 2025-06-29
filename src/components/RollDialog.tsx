@@ -110,7 +110,7 @@ export function RollDialog({
     setIsRolling(true);
     setTimeout(() => { // Simulate roll delay
       if (isDamageRoll) {
-        const { result: baseRoll } = parseAndRollDice(baseDamageDiceStringForRoll);
+        const { result: baseRoll, rolls: baseRollsDetails } = parseAndRollDice(baseDamageDiceStringForRoll);
         setBaseDamageRoll(baseRoll);
         
         let totalBonusDiceResult = 0;
@@ -120,8 +120,9 @@ export function RollDialog({
         setBonusDiceRollsResult(totalBonusDiceResult);
         
         let critBonusDamage = 0;
-        const multiplier = weaponCriticalMultiplier || 2;
-        if (isCritical && multiplier > 1) {
+        if (isCritical) {
+            const multiplier = weaponCriticalMultiplier || 2;
+            // Multiply the initial base roll and applicable static bonuses, don't re-roll dice.
             critBonusDamage = (baseRoll + staticBonusMultiplied) * (multiplier - 1);
         }
         setCriticalHitBonusDamage(critBonusDamage);
@@ -160,11 +161,15 @@ export function RollDialog({
     const diceParts = calculationBreakdown.filter(i => i.isRawValue).map(i => i.value as string);
     const bonus = calculationBreakdown.filter(i => !i.isRawValue).reduce((acc, item) => acc + Number(item.value), 0);
     
-    const parts = [...diceParts];
-    if (bonus !== 0) {
-      parts.push(`${bonus > 0 ? '+' : ''}${bonus}`);
+    let formula = diceParts.join(' + ');
+
+    if (bonus > 0) {
+      formula += ` + ${bonus}`;
+    } else if (bonus < 0) {
+      formula += ` - ${Math.abs(bonus)}`;
     }
-    return parts.join(' + ').replace(/\+ -/g, '- ');
+    
+    return formula;
   }, [isDamageRoll, calculationBreakdown]);
 
 
@@ -172,7 +177,7 @@ export function RollDialog({
   const UI_STRINGS = translations.UI_STRINGS;
   
   const buttonText = isDamageRoll
-    ? UI_STRINGS.rollDialogRollDamageButton.replace('{dice}', baseDamageDiceStringForRoll || 'Dice')
+    ? (UI_STRINGS.rollDialogRollDamageButton || 'Roll {dice}').replace('{dice}', baseDamageDiceStringForRoll || 'Dice')
     : UI_STRINGS.rollDialogRollButton;
   
   const isInitialRollCritFailure = !isDamageRoll && initialD20Roll === 1;
@@ -334,4 +339,5 @@ export function RollDialog({
     </Dialog>
   );
 }
+
 
