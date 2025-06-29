@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -93,52 +94,58 @@ export function RollDialog({
 
   const handleRollOrConfirm = () => {
     setIsRolling(true);
-
-    if (isDamageRoll) {
-      const { result: baseRoll } = parseAndRollDice(baseDamageDiceStringForRoll);
-      setBaseDamageRoll(baseRoll);
-      
-      let totalBonusDiceResult = 0;
-      for (const diceStr of bonusDiceStrings) {
-        totalBonusDiceResult += parseAndRollDice(diceStr).result;
-      }
-      setBonusDiceRollsResult(totalBonusDiceResult);
-      
-      let critBonusDamage = 0;
-      if (isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1) {
-        // According to SRD, you multiply the dice and the static bonuses that apply to the weapon.
-        // Bonus dice (like flaming) are not multiplied.
-        critBonusDamage = (baseRoll + staticBonus) * (weaponCriticalMultiplier - 1);
-      }
-      setCriticalHitBonusDamage(critBonusDamage);
-      
-      const totalFinalDamage = baseRoll + staticBonus + critBonusDamage + totalBonusDiceResult;
-      setFinalResult(totalFinalDamage);
-
-    } else { // Attack, Save, Check rolls
-      const { result: firstRollResult } = parseAndRollDice("1d20");
-      setInitialD20Roll(firstRollResult);
-
-      let currentTotalD20Value = firstRollResult;
-      const currentBonusRolls: number[] = [];
-
-      if (isCheckRoll && rerollTwentiesForChecks && firstRollResult === 20) {
-        let latestBonusRoll = 20;
-        let safetyBreak = 0;
-        while (latestBonusRoll === 20 && safetyBreak < 10) {
-          const { result: bonusRollVal } = parseAndRollDice("1d20");
-          latestBonusRoll = bonusRollVal;
-          currentBonusRolls.push(latestBonusRoll);
-          currentTotalD20Value += latestBonusRoll;
-          safetyBreak++;
+    setTimeout(() => { // Simulate roll delay
+      if (isDamageRoll) {
+        const { result: baseRoll } = parseAndRollDice(baseDamageDiceStringForRoll);
+        setBaseDamageRoll(baseRoll);
+        
+        let totalBonusDiceResult = 0;
+        for (const diceStr of bonusDiceStrings) {
+          totalBonusDiceResult += parseAndRollDice(diceStr).result;
         }
+        setBonusDiceRollsResult(totalBonusDiceResult);
+        
+        let critBonusDamage = 0;
+        if (isCritical && weaponCriticalMultiplier && weaponCriticalMultiplier > 1) {
+          let critBonusBaseRolls = 0;
+          for(let i=0; i < (weaponCriticalMultiplier - 1); i++) {
+            critBonusBaseRolls += parseAndRollDice(baseDamageDiceStringForRoll).result;
+          }
+          const applicableStaticBonus = calculationBreakdown
+            .filter(item => !item.isRawValue && (item.label.toLowerCase().includes('ability') || item.label.toLowerCase().includes('enhancement')))
+            .reduce((acc, item) => acc + Number(item.value), 0);
+            
+          critBonusDamage = critBonusBaseRolls + (applicableStaticBonus * (weaponCriticalMultiplier - 1));
+        }
+        setCriticalHitBonusDamage(critBonusDamage);
+        
+        const totalFinalDamage = baseRoll + staticBonus + critBonusDamage + totalBonusDiceResult;
+        setFinalResult(totalFinalDamage);
+
+      } else { // Attack, Save, Check rolls
+        const { result: firstRollResult } = parseAndRollDice("1d20");
+        setInitialD20Roll(firstRollResult);
+
+        let currentTotalD20Value = firstRollResult;
+        const currentBonusRolls: number[] = [];
+
+        if (isCheckRoll && rerollTwentiesForChecks && firstRollResult === 20) {
+          let latestBonusRoll = 20;
+          let safetyBreak = 0;
+          while (latestBonusRoll === 20 && safetyBreak < 10) {
+            const { result: bonusRollVal } = parseAndRollDice("1d20");
+            latestBonusRoll = bonusRollVal;
+            currentBonusRolls.push(latestBonusRoll);
+            currentTotalD20Value += latestBonusRoll;
+            safetyBreak++;
+          }
+        }
+        setBonusD20Rolls(currentBonusRolls);
+        const calculatedFinalResult = currentTotalD20Value + baseModifier;
+        setFinalResult(calculatedFinalResult);
       }
-      setBonusD20Rolls(currentBonusRolls);
-      const calculatedFinalResult = currentTotalD20Value + baseModifier;
-      setFinalResult(calculatedFinalResult);
-    }
-    
-    setIsRolling(false);
+      setIsRolling(false);
+    }, 300);
   };
 
   const totalDamageFormula = React.useMemo(() => {
@@ -157,7 +164,9 @@ export function RollDialog({
   if (translationsLoading || !translations) { return null; }
   const UI_STRINGS = translations.UI_STRINGS;
   
-  const buttonText = isDamageRoll ? UI_STRINGS.rollDialogRollDamageButton.replace('{dice}', baseDamageDiceStringForRoll || 'Dice') : UI_STRINGS.rollDialogRollButton;
+  const buttonText = isDamageRoll
+    ? UI_STRINGS.rollDialogRollDamageButton.replace('{dice}', baseDamageDiceStringForRoll || 'Dice')
+    : UI_STRINGS.rollDialogRollButton;
   
   const isInitialRollCritFailure = !isDamageRoll && initialD20Roll === 1;
   const isInitialRollNat20 = !isDamageRoll && initialD20Roll === 20;
