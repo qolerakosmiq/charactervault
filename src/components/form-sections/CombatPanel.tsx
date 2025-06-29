@@ -1,4 +1,3 @@
-
 'use client';
 
 import *as React from 'react';
@@ -283,7 +282,10 @@ const CombatPanelComponent = ({
           <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
             <Card>
               <CardContent className="flex flex-col items-center justify-center p-3 gap-1">
-                <CardTitle className={textStyleCardTitle}>{UI_STRINGS.combatPanelBabLabel}</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Swords className="h-5 w-5 text-primary" />
+                  <CardTitle className={textStyleCardTitle}>{UI_STRINGS.combatPanelBabLabel}</CardTitle>
+                </div>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                   <p className={cn(textStyleValueBig, "text-accent")}>{totalBabWithModifier.map(b => `${b >= 0 ? '+' : ''}${b}`).join('/')}</p>
                   <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'babBreakdown'})} disabled={panelIsLocked}><Info /></Button>
@@ -292,7 +294,10 @@ const CombatPanelComponent = ({
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center justify-center p-3 gap-1">
-                <CardTitle className={textStyleCardTitle}>{UI_STRINGS.combatPanelInitiativeLabel}</CardTitle>
+                 <div className="flex items-center gap-2">
+                  <Activity className="h-5 w-5 text-primary" />
+                  <CardTitle className={textStyleCardTitle}>{UI_STRINGS.combatPanelInitiativeLabel}</CardTitle>
+                </div>
                 <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                   <p className={cn(textStyleValueBig, "text-accent")}>{baseInitiative >= 0 ? '+' : ''}{baseInitiative}</p>
                   <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({type: 'initiativeBreakdown'})} disabled={panelIsLocked}><Info /></Button>
@@ -302,7 +307,10 @@ const CombatPanelComponent = ({
             </Card>
             <Card>
               <CardContent className="flex flex-col items-center justify-center p-3 gap-1">
-                <CardTitle className={textStyleCardTitle}>{UI_STRINGS.combatPanelGrappleModifierLabel}</CardTitle>
+                <div className="flex items-center gap-2">
+                  <Hand className="h-5 w-5 text-primary" />
+                  <CardTitle className={textStyleCardTitle}>{UI_STRINGS.combatPanelGrappleModifierLabel}</CardTitle>
+                </div>
                  <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
                     <p className={cn(textStyleValueBig, "text-accent")}>{totalGrappleModifier >= 0 ? '+' : ''}{totalGrappleModifier}</p>
                     <Button type="button" variant="ghost" size="icon-xs" onClick={() => onOpenCombatStatInfoDialog({ type: 'grappleModifierBreakdown' })} disabled={panelIsLocked}><Info /></Button>
