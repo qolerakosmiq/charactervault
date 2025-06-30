@@ -3,7 +3,6 @@
 
 import *as React from 'react';
 import type { Character, InfoDialogContentType, AggregatedFeatEffects, ItemDefinition, ItemInstance, GearSlotId } from '@/types/character';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Shield, Info } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
@@ -30,6 +29,7 @@ import {
   textStyleLabel,
 } from '@/config/layout';
 import { Input } from '@/components/ui/input';
+import { ArmorClassCard } from './ArmorClassCard';
 
 export interface ArmorClassPanelProps {
   character: Character;
@@ -182,27 +182,21 @@ const ArmorClassPanelContent = React.memo(({
   return (
     <>
       <div className={cn("grid grid-cols-1 md:grid-cols-3", panelGridGap)}>
-        <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-          <Label htmlFor="normal-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassNormalLabel}</Label>
-          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-            <p id="normal-ac-display" className={textStyleValueBig}>{Math.max(0, normalAC)}</p>
-            <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Normal')}><Info /></Button>
-          </div>
-        </div>
-        <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-          <Label htmlFor="touch-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassTouchLabel}</Label>
-          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-            <p id="touch-ac-display" className={textStyleValueBig}>{Math.max(0, touchAC)}</p>
-            <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Touch')}><Info /></Button>
-          </div>
-        </div>
-        <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-          <Label htmlFor="flat-footed-ac-display" className={textStyleCardTitle}>{UI_STRINGS.armorClassFlatFootedLabel}</Label>
-          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-            <p id="flat-footed-ac-display" className={textStyleValueBig}>{Math.max(0, flatFootedAC)}</p>
-            <Button type="button" variant="ghost" size="icon-xs" onClick={() => handleShowAcBreakdown('Flat-Footed')}><Info /></Button>
-          </div>
-        </div>
+        <ArmorClassCard
+          label={UI_STRINGS.armorClassNormalLabel}
+          value={normalAC}
+          onOpenInfoDialog={() => handleShowAcBreakdown('Normal')}
+        />
+        <ArmorClassCard
+          label={UI_STRINGS.armorClassTouchLabel}
+          value={touchAC}
+          onOpenInfoDialog={() => handleShowAcBreakdown('Touch')}
+        />
+        <ArmorClassCard
+          label={UI_STRINGS.armorClassFlatFootedLabel}
+          value={flatFootedAC}
+          onOpenInfoDialog={() => handleShowAcBreakdown('Flat-Footed')}
+        />
       </div>
       
       {!panelIsLocked && (
