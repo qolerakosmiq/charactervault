@@ -4,36 +4,18 @@
 import *as React from 'react';
 import type { AbilityScores, SavingThrows, SavingThrowType, Character, AbilityName, InfoDialogContentType, AggregatedFeatEffects, GenericBreakdownItem } from '@/types/character';
 import { getAbilityModifierByName, getBaseSaves, SAVING_THROW_ABILITIES } from '@/lib/dnd-utils';
-import { Zap, Info, Dices, Lock, Unlock } from 'lucide-react';
+import { Zap } from 'lucide-react';
 import { cn, parseAndRenderUIString } from '@/lib/utils';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { renderModifierValue, sectionHeadingClass } from '@/components/info-dialog-content/dialog-utils';
-import { useDebouncedFormField } from '@/hooks/useDebouncedFormField';
-import { DualBadge, type DualBadgeProps } from '@/components/ui/DualBadge';
 import type { RollDialogProps } from '@/components/RollDialog';
 import { useDefinitionsStore } from '@/lib/definitions-store';
 import { LockablePanelWrapper } from '@/components/LockablePanelWrapper';
-import { Input } from '@/components/ui/input';
 import {
-  debounceDelayFormInput,
-  panelContentPadding,
-  panelFieldHorizontalGap,
   panelGridGap,
-  panelFieldVerticalGap,
-  textStyleModifier,
-  textStyleValueBig,
-  textStyleCardTitle,
-  textStyleInput,
   textStyleDescription,
-  inputWidthFull,
-  textStyleLabel,
-  textStyleBadgeMedium,
-  textStyleSubLabel,
 } from '@/config/layout';
 import { Badge } from '@/components/ui/badge';
 import { useI18n } from '@/context/I18nProvider';
-
+import { SavingThrowCard } from './SavingThrowCard'; // New import
 
 export interface SavingThrowsPanelProps {
   savingThrowsData: Pick<Character, 'savingThrows' | 'classes' | 'feats'>;
@@ -45,122 +27,6 @@ export interface SavingThrowsPanelProps {
 }
 
 const SAVE_TYPES: SavingThrowType[] = ['fortitude', 'reflex', 'will'];
-
-interface SavingThrowCardProps {
-  saveType: SavingThrowType;
-  saveTypeLabel: string;
-  totalValue: number;
-  baseValue: number;
-  abilityModifier: number;
-  abilityAbbr: string;
-  miscBonus: number;
-  tempModValue: number;
-  onTempModChange: (saveType: SavingThrowType, value: number) => void;
-  panelIsLocked: boolean;
-  onOpenInfoDialog: (saveType: SavingThrowType) => void;
-  onOpenRollDialog: (saveType: SavingThrowType) => void;
-  uiStrings: Record<string, string>;
-  translations: ReturnType<typeof useI18n>['translations'];
-}
-
-const SavingThrowCard = React.memo(({
-  saveType,
-  saveTypeLabel,
-  totalValue,
-  baseValue,
-  abilityModifier,
-  abilityAbbr,
-  miscBonus,
-  tempModValue,
-  onTempModChange,
-  panelIsLocked,
-  onOpenInfoDialog,
-  onOpenRollDialog,
-  uiStrings,
-  translations,
-}: SavingThrowCardProps) => {
-
-  const handleDebouncedChange = React.useCallback((value: number) => {
-    onTempModChange(saveType, value);
-  }, [onTempModChange, saveType]);
-
-  const [localTemporaryMod, setLocalTemporaryMod] = useDebouncedFormField(
-    tempModValue, handleDebouncedChange, debounceDelayFormInput
-  );
-
-  let badgeColor: DualBadgeProps['color'] = 'default';
-  if (abilityModifier > 0) badgeColor = 'emerald';
-  else if (abilityModifier < 0) badgeColor = 'destructive';
-  
-  const { UI_STRINGS } = translations || { UI_STRINGS: {} };
-
-  const formattedAbilityModifier = `${abilityModifier >= 0 ? '+' : ''}${abilityModifier}`;
-
-  return (
-    <div className={cn("flex flex-col border rounded-md bg-card items-center text-center", panelContentPadding, panelFieldVerticalGap)}>
-       <Label className={cn("text-center flex flex-col items-center", panelFieldVerticalGap)}>
-        <span className={textStyleCardTitle}>{saveTypeLabel}</span>
-        <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-            <p className={textStyleValueBig}>{baseValue}</p>
-            <Button
-            type="button" variant="ghost" size="icon-xs"
-            className="text-muted-foreground hover:text-primary self-center"
-            onClick={() => onOpenInfoDialog(saveType)}
-            aria-label={(UI_STRINGS.infoDialogSavingThrowBreakdownAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
-            >
-            <Info />
-            </Button>
-        </div>
-      </Label>
-      <>
-        <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-          <Label className={textStyleLabel}>{uiStrings.savingThrowsRowLabelFinalModifier}</Label>
-          <div className={cn("flex items-center justify-center", panelFieldHorizontalGap)}>
-            <p className={cn(textStyleModifier, 'text-center')}>{renderModifierValue(totalValue)}</p>
-             <Button
-              type="button" variant="ghost" size="icon-xs"
-              className="text-muted-foreground hover:text-primary self-center"
-              onClick={() => onOpenRollDialog(saveType)}
-              aria-label={(UI_STRINGS.rollDialogSavingThrowAriaLabel).replace("{saveTypeLabel}", saveTypeLabel)}
-            >
-              <Dices />
-            </Button>
-          </div>
-        </div>
-        {!panelIsLocked && (
-          <>
-            <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-              <Label className={textStyleLabel}>{uiStrings.savingThrowsRowLabelAbilityModifier}</Label>
-              <DualBadge leftLabel={abilityAbbr} rightLabel={formattedAbilityModifier} color={badgeColor} className={textStyleBadgeMedium} />
-            </div>
-            <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-              <Label className={textStyleLabel}>
-                {uiStrings.savingThrowsRowLabelMiscModifier}
-              </Label>
-              <p className={textStyleSubLabel}>{renderModifierValue(miscBonus)}</p>
-            </div>
-            <div className={cn("flex flex-col items-center", panelFieldVerticalGap)}>
-                <Label htmlFor={`temp-mod-${saveType}`} className={textStyleLabel}>
-                  {uiStrings.savingThrowsRowLabelTemporaryModifier}
-                </Label>
-                <div className="flex justify-center w-full">
-                  <Input
-                    id={`temp-mod-${saveType}`}
-                    type="number"
-                    value={localTemporaryMod}
-                    onChange={(e) => setLocalTemporaryMod(parseInt(e.target.value, 10) || 0)}
-                    className={cn(textStyleInput, inputWidthFull)}
-                    disabled={panelIsLocked}
-                  />
-                </div>
-            </div>
-          </>
-        )}
-      </>
-    </div>
-  )
-});
-SavingThrowCard.displayName = 'SavingThrowCard';
 
 const SavingThrowsPanelContent = React.memo(({
   savingThrowsData,
@@ -238,10 +104,9 @@ const SavingThrowsPanelContent = React.memo(({
             {...cardData}
             onTempModChange={onSavingThrowTemporaryModChange}
             panelIsLocked={panelIsLocked}
-            onOpenInfoDialog={onOpenInfoDialog}
-            onOpenRollDialog={onOpenRollDialog}
+            onOpenInfoDialog={saveType => onOpenInfoDialog({type: 'savingThrowBreakdown', saveType})}
+            onOpenRollDialog={onOpenRollDialog as any} // Cast as any to avoid complex type issues here
             uiStrings={UI_STRINGS}
-            translations={translations}
           />
         )
       )}
@@ -298,9 +163,6 @@ const SavingThrowsPanelComponent = ({
     });
   }, [translations, savingThrowsData, abilityScores, aggregatedFeatEffects, onOpenRollDialog]);
 
-  const handleOpenInfo = React.useCallback((saveType: SavingThrowType) => {
-    onOpenInfoDialog({ type: 'savingThrowBreakdown', saveType });
-  }, [onOpenInfoDialog]);
 
   const footerContent = React.useMemo(() => {
     if (!translations) return null;
@@ -333,7 +195,7 @@ const SavingThrowsPanelComponent = ({
           abilityScores={abilityScores}
           aggregatedFeatEffects={aggregatedFeatEffects}
           onSavingThrowTemporaryModChange={onSavingThrowTemporaryModChange}
-          onOpenInfoDialog={handleOpenInfo}
+          onOpenInfoDialog={saveType => onOpenInfoDialog({type: 'savingThrowBreakdown', saveType})}
           onOpenRollDialog={handleOpenSavingThrowRollDialog}
           translations={translations}
         />
