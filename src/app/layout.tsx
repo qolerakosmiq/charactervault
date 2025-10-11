@@ -25,10 +25,10 @@ export default function RootLayout({
         <I18nProvider> {/* Wrap with I18nProvider */}
           <div className="min-h-screen flex flex-col">
             <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <div className="container flex h-16 max-w-screen-2xl items-center justify-between">
+              <div className="container flex h-16 max-w-screen-2xl items-center justify-center">
                 <Link href="/" className="flex items-center gap-2">
                   <ScrollText className="h-8 w-8 text-primary" />
-                  <span className="font-serif text-xl font-bold tracking-tight text-primary">Character Vault</span>
+                  <span className="font-serif text-xl font-bold tracking-tight text-primary uppercase">Character Vault</span>
                 </Link>
                 {/* Add navigation items here if needed */}
               </div>
