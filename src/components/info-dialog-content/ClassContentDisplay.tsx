@@ -1,4 +1,3 @@
-
 'use client';
 
 import React from 'react';
@@ -104,7 +103,7 @@ export const ClassContentDisplay = ({
             return (
                <li key={uniqueKey} className="group">
                   <div
-                    className="flex items-baseline gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
+                    className="flex items-center gap-2 p-1 -mx-1 rounded transition-colors cursor-pointer"
                     onClick={() => toggleExpanded(uniqueKey)}
                     role="button"
                     aria-expanded={expandedItems.has(uniqueKey)}
