@@ -122,7 +122,6 @@ export function RollDialog({
         let critBonusDamage = 0;
         if (isCritical) {
             const multiplier = weaponCriticalMultiplier || 2;
-            // Multiply the initial base roll and applicable static bonuses, don't re-roll dice.
             critBonusDamage = (baseRoll + staticBonusMultiplied) * (multiplier - 1);
         }
         setCriticalHitBonusDamage(critBonusDamage);
@@ -194,15 +193,15 @@ export function RollDialog({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-left">
-          <DialogTitle className="flex items-center gap-2 font-serif">
-            <Dices className="h-5 w-5 shrink-0 text-primary" />
-            {dialogTitle}
-          </DialogTitle>
-          {dialogSubtitle && (
-            <DialogDescription className="text-sm text-muted-foreground pt-1 pl-7">
-              {dialogSubtitle}
-            </DialogDescription>
-          )}
+          <div className="flex items-start">
+            <Dices className="h-5 w-5 shrink-0 text-primary mr-2" />
+            <div className="flex flex-col gap-1.5">
+              <DialogTitle className="font-serif">{dialogTitle}</DialogTitle>
+              {dialogSubtitle && (
+                <DialogDescription className="text-sm text-muted-foreground">{dialogSubtitle}</DialogDescription>
+              )}
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-3 py-3 max-h-[60vh] overflow-y-auto pr-2">
@@ -339,5 +338,6 @@ export function RollDialog({
     </Dialog>
   );
 }
+
 
 

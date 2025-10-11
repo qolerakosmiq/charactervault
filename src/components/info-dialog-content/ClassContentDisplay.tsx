@@ -25,10 +25,10 @@ interface ClassContentDisplayProps {
   detailsList?: Array<{ label: string; value: string | number; isBold?: boolean }>; // For Hit Dice, Saves
   translations: {
     UI_STRINGS: Record<string, string>;
-    ABILITY_LABELS: readonly { value: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
+    ABILITY_LABELS: readonly { id: Exclude<AbilityName, 'none'>; label: string; abbr: string }[];
     DND_CLASSES: readonly DndClassOption[];
     DND_RACES: readonly DndRaceOption[];
-    ALIGNMENT_PREREQUISITE_OPTIONS: readonly { value: string; label: string }[];
+    ALIGNMENT_PREREQUISITE_OPTIONS: readonly { id: string; label: string }[];
     SKILL_DEFINITIONS: readonly SkillDefinitionJsonData[];
   };
   allCombinedFeatDefinitions: readonly (FeatDefinitionJsonData & { isCustom?: boolean })[];

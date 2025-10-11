@@ -274,7 +274,7 @@ export function InfoDisplayDialog({
         const classId = character.classes[0]?.className;
         const classData = DND_CLASSES.find(c => c.id === classId);
         const classSpecificDetails: Array<{ label: string; value: string | number; isBold?: boolean }> = [];
-        if (classData?.hitDice) classSpecificDetails.push({ label: UI_STRINGS.hitDiceLabel || "Hit Dice | <b>{value}</b>", value: classData.hitDice, isBold: true });
+        if (classData?.hitDice) classSpecificDetails.push({ label: UI_STRINGS.hitDiceDialogLabel || "Hit Dice", value: classData.hitDice, isBold: true });
         if (classData?.saves) {
           const fortSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'fortitude')?.label;
           const reflexSaveLabel = SAVING_THROW_LABELS.find(l => l.id === 'reflex')?.label;
@@ -941,11 +941,7 @@ export function InfoDisplayDialog({
           content: [<MeleeDamageBreakdownContentDisplay components={contentType.components} uiStrings={UI_STRINGS} />]
         };
         break;
-      case 'genericHtml':
-        iconKey = 'genericHtml';
-        data = { title: contentType.title, content: [GenericHtmlContentDisplay({htmlContent: contentType.content})] };
-        break;
-       case 'genericNumericalBreakdown':
+      case 'genericNumericalBreakdown':
         iconKey = 'default';
         const titleForGeneric = UI_STRINGS[contentType.titleKey as keyof typeof UI_STRINGS] || "Breakdown";
         data = {
@@ -1005,7 +1001,7 @@ export function InfoDisplayDialog({
             <IconComponent className="mr-2 h-6 w-6 shrink-0 text-primary" />
             <div className="flex flex-col gap-1.5">
               <DialogTitle className="font-serif">{finalTitle}</DialogTitle>
-              {finalSubtitle && <DialogDescription>{finalSubtitle}</DialogDescription>}
+              {finalSubtitle && <DialogDescription className="pl-8">{finalSubtitle}</DialogDescription>}
             </div>
           </div>
         </DialogHeader>
@@ -1029,4 +1025,3 @@ interface DerivedDialogData {
   iconKey?: string;
 }
 
-    

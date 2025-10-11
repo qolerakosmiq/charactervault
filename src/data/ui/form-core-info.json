@@ -12,6 +12,7 @@
   "genderLabel": { "en": "Gender", "fr": "Genre" },
   "sizeLabel": { "en": "Size Category", "fr": "Catégorie de taille" },
   "hitDiceBadgeLabel": { "en": "HD", "fr": "DV" },
+  "hitDiceDialogLabel": { "en": "Hit Dice", "fr": "Dé de Vie" },
   "favoredEnemySlotsAvailableShort": { "en": "{slots} Slot(s)", "fr": "{slots} Emplacement(s)"},
   "favoredEnemyBonusDisplayInfo": { "en": "Bonuses vs Favored Enemies: +{skillBonus} to skills (Bluff, Listen, Sense Motive, Spot, Survival), +{damageBonus} to damage.", "fr": "Bonus vs Ennemis Jurés : +{skillBonus} aux compétences (Bluff, Perception auditive, Psychologie, Détection, Survie), +{damageBonus} aux dégâts." },
   "ageCategoryBadgeLabel": { "en": "Age Cat.", "fr": "Cat. Âge" },
