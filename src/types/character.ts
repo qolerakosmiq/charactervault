@@ -1084,87 +1084,6 @@ export function calculateFeatEffects(
   return newAggregatedEffects;
 }
 
-export function calculateSpeedBreakdown(
-  speedType: SpeedType,
-  character: Pick<Character, 'race' | 'size' | 'classes' | `${SpeedType}Speed` | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier' | 'feats'>,
-  aggregatedFeatEffects: AggregatedFeatEffects | null,
-  DND_RACES: readonly DndRaceOption[],
-  DND_CLASSES: readonly DndClassOption[],
-  SIZES: readonly CharacterSizeObject[],
-  UI_STRINGS: Record<string, string>
-): SpeedBreakdownDetails {
-  const components: { source: string; value: number }[] = [];
-  let currentSpeed = 0;
-  const currentLang = UI_STRINGS.currentLangCodeForNotesFallback as 'en' | 'fr' || 'en';
-
-  const charRaceData = DND_RACES.find(r => r.id === character.race);
-  const raceLabel = charRaceData?.label || character.race || 'Unknown Race';
-
-  const racialSpeed = charRaceData?.speeds?.[speedType];
-  if (racialSpeed !== undefined && racialSpeed > 0) {
-    components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: racialSpeed });
-    currentSpeed = racialSpeed;
-  } else if (speedType === 'land' && racialSpeed === undefined) {
-    const sizeData = SIZES.find(s => s.id === character.size);
-    let defaultLandSpeed = 30;
-    const charRaceLabelText = charRaceData?.label;
-    if (sizeData?.label === 'Small' || (charRaceLabelText && (charRaceLabelText.toLowerCase().includes('gnome') || charRaceLabelText.toLowerCase().includes('halfling') || charRaceLabelText.toLowerCase().includes('dwarf')))) {
-        defaultLandSpeed = 20;
-    }
-    components.push({ source: (UI_STRINGS.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel), value: defaultLandSpeed });
-    currentSpeed = defaultLandSpeed;
-  }
-
-  if (aggregatedFeatEffects?.speedBonuses) {
-    aggregatedFeatEffects.speedBonuses.forEach(effect => {
-      if (effect.isActive && (effect.speedType === speedType || effect.speedType === 'all')) {
-        const sourceFeatName = effect.sourceFeat ? getLocalizedString(effect.sourceFeat, currentLang) : (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Bonus");
-        if (effect.modification === 'bonus' && typeof effect.value === 'number') {
-          components.push({ source: sourceFeatName, value: effect.value });
-          currentSpeed += effect.value;
-        } else if (effect.modification === 'setAbsolute' && typeof effect.value === 'number') {
-          components.push({ source: `${sourceFeatName} (Set to)`, value: effect.value - currentSpeed });
-          currentSpeed = effect.value;
-        } else if (effect.modification === 'penalty' && typeof effect.value === 'number') {
-          components.push({ source: sourceFeatName || (UI_STRINGS.infoDialogFeatBonusLabel || "Feat Penalty"), value: -effect.value });
-          currentSpeed -= effect.value;
-        }
-      }
-    });
-  }
-
-
-  const speedFieldKey = `${speedType}Speed` as keyof Pick<Character, 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed'>;
-  const miscModForThisSpeed = (character as any)[speedFieldKey]?.miscModifier || 0; // Type assertion
-  if (miscModForThisSpeed !== 0) {
-    components.push({ source: UI_STRINGS.infoDialogSpeedMiscModifierLabel || "Misc Modifier", value: miscModForThisSpeed });
-    currentSpeed += miscModForThisSpeed;
-  }
-
-  if (currentSpeed > 0 && speedType === 'land') {
-    const armorPenaltyVal = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
-    if (armorPenaltyVal !== 0) {
-      components.push({ source: UI_STRINGS.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: armorPenaltyVal });
-      currentSpeed = Math.max(0, currentSpeed + armorPenaltyVal);
-    }
-
-    const loadPenaltyVal = (character.loadSpeedPenalty_miscModifier || 0) - (character.loadSpeedPenalty_base || 0);
-    if (loadPenaltyVal !== 0) {
-       components.push({ source: UI_STRINGS.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: loadPenaltyVal });
-       currentSpeed = Math.max(0, currentSpeed + loadPenaltyVal);
-    }
-  }
-
-  const speedTypeLabelKey = `speedLabel${speedType.charAt(0).toUpperCase() + speedType.slice(1)}` as keyof typeof UI_STRINGS;
-  const speedName = UI_STRINGS[speedTypeLabelKey] || speedType;
-
-  return {
-    name: speedName,
-    components,
-    total: Math.max(0, currentSpeed),
-  };
-}
-
 export function isAlignmentValidForRequirement(
   characterAlignment: CharacterAlignment | '',
   requiredAlignment: string // Can be specific like "lawful-good" or generic like "any-good", "lawful"
@@ -1254,5 +1173,3 @@ export const DEFAULT_SPEED_PENALTIES_DATA = {
 export const DEFAULT_RESISTANCE_VALUE_DATA = { base: 0, customMod: 0 };
 
 export * from './character-core';
-
-    
