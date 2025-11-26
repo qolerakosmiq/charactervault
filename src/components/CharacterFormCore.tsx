@@ -323,149 +323,150 @@ const CharacterFormCoreComponent = ({ onSave }: CharacterFormCoreProps) => {
             <TabsTrigger value="feats"><Award className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelFeats || 'Feats'}</span></TabsTrigger>
             <TabsTrigger value="inventory"><Backpack className="mr-1 h-4 w-4 sm:mr-2" /><span className="hidden sm:inline">{UI_STRINGS.tabLabelInventory || 'Inventory'}</span></TabsTrigger>
           </TabsList>
-
-          <TabsContent value="core" className="mt-6 flex flex-col gap-6">
-             <BasicInformationSection
-              characterData={basicInfoData}
-              classSpecificChoices={character.classSpecificChoices || []}
-              onFieldChange={handleCoreInfoFieldChange}
-              onClassChange={handleClassChange}
-              ageEffectsDetails={getNetAgingEffects(character.race, character.age, translations.DND_RACE_BASE_MAX_AGE_DATA, translations.RACE_TO_AGING_CATEGORY_MAP_DATA, translations.DND_RACE_AGING_EFFECTS_DATA, translations.ABILITY_LABELS)}
-              raceSpecialQualities={getRaceSpecialQualities(character.race, translations.DND_RACES, translations.DND_RACE_ABILITY_MODIFIERS_DATA, allAvailableSkillDefinitionsForDisplay, allAvailableFeatDefinitions, translations.ABILITY_LABELS)}
-              currentMinAgeForInput={translations.DND_RACE_MIN_ADULT_AGE_DATA[character.race as DndRaceId] || 1}
-              onOpenRaceInfoDialog={() => openInfoDialog({ type: 'race' })}
-              onOpenClassInfoDialog={() => openInfoDialog({ type: 'class' })}
-              onOpenAlignmentInfoDialog={() => openInfoDialog({ type: 'alignmentSummary' })}
-              onOpenDeityInfoDialog={() => openInfoDialog({ type: 'deity' })}
-              onOpenClassSpecificChoiceInfoDialog={(contentType) => openInfoDialog(contentType)}
-              aggregatedFeatEffects={aggregatedFeatEffects}
-              characterLevel={characterLevelFromXP}
-            />
-             <CharacterFormStoryPortraitSection
-              storyAndAppearanceData={{...character}}
-              onFieldChange={handleCoreInfoFieldChange}
-              onPortraitChange={handlePortraitChange}
-            />
-            <LanguagesPanel
-              characterLanguages={character.languages || []}
-              onLanguagesChange={(val) => handleCoreInfoFieldChange('languages', val)}
-              characterRaceId={character.race}
-              characterIntelligenceScore={detailedAbilityScores.intelligence.finalScore}
-              speakLanguageSkillRanks={character.skills.find(s => s.id === 'speak-language')?.ranks || 0}
-            />
-          </TabsContent>
           
-          <TabsContent value="abilities" className="mt-6 flex flex-col gap-6">
-            <CharacterFormAbilityScoresSection
-              abilityScoresData={abilityScoresData}
-              detailedAbilityScores={detailedAbilityScores}
-              onBaseAbilityScoreChange={(ability, value) => setCharacter(prev => prev ? ({ ...prev, abilityScores: { ...prev.abilityScores, [ability]: value } }) : null)}
-              onMultipleBaseAbilityScoresChange={(newScores) => setCharacter(prev => prev ? ({ ...prev, abilityScores: newScores }) : null)}
-              onAbilityScoreTempCustomModifierChange={(ability, value) => setCharacter(prev => prev ? ({ ...prev, abilityScoreTempCustomModifiers: { ...prev.abilityScoreTempCustomModifiers, [ability]: value } }) : null)}
-              onOpenAbilityScoreBreakdownDialog={(ability) => openInfoDialog({type: 'abilityScoreBreakdown', abilityName: ability})}
-              characterClassId={character.classes[0]?.className || ''}
-            />
-            <SavingThrowsPanel
-              savingThrowsData={{ savingThrows: character.savingThrows, classes: character.classes, feats: character.feats }}
-              abilityScores={actualAbilityScoresForSavesAndSkills}
-              aggregatedFeatEffects={aggregatedFeatEffects}
-              onSavingThrowTemporaryModChange={(saveType, value) => setCharacter(prev => prev ? ({...prev, savingThrows: {...prev.savingThrows, [saveType]: {...prev.savingThrows[saveType], miscMod: value}}}) : null)}
-              onOpenInfoDialog={(contentType) => openInfoDialog(contentType)}
-              onOpenRollDialog={handleOpenRollDialog}
-            />
-            <SkillsFormSection
-              skillsData={{ skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats }}
-              actualAbilityScores={actualAbilityScoresForSavesAndSkills}
-              allFeatDefinitions={allAvailableFeatDefinitions}
-              allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
-              allCustomSkillDefinitions={globalCustomSkillDefinitions}
-              onSkillChange={(skillId, ranks, miscModifier, isClassSkill) => setCharacter(prev => prev ? ({ ...prev, skills: prev.skills.map(s => s.id === skillId ? { ...s, ranks, miscModifier, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s) }) : null)}
-              onEditCustomSkillDefinition={() => {}}
-              onOpenSkillInfoDialog={(skillId) => openInfoDialog({type: 'skillModifierBreakdown', skillId})}
-              onOpenRollDialog={handleOpenRollDialog}
-              characterLevel={characterLevelFromXP}
-              aggregatedFeatEffects={aggregatedFeatEffects}
-            />
-          </TabsContent>
-          
-          <TabsContent value="combat" className="mt-6 flex flex-col gap-6">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <ArmorClassPanel
-                  character={character}
-                  aggregatedFeatEffects={aggregatedFeatEffects}
-                  onCharacterUpdate={(field, value) => setCharacter(prev => prev ? ({...prev, [field]: value}) : null)}
-                  onOpenAcBreakdownDialog={(contentType) => openInfoDialog(contentType)}
-                />
-                <div className="flex flex-col gap-6">
-                    <ExperiencePanel
-                      experienceData={{ currentXp: character.experiencePoints || 0, currentLevel: characterLevelFromXP }}
-                      onXpChange={(newXp) => handleCoreInfoFieldChange('experiencePoints', newXp)}
-                      xpTable={translations.XP_TABLE}
-                      epicLevelXpIncrease={translations.EPIC_LEVEL_XP_INCREASE}
-                    />
-                    <HealthPanel
-                      healthData={{...character}}
-                      calculatedMaxHp={character.maxHp}
-                      finalConstitutionModifier={calculateAbilityModifier(detailedAbilityScores.constitution.finalScore)}
-                      calculatedMiscMaxHpBonus={aggregatedFeatEffects.hpBonus || 0}
-                      onCharacterUpdate={(field, value) => setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null)}
-                      onOpenHealthInfoDialog={(contentType) => openInfoDialog(contentType)}
-                    />
-                </div>
-            </div>
-            <ResistancesPanel
-              characterData={{...character}}
-              aggregatedFeatEffects={aggregatedFeatEffects} 
-              onResistanceChange={(field, subField, value) => setCharacter(prev => prev ? ({...prev, [field]: {...(prev[field] as any), [subField]: value}}) : null)}
-              onDamageReductionChange={(newDrArray) => setCharacter(prev => prev ? ({...prev, damageReduction: newDrArray}) : null)}
-              onOpenResistanceInfoDialog={(resistanceField) => openInfoDialog({type: 'resistanceBreakdown', resistanceField})}
-            />
-             <CombatPanel
-              combatData={combatDataForPanel}
-              aggregatedFeatEffects={aggregatedFeatEffects}
-              allFeatDefinitions={allAvailableFeatDefinitions}
-              onCharacterUpdate={(field, value) => setCharacter(prev => prev ? ({...prev, [field]: value}) : null)}
-              onOpenCombatStatInfoDialog={(contentType) => openInfoDialog(contentType)}
-              onOpenRollDialog={handleOpenRollDialog}
-            />
-            <SpeedPanel
-              speedData={{...character}}
-              aggregatedFeatEffects={aggregatedFeatEffects}
-              onCharacterUpdate={(field, value) => setCharacter(prev => { if(!prev) return null; const keys = field.split('.'); if(keys.length > 1) { return {...prev, [keys[0]]: {...(prev as any)[keys[0]], [keys[1]]: value}}; } return {...prev, [field]: value};})}
-              onOpenSpeedInfoDialog={(speedType) => openInfoDialog({type: 'speedBreakdown', speedType})}
-              onOpenArmorSpeedPenaltyInfoDialog={() => openInfoDialog({type: 'armorSpeedPenaltyBreakdown'})}
-              onOpenLoadSpeedPenaltyInfoDialog={() => openInfoDialog({type: 'loadSpeedPenaltyBreakdown'})}
-            />
-          </TabsContent>
-
-          <TabsContent value="feats" className="mt-6 flex flex-col gap-6">
-              <FeatsFormSection
-                featSectionData={{...character}}
-                allAvailableFeatDefinitions={allAvailableFeatDefinitions}
-                chosenFeatInstances={character.feats}
-                onFeatInstancesChange={handleFeatInstancesChange}
-                onEditCustomFeatDefinition={() => {}}
+          <div className="mt-6">
+            <TabsContent value="core" className="m-0 p-0 flex flex-col gap-6">
+               <BasicInformationSection
+                characterData={basicInfoData}
+                classSpecificChoices={character.classSpecificChoices || []}
+                onFieldChange={handleCoreInfoFieldChange}
+                onClassChange={handleClassChange}
+                ageEffectsDetails={getNetAgingEffects(character.race, character.age, translations.DND_RACE_BASE_MAX_AGE_DATA, translations.RACE_TO_AGING_CATEGORY_MAP_DATA, translations.DND_RACE_AGING_EFFECTS_DATA, translations.ABILITY_LABELS)}
+                raceSpecialQualities={getRaceSpecialQualities(character.race, translations.DND_RACES, translations.DND_RACE_ABILITY_MODIFIERS_DATA, allAvailableSkillDefinitionsForDisplay, allAvailableFeatDefinitions, translations.ABILITY_LABELS)}
+                currentMinAgeForInput={translations.DND_RACE_MIN_ADULT_AGE_DATA[character.race as DndRaceId] || 1}
+                onOpenRaceInfoDialog={() => openInfoDialog({ type: 'race' })}
+                onOpenClassInfoDialog={() => openInfoDialog({ type: 'class' })}
+                onOpenAlignmentInfoDialog={() => openInfoDialog({ type: 'alignmentSummary' })}
+                onOpenDeityInfoDialog={() => openInfoDialog({ type: 'deity' })}
+                onOpenClassSpecificChoiceInfoDialog={(contentType) => openInfoDialog(contentType)}
+                aggregatedFeatEffects={aggregatedFeatEffects}
+                characterLevel={characterLevelFromXP}
+              />
+               <CharacterFormStoryPortraitSection
+                storyAndAppearanceData={{...character}}
+                onFieldChange={handleCoreInfoFieldChange}
+                onPortraitChange={handlePortraitChange}
+              />
+              <LanguagesPanel
+                characterLanguages={character.languages || []}
+                onLanguagesChange={(val) => handleCoreInfoFieldChange('languages', val)}
+                characterRaceId={character.race}
+                characterIntelligenceScore={detailedAbilityScores.intelligence.finalScore}
+                speakLanguageSkillRanks={character.skills.find(s => s.id === 'speak-language')?.ranks || 0}
+              />
+            </TabsContent>
+            
+            <TabsContent value="abilities" className="m-0 p-0 flex flex-col gap-6">
+              <CharacterFormAbilityScoresSection
+                abilityScoresData={abilityScoresData}
+                detailedAbilityScores={detailedAbilityScores}
+                onBaseAbilityScoreChange={(ability, value) => setCharacter(prev => prev ? ({ ...prev, abilityScores: { ...prev.abilityScores, [ability]: value } }) : null)}
+                onMultipleBaseAbilityScoresChange={(newScores) => setCharacter(prev => prev ? ({ ...prev, abilityScores: newScores }) : null)}
+                onAbilityScoreTempCustomModifierChange={(ability, value) => setCharacter(prev => prev ? ({ ...prev, abilityScoreTempCustomModifiers: { ...prev.abilityScoreTempCustomModifiers, [ability]: value } }) : null)}
+                onOpenAbilityScoreBreakdownDialog={(ability) => openInfoDialog({type: 'abilityScoreBreakdown', abilityName: ability})}
+                characterClassId={character.classes[0]?.className || ''}
+              />
+              <SavingThrowsPanel
+                savingThrowsData={{ savingThrows: character.savingThrows, classes: character.classes, feats: character.feats }}
                 abilityScores={actualAbilityScoresForSavesAndSkills}
-                skills={character.skills}
+                aggregatedFeatEffects={aggregatedFeatEffects}
+                onSavingThrowTemporaryModChange={(saveType, value) => setCharacter(prev => prev ? ({...prev, savingThrows: {...prev.savingThrows, [saveType]: {...prev.savingThrows[saveType], miscMod: value}}}) : null)}
+                onOpenInfoDialog={(contentType) => openInfoDialog(contentType)}
+                onOpenRollDialog={handleOpenRollDialog}
+              />
+              <SkillsFormSection
+                skillsData={{ skills: character.skills, classes: character.classes, race: character.race, size: character.size, feats: character.feats }}
+                actualAbilityScores={actualAbilityScoresForSavesAndSkills}
+                allFeatDefinitions={allAvailableFeatDefinitions}
                 allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
                 allCustomSkillDefinitions={globalCustomSkillDefinitions}
-                allSkillOptionsForDialog={allSkillOptionsForDialog}
-                allMagicSchoolOptionsForDialog={allMagicSchoolOptionsForDialog}
+                onSkillChange={(skillId, ranks, miscModifier, isClassSkill) => setCharacter(prev => prev ? ({ ...prev, skills: prev.skills.map(s => s.id === skillId ? { ...s, ranks, miscModifier, isClassSkill: isClassSkill !== undefined ? isClassSkill : s.isClassSkill } : s) }) : null)}
+                onEditCustomSkillDefinition={() => {}}
+                onOpenSkillInfoDialog={(skillId) => openInfoDialog({type: 'skillModifierBreakdown', skillId})}
+                onOpenRollDialog={handleOpenRollDialog}
                 characterLevel={characterLevelFromXP}
                 aggregatedFeatEffects={aggregatedFeatEffects}
               />
-              <ConditionsPanel
-                characterFeats={character.feats}
-                allFeatDefinitions={allAvailableFeatDefinitions}
-                onConditionToggle={(conditionKey, isActive) => setCharacter(prev => prev ? ({...prev, feats: prev.feats.map(feat => { const def = allAvailableFeatDefinitions.find(d => d.id === feat.definitionId); if (def && !def.permanentEffect && def.effects?.some(e => e.condition === conditionKey)) { return {...feat, conditionalEffectStates: {...feat.conditionalEffectStates, [conditionKey]: isActive}}; } return feat; })}) : null)}
-                aggregatedFeatEffects={aggregatedFeatEffects}
+            </TabsContent>
+            
+            <TabsContent value="combat" className="m-0 p-0 flex flex-col gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  <ArmorClassPanel
+                    character={character}
+                    aggregatedFeatEffects={aggregatedFeatEffects}
+                    onCharacterUpdate={(field, value) => setCharacter(prev => prev ? ({...prev, [field]: value}) : null)}
+                    onOpenAcBreakdownDialog={(contentType) => openInfoDialog(contentType)}
+                  />
+                  <div className="flex flex-col gap-6">
+                      <ExperiencePanel
+                        experienceData={{ currentXp: character.experiencePoints || 0, currentLevel: characterLevelFromXP }}
+                        onXpChange={(newXp) => handleCoreInfoFieldChange('experiencePoints', newXp)}
+                        xpTable={translations.XP_TABLE}
+                        epicLevelXpIncrease={translations.EPIC_LEVEL_XP_INCREASE}
+                      />
+                      <HealthPanel
+                        healthData={{...character}}
+                        calculatedMaxHp={character.maxHp}
+                        finalConstitutionModifier={calculateAbilityModifier(detailedAbilityScores.constitution.finalScore)}
+                        calculatedMiscMaxHpBonus={aggregatedFeatEffects.hpBonus || 0}
+                        onCharacterUpdate={(field, value) => setCharacter(prev => prev ? ({ ...prev, [field]: value }) : null)}
+                        onOpenHealthInfoDialog={(contentType) => openInfoDialog(contentType)}
+                      />
+                  </div>
+              </div>
+              <ResistancesPanel
+                characterData={{...character}}
+                aggregatedFeatEffects={aggregatedFeatEffects} 
+                onResistanceChange={(field, subField, value) => setCharacter(prev => prev ? ({...prev, [field]: {...(prev[field] as any), [subField]: value}}) : null)}
+                onDamageReductionChange={(newDrArray) => setCharacter(prev => prev ? ({...prev, damageReduction: newDrArray}) : null)}
+                onOpenResistanceInfoDialog={(resistanceField) => openInfoDialog({type: 'resistanceBreakdown', resistanceField})}
               />
-          </TabsContent>
+               <CombatPanel
+                combatData={combatDataForPanel}
+                aggregatedFeatEffects={aggregatedFeatEffects}
+                allFeatDefinitions={allAvailableFeatDefinitions}
+                onCharacterUpdate={(field, value) => setCharacter(prev => prev ? ({...prev, [field]: value}) : null)}
+                onOpenCombatStatInfoDialog={(contentType) => openInfoDialog(contentType)}
+                onOpenRollDialog={handleOpenRollDialog}
+              />
+              <SpeedPanel
+                speedData={{...character}}
+                aggregatedFeatEffects={aggregatedFeatEffects}
+                onCharacterUpdate={(field, value) => setCharacter(prev => { if(!prev) return null; const keys = field.split('.'); if(keys.length > 1) { return {...prev, [keys[0]]: {...(prev as any)[keys[0]], [keys[1]]: value}}; } return {...prev, [field]: value};})}
+                onOpenSpeedInfoDialog={(speedType) => openInfoDialog({type: 'speedBreakdown', speedType})}
+                onOpenArmorSpeedPenaltyInfoDialog={() => openInfoDialog({type: 'armorSpeedPenaltyBreakdown'})}
+                onOpenLoadSpeedPenaltyInfoDialog={() => openInfoDialog({type: 'loadSpeedPenaltyBreakdown'})}
+              />
+            </TabsContent>
 
-          <TabsContent value="inventory" className="mt-6 flex flex-col gap-6">
-            <p>Inventory will go here.</p>
-          </TabsContent>
+            <TabsContent value="feats" className="m-0 p-0 flex flex-col gap-6">
+                <FeatsFormSection
+                  featSectionData={{...character}}
+                  allAvailableFeatDefinitions={allAvailableFeatDefinitions}
+                  chosenFeatInstances={character.feats}
+                  onFeatInstancesChange={handleFeatInstancesChange}
+                  onEditCustomFeatDefinition={() => {}}
+                  abilityScores={actualAbilityScoresForSavesAndSkills}
+                  skills={character.skills}
+                  allPredefinedSkillDefinitions={translations.SKILL_DEFINITIONS}
+                  allCustomSkillDefinitions={globalCustomSkillDefinitions}
+                  allSkillOptionsForDialog={allSkillOptionsForDialog}
+                  allMagicSchoolOptionsForDialog={allMagicSchoolOptionsForDialog}
+                  characterLevel={characterLevelFromXP}
+                  aggregatedFeatEffects={aggregatedFeatEffects}
+                />
+                <ConditionsPanel
+                  characterFeats={character.feats}
+                  allFeatDefinitions={allAvailableFeatDefinitions}
+                  onConditionToggle={(conditionKey, isActive) => setCharacter(prev => prev ? ({...prev, feats: prev.feats.map(feat => { const def = allAvailableFeatDefinitions.find(d => d.id === feat.definitionId); if (def && !def.permanentEffect && def.effects?.some(e => e.condition === conditionKey)) { return {...feat, conditionalEffectStates: {...feat.conditionalEffectStates, [conditionKey]: isActive}}; } return feat; })}) : null)}
+                  aggregatedFeatEffects={aggregatedFeatEffects}
+                />
+            </TabsContent>
 
+            <TabsContent value="inventory" className="m-0 p-0 flex flex-col gap-6">
+              <p>Inventory will go here.</p>
+            </TabsContent>
+          </div>
         </Tabs>
 
         <div className="flex flex-col-reverse md:flex-row md:justify-between gap-4 mt-8 pt-8 border-t">
