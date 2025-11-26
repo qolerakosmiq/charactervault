@@ -501,7 +501,7 @@ export function InfoDisplayDialog({
         const resistanceValue = character[contentType.resistanceField] as ResistanceValue;
         const resistanceFieldLabelKey = `resistanceLabel${contentType.resistanceField.charAt(0).toUpperCase() + contentType.resistanceField.slice(1).replace('Resistance', '')}` as keyof typeof UI_STRINGS;
         const resistanceLabel = UI_STRINGS[resistanceFieldLabelKey] || contentType.resistanceField.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(' Resistance', '');
-        const miscBonus = aggregatedFeatEffectsProp.resistanceBonuses.find(rb => rb.resistanceTo === contentType.resistanceField && rb.isActive)?.value || 0;
+        const miscBonus = aggregatedFeatEffectsProp?.resistanceBonuses.find(rb => rb.resistanceTo === contentType.resistanceField && rb.isActive)?.value || 0;
 
         data = {
           title: (UI_STRINGS.infoDialogTitleResistanceBreakdown || "Resistance Breakdown ({resistanceName})").replace("{resistanceName}", resistanceLabel),
@@ -1024,4 +1024,3 @@ interface DerivedDialogData {
   content?: React.ReactNode | React.ReactNode[];
   iconKey?: string;
 }
-

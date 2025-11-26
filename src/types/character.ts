@@ -1154,6 +1154,71 @@ export function isAlignmentCompatibleWithDeity(
   return (lcDiff <= 1 && geDiff <= 1 && (lcDiff + geDiff) <= 1);
 }
 
+export function calculateSpeedBreakdown(
+  speedType: SpeedType,
+  character: Pick<Character, 'race' | 'classes' | 'landSpeed' | 'burrowSpeed' | 'climbSpeed' | 'flySpeed' | 'swimSpeed' | 'armorSpeedPenalty_base' | 'armorSpeedPenalty_miscModifier' | 'loadSpeedPenalty_base' | 'loadSpeedPenalty_miscModifier'>,
+  aggregatedFeatEffects: AggregatedFeatEffects | null,
+  DND_RACES: readonly DndRaceOption[],
+  DND_CLASSES: readonly DndClassOption[],
+  SIZES: readonly CharacterSizeObject[],
+  uiStrings: Record<string, string>
+): SpeedBreakdownDetails {
+  const speedLabelKey = `speedLabel${speedType.charAt(0).toUpperCase() + speedType.slice(1)}` as keyof typeof uiStrings;
+  const speedName = uiStrings[speedLabelKey] || speedType;
+
+  const components: { source: string; value: number }[] = [];
+  let totalSpeed = 0;
+
+  const raceData = DND_RACES.find(r => r.id === character.race);
+  let baseRaceSpeed = 0;
+  if (raceData?.speeds && raceData.speeds[speedType] !== undefined) {
+    baseRaceSpeed = raceData.speeds[speedType]!;
+    const raceLabel = raceData.label || character.race;
+    const baseRaceLabel = (uiStrings.infoDialogSpeedBaseRaceLabel || "Base ({raceName})").replace("{raceName}", raceLabel);
+    components.push({ source: baseRaceLabel, value: baseRaceSpeed });
+    totalSpeed += baseRaceSpeed;
+  }
+
+  const miscMod = character[`${speedType}Speed`]?.miscModifier || 0;
+  if (miscMod !== 0) {
+    components.push({ source: uiStrings.infoDialogSpeedMiscModifierLabel || "Misc Modifier", value: miscMod });
+    totalSpeed += miscMod;
+  }
+  
+  if (aggregatedFeatEffects?.speedBonuses) {
+    aggregatedFeatEffects.speedBonuses.forEach(effect => {
+      if (effect.isActive && (effect.speedType === speedType || effect.speedType === 'all')) {
+        let bonusValue = 0;
+        if (typeof effect.value === 'number') {
+          bonusValue = effect.value;
+        }
+        if (bonusValue !== 0) {
+          const sourceName = typeof effect.sourceFeat === 'string' ? effect.sourceFeat : "Feat";
+          components.push({ source: sourceName, value: bonusValue });
+          totalSpeed += bonusValue;
+        }
+      }
+    });
+  }
+
+  if (speedType === 'land') {
+    const netArmorPenalty = (character.armorSpeedPenalty_miscModifier || 0) - (character.armorSpeedPenalty_base || 0);
+    const netLoadPenalty = (character.loadSpeedPenalty_miscModifier || 0) - (character.loadSpeedPenalty_base || 0);
+    if(netArmorPenalty !== 0) {
+      components.push({ source: uiStrings.infoDialogSpeedArmorPenaltyLabel || "Armor Penalty", value: netArmorPenalty });
+      totalSpeed += netArmorPenalty;
+    }
+    if(netLoadPenalty !== 0) {
+      components.push({ source: uiStrings.infoDialogSpeedLoadPenaltyLabel || "Load Penalty", value: netLoadPenalty });
+      totalSpeed += netLoadPenalty;
+    }
+  }
+  
+  totalSpeed = Math.max(0, totalSpeed);
+
+  return { name: speedName, components, total: totalSpeed };
+}
+
 
 export const DEFAULT_ABILITIES_DATA: AbilityScores = {
   strength: 10, dexterity: 10, constitution: 10, intelligence: 10, wisdom: 10, charisma: 10,

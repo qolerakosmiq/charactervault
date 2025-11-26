@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import type { SpeedBreakdownDetails } from '@/types/character';
+import type { Character, SpeedType, SpeedBreakdownDetails, SpeedComponent, DndRaceOption, DndClassOption, CharacterSizeObject, AggregatedFeatEffects } from '@/types/character';
 import { renderModifierValue, sectionHeadingClass } from './dialog-utils';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';

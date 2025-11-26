@@ -2,6 +2,7 @@
 'use client';
 
 import *as React from 'react';
+import type { MouseEvent } from 'react';
 import type { Character, SpeedType, SpeedDetails, InfoDialogContentType, DndRaceOption, DndClassOption, AggregatedFeatEffects } from '@/types/character'; 
 import { calculateSpeedBreakdown } from '@/types/character';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
